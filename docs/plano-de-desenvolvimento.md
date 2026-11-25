@@ -1,0 +1,368 @@
+---
+name: plano-de-desenvolvimento
+description: Evolução do projeto e plano completo de execução da Fase A (Pilot Core)
+source: docs/002/00-mapa-de-fatiamento.md
+version: 0.1
+status: APPROVED_FOR_EXECUTION
+verified: 2026-11-25
+classification: CONFIDENTIAL - METHODOLOGY IP
+canonical: false
+derived_from:
+  - docs/002/context.md
+  - docs/002/decisoes/01-saas-multitenant-mentor-mentorados.md
+---
+
+# Plano de Desenvolvimento e Evolução do Projeto
+
+> Documento operacional **derivado** de `docs/002`. Ele não substitui anexos
+> canônicos (`ANX-*`), não autoriza conteúdo metodológico novo e não abre
+> nenhum item `OPEN-*`. Em conflito, vale: anexo canônico > documento narrativo
+> > histórico de conversa.
+
+---
+
+## 0. Regras de execução
+
+1. Uma tarefa por vez, com evidência observável antes de qualquer afirmação de
+   conclusão (skill `executing-plans`).
+2. Nada de código entra sem procedência: `source`, `version`, `status`,
+   `verified`.
+3. Nenhum texto de cenário, opção, SELF ou consentimento é inventado,
+   parafraseado ou reconstruído.
+4. `docs/001` é acervo binário original e permanece intacto.
+5. `docs/exemplo_projeto_mgh.txt` é dump de conversa de IA: serve apenas como
+   checklist de tópicos, nunca como regra de score ou de SQL.
+
+---
+
+## 1. Estado atual — 2026-11-25
+
+| Item | Estado |
+|------|--------|
+| Repositório | `devtiagoabreu/mgh`, autenticação SSH como `devtiagoabreu` |
+| `main` | `de13285` — contexto canônico `002` + decisão multitenant |
+| Branch de trabalho | `feature/mgh-phase-a-foundation` |
+| Contexto canônico | `docs/002` (11 fontes, 47 fatimentos, 11 índices) |
+| Acervo original | `docs/001` (11 binários, intactos) |
+| Aplicação | Em bootstrap: fundação Next.js + TypeScript em andamento |
+| Ambiente | `.env` local criado (não versionado), `.env.example` versionado |
+| Plano | Aprovado para execução; P0 verificado e evidenciado em `docs/evidencias/p0.md` |
+
+**Bloqueios que permanecem abertos:** `ANX-003` DRAFT (0/48 textos exatos,
+0 IDs canônicos), `REQ-INST-012 = WAITING_BANK`, `OPEN-INST-001`,
+`OPEN-LEGAL-001/002`, `OPEN-TECH-006`, `OPEN-TEN-001`.
+
+---
+
+## 2. Decisões fundantes (congeladas para a Fase A)
+
+### 2.1 Produto e metodologia
+
+- Usuário é o **desenvolvedor/mentor**, não solicitante da metodologia MGH™.
+- Escopo: **apenas Fase A — Pilot Core**. Todo o resto está em Parking Lot.
+- RAW imutável, append-only. Nunca sobrescrever, nunca apagar.
+- 48 cenários, 56 respostas pontuáveis, ordem fixa; `PC-001` primeiro,
+  `PC-011R` último.
+- DR sem randomização. SELF, feedback e RG fora do score.
+- Runs versionados e recomputáveis por `runId + versão`.
+- IA fora da Fase A: sem scoring, sem interpretação, sem classificação.
+- Onda 0 não gera relatório nem perfil ao participante: confirmação neutra.
+
+### 2.2 Arquitetura (`PROD-TEN-001`)
+
+- SaaS multitenant; tenant = workspace do mentor/programa.
+- Primeiro `MENTOR_OWNER`: Alisson Campos. Mentorados: `MENTEE`.
+- Papéis: `PLATFORM_ADMIN`, `MENTOR_OWNER`, `MENTEE`.
+  `MENTOR_ASSISTANT = DEFERIDO` — não implementar.
+- Shared DB + shared schema + `tenant_id`; RLS `ENABLE + FORCE`.
+- `tenantId` somente de sessão/JWT verificada. Nunca de header, query, body ou
+  parâmetro de rota. Falha fechada.
+- DAL sempre com `where: { tenantId: ctx.tenantId }`; config de sessão via
+  `set_config('app.current_tenant_id', $1, true)` parametrizado.
+- Default técnico: mentor vê somente agregados. Individual depende de MGH +
+  Legal (`OPEN-TEN-001`).
+- Branches Neon `preview/pr-*`, `qa/*`, `recovery/*`: schema-only + seed
+  sintético. Nunca ramificar produção com PII.
+
+### 2.3 Stack
+
+TypeScript · Next.js (App Router) · NeonDB/Postgres · Prisma · Zod · Vitest ·
+Vercel · GitHub. Runtime `nodejs` nas rotas que usam transação.
+
+### 2.4 Governança humana (persona `psicologo-organizacional`)
+
+- MGH não é terapia, diagnóstico, laudo nem decisão de RH automatizada.
+- Decisão humana nomeada: nome, data e justificativa.
+- Segurança psicológica: recusa, pausa e saque sem penalidade; silêncio não é
+  concordância.
+- Nível de evidência colado à linguagem: E1 sinal, E2 hipótese, E3
+  consistência. A linguagem nunca aumenta o nível de evidência.
+- Forbidden Claims: inteligência, competência, maturidade, caráter, saúde
+  mental, diagnóstico, job fit, hiring, promoção, resiliência, estabilidade,
+  compatibilidade percentual — entre outros.
+- Gate de crise: sinal em campo livre é evento de segurança da pesquisa, não
+  entrada de score; dono humano nomeado, diferente do mentor se houver
+  conflito.
+- Agregados com `n ≥ 5` e checagem de inferência por subtração.
+
+---
+
+## 3. Plano completo — Fase A
+
+### P0 — Contrato e configuração
+
+**Tarefas**
+
+- Fixar versões: `MGH-P1.0`, `BANK-0.2 (DRAFT)`, `SCORE-P1.0`, `ANX-004 v0.1`,
+  `GOLDEN-P1.0`, `ReleaseManifest`.
+- Escrever contrato de `tenantId` (origem exclusiva, falha fechada).
+- Matriz de papéis e registro de `MENTOR_ASSISTANT = DEFERIDO`.
+- Registrar `BANK-0.2 = DRAFT` e `REQ-INST-012 = WAITING_BANK`.
+
+**Critérios de aceitação**
+
+- Uma única lista de versões referenciada por código, testes e documentação.
+- Nenhuma rota, DAL ou teste obtém `tenantId` de entrada do cliente.
+- `.env.example` contém todas as variáveis; `.env` não é versionado.
+
+**Gate `G0`:** versão, papel ou origem de tenant ambígua → não iniciar P1.
+
+---
+
+### P1 — Identidade, tenant e RBAC/RLS
+
+**Tarefas**
+
+- Modelar `Tenant`, `User`, `TenantMembership` e `ParticipantIdentity` no Vault.
+- Sessão/JWT com `tenantId + role` verificados; `401/403` sem claim.
+- RLS `ENABLE + FORCE` em toda tabela de tenant, com políticas separadas de
+  `SELECT/INSERT/UPDATE/DELETE`.
+- `AuditLog` com `actor`, `action`, `tenant_scope`, `reason`, `timestamp_utc`.
+
+**Critérios de aceitação**
+
+- Claim válido vê somente linhas do próprio tenant.
+- Claim ausente falha fechado; `tenantId` forjado é ignorado ou rejeitado.
+- Query de catálogo confirma `FORCE RLS` em todas as tabelas de tenant.
+- Toda operação com service role gera `AuditLog`.
+
+**Gate `G1`:** RLS incompleto, service role sem auditoria ou autorização apenas
+no cliente → parar.
+
+---
+
+### P2 — Modelo de dados e DAL
+
+**Tarefas**
+
+- Catálogo versionado (`InstrumentVersion`, `ItemBankVersion`,
+  `ScoringVersion`, `SequenceVersion`, `GoldenDatasetVersion`).
+- `Run`, `ResponseRaw`, `ResponseEvent`, `DerivedScoreRun/Value`, `ChangeLog`,
+  `Occurrence`.
+- RAW e eventos sem `updated_at`; `UPDATE/DELETE` bloqueados.
+- DAL exige contexto autenticado; proibir `$queryRaw` fora do DAL.
+- Singleton do Prisma + string pooled do Neon.
+
+**Critérios de aceitação**
+
+- Nenhuma tabela analítica contém nome, e-mail ou identificador direto.
+- Tentativa de mutar RAW falha por policy/trigger.
+- Score derivado é separado e recomputável por `runId + versão`.
+- Teste cross-tenant negativo passa.
+
+**Gate `G2`:** PII em tabela analítica, RAW mutável ou versão ausente → não
+iniciar P3.
+
+---
+
+### P3 — Registry estrutural e sequência
+
+**Tarefas**
+
+- Registrar contagens: 24 PC, 8 PRC Forced, 4 grupos/12 ratings, 12 DR, 8
+  SELF, 6 RG.
+- Ordem de `ANX-004`; `PC-001` primeiro, `PC-011R` último.
+- `randomizable=false` para DR; `scored=false` para SELF/feedback/RG.
+- Nenhum campo de texto preenchido; nenhum `option_id` canônico inventado.
+
+**Critérios de aceitação**
+
+- Registry com versões e contagens, textos vazios.
+- Nenhum cálculo inclui SELF, feedback ou RG.
+- `WAITING_BANK` continua explícito.
+
+**Gate `G3`:** qualquer wording inventado publicado → reverter e marcar
+`SOURCE_REQUIRED`.
+
+---
+
+### P4 — Eventos, respostas e fechamento idempotente
+
+**Tarefas**
+
+- Validação Zod: `option_id` apresentado, versão compatível, run em andamento,
+  ordem respeitada.
+- Autosave com estado “salvo/falhou”; falha impede avanço.
+- Voltar antes do submit gera `ResponseEvent`; após `COMPLETED`, edição negada.
+- Transação única: `COMPLETED + lock + FINAL_SUBMIT`; submit duplicado
+  idempotente.
+
+**Critérios de aceitação**
+
+- 55/56 → `ASSESSMENT_NOT_READY`, run permanece `IN_PROGRESS`.
+- 56/56 → um único job de score; `OPTION_NOT_PRESENTED` e `VERSION_MISMATCH`
+  sem output oficial.
+- Invalidação preserva RAW e auditoria.
+
+**Gate `G4`:** fechamento duplicado ou RAW sobrescrito → não iniciar P5.
+
+---
+
+### P5 — Score Engine puro e golden cases
+
+**Tarefas**
+
+- Função pura com entrada = RAW + versões + regras; saída tipada ou erro
+  (`VERSION_MISMATCH`, `CONFIG_ERROR`, `INCOMPLETE_INPUT`, `UNKNOWN_OPTION`).
+- Sem DB, rede, IA, `Date.now()`, `Math.random()`; serialização canônica.
+- Golden cases de `GOLDEN-P1.0`: completo, 55/56, opção desconhecida, versão
+  divergente, regra ausente, SELF/RG injectados, DR reordenado, recomputação,
+  nova versão.
+
+**Critérios de aceitação**
+
+- Testes passam sem banco, rede ou relógio.
+- Mesmo `runId + versões` gera output idêntico.
+- Erro gera status, nunca score parcial.
+- `SELF`, feedback e RG não aparecem na entrada.
+
+**Gate `G5`:** golden falhando ou não determinismo → não iniciar P6.
+
+---
+
+### P6 — Superfície do participante e consentimento estrutural
+
+**Tarefas**
+
+- Fluxo: link opaco → consentimento versionado → contexto → 48 cenários (uma
+  tela por cenário, progresso `x/48`) → SELF-01..08 → feedback → confirmação
+  neutra.
+- Tokens em três camadas; light/dark; 1280×800 e 390×844; WCAG 2.2 AA.
+- axe + auditoria manual (teclado, leitor de tela, 200/400%, forced colors).
+- Sem dark patterns, gamificação, pré-seleção ou progresso `/56`.
+- Gate de crise com dono humano nomeado e contatos revalidados.
+
+**Critérios de aceitação**
+
+- Fluxo não entra em `IN_PROGRESS` sem aceite registrado.
+- Token inválido retorna mensagem neutra.
+- Zero P0 de acessibilidade; crítica visual com `aprovar`/`rework`.
+- Placeholders obrigatórios: `[PLACEHOLDER SINTÉTICO — NÃO CANÔNICO]`.
+
+**Gate `G6`:** `OPEN-LEGAL-*`, `OPEN-INST-001` ou `ANX-003` pendentes → nenhum
+participante real.
+
+---
+
+### P7 — Admin agregado, governança e release
+
+**Tarefas**
+
+- Dashboard somente agregados, `n ≥ 5`, checagem por subtração e campo
+  “o que estes dados **não** permitem dizer”.
+- Exportações pseudonimizadas e auditadas; individual bloqueado por
+  `OPEN-TEN-001`.
+- Forbidden Claim Registry e níveis E1/E2/E3 aplicados à linguagem.
+- Deploy Vercel, `prisma migrate deploy`, branches Neon sintéticos,
+  `Cache-Control: private, no-store`.
+- Propor RPO/RTO (`OPEN-TECH-006`) e executar restore testado.
+
+**Critérios de aceitação**
+
+- Mentor vê agregados e recebe `403` em resposta individual.
+- Restore executado com sucesso; nenhuma PII em preview/log/cache.
+- Release Manifest completo; evidências de `G0`–`G6` anexadas.
+
+**Gate `G7`:** sem restore testado e RPO/RTO decidido, Fase A não é declarada
+pronta.
+
+---
+
+## 4. Orquestração de agents e skills
+
+| Frente | Skills | agents | Escopo de escrita |
+|--------|--------|--------|-------------------|
+| Fundação | `executing-plans`, `project-setup`, `nextjs-development` | executor principal | configs, `app/`, CI |
+| Dados | `prisma-orm`, `rls-tenancy-pattern`, `multi-tenant-saas`, `rbac-authorization` | agent de arquitetura | `prisma/`, `lib/db/`, `lib/auth/`, `tests/data/` |
+| Motor | `clean-architecture`, `tdd`, `unit-testing` | agent de backend | `lib/engine/`, `tests/engine/` |
+| Design | `design-system`, `a11y-audit`, `ui-visual-craft`, `design-review-critic` | agent de design | `app/`, `components/`, `styles/` |
+| Governança | `people-governance-psychology`, `mental-health-crisis-protocol`, `evidence-based-scales` | persona `psicologo-organizacional` | `docs/governanca/` |
+
+Regra de paralelismo: escopos de escrita não se sobrepõem; quando houver
+sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
+
+---
+
+## 5. Riscos, mitigação e rollback
+
+| Risco | Mitigação | Rollback |
+|-------|-----------|----------|
+| Vazamento cross-tenant | `FORCE RLS`, DAL, claim verificado, `AuditLog`, testes negativos | `git revert` da migration + feature flag |
+| RAW mutado | Sem `updated_at`, trigger/policy, invalidação por evento | Restaurar `recovery/*`; nunca editar RAW |
+| Score não determinístico | Função pura, golden no CI, hashes | Reverter versão do scoring; manter derivado antigo |
+| Wording inventado | `BANK-0.2 = DRAFT`, registry vazio, checklist de PR | Reverter commit e marcar `SOURCE_REQUIRED` |
+| PII em DEV/preview | Seed sintético, varredura de log/URL/cache | Apagar branch de preview |
+| A11y/dark pattern | axe + manual, zero P0, `design-review-critic` | `rework` obrigatório |
+| Legal/saúde | Gate de crise humano, consentimento bloqueado | Suspender O0 e acionar humano nomeado |
+
+---
+
+## 6. Evolução do projeto
+
+| Data | Entrada |
+|------|---------|
+| 2026-11-25 (1) | `docs/001` inventariado; 11 fontes binárias preservadas. |
+| 2026-11-25 (2) | 11 fontes convertidas e fatiadas em 47 partes + 11 índices em `docs/002`; validação `exact=True`, `coverage=True`, `TOTAL_PARTS=47`. |
+| 2026-11-25 (3) | `docs/002/context.md`, `00-mapa-de-fatiamento.md` e `llms.txt` criados; resumos duplicados removidos. |
+| 2026-11-25 (4) | Decisão `PROD-TEN-001` registrada: SaaS multitenant, RLS `FORCE`, DAL, papéis e default agregado. |
+| 2026-11-25 (5) | Commit `de13285` enviado; `main` atualizado por fast-forward; remoto convertido para SSH `devtiagoabreu`. |
+| 2026-11-25 (6) | Análise de `docs/exemplo_projeto_mgh.txt`: classificado como dump de IA, não canônico; regras inventadas e bugs identificados. |
+| 2026-11-25 (7) | Plano consolidado por 3 agents (arquitetura, design, psicologia/governança) e aprovado para execução. |
+| 2026-11-25 (8) | Branch `feature/mgh-phase-a-foundation` criada; `.env`/`.env.example` e este documento criados; bootstrap Next.js iniciado. |
+| 2026-11-25 (9) | P0 concluído: versões/gates/papéis/tenant contratados; `audit`, `typecheck`, `test` (11), `lint`, `build` e `diff --check` verdes; evidência em `docs/evidencias/p0.md`. |
+
+---
+
+## 7. Congelado até decisão explícita
+
+- Textos e IDs de `ANX-003` / `BANK-0.2`.
+- Rótulos finais de SELF-01..08 (`OPEN-INST-001`).
+- Consentimento e Privacy Notice finais (`OPEN-LEGAL-001/002`).
+- Participantes reais na Onda 0.
+- Acesso do mentor a respostas individuais (`OPEN-TEN-001`).
+- RPO/RTO definitivo (`OPEN-TECH-006`).
+- IA, randomização de DR, score com SELF/feedback/RG.
+- Parking Lot completo: relatório comercial, Assinatura/Manual externos,
+  Mapa de Relação™, Sala de Comando Humana™, dashboard organizacional,
+  matching, compatibilidade percentual, app nativo, pagamentos, CRM,
+  gamificação, MGH 360™.
+
+---
+
+## 8. Variáveis de ambiente — como preencher
+
+1. Copie `.env.example` para `.env` (já criado).
+2. Preencha `DATABASE_URL` (pool) e `DIRECT_URL` (direta) do Neon.
+3. Ajuste `JWT_TENANT_CLAIM` e `JWT_ROLE_CLAIM` quando o auth for definido.
+4. Não altere os gates `MGH_*` sem decisão registrada.
+5. Nunca commite `.env` e nunca cole segredos no chat; informe apenas quais
+   variáveis já estão preenchidas. O agente lê o arquivo localmente sem
+   exibir os valores.
+
+---
+
+## 9. Próximo passo
+
+Concluir o bootstrap (P0), verificar `npm run lint`, `npm run typecheck`,
+`npm test` e `npm run build`, commits por tarefa verificada, e então delegar
+P1/P2 (dados e RLS) e P5 (motor) a agents com escopos separados.
