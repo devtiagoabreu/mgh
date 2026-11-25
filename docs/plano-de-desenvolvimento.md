@@ -46,7 +46,7 @@ derived_from:
 | Acervo original | `docs/001` (11 binários, intactos) |
 | Aplicação | Em bootstrap: fundação Next.js + TypeScript em andamento |
 | Ambiente | `.env` local criado (não versionado), `.env.example` versionado |
-| Plano | Aprovado para execução; P0 verificado e evidenciado em `docs/evidencias/p0.md` |
+| Plano | P0, P1/P2, P5 e superfície estrutural de P6 verificados; integração final green em `docs/evidencias/integracao-final.md` |
 
 **Bloqueios que permanecem abertos:** `ANX-003` DRAFT (0/48 textos exatos,
 0 IDs canônicos), `REQ-INST-012 = WAITING_BANK`, `OPEN-INST-001`,
@@ -332,6 +332,9 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-25 (9) | P0 concluído: versões/gates/papéis/tenant contratados; `audit`, `typecheck`, `test` (11), `lint`, `build` e `diff --check` verdes; evidência em `docs/evidencias/p0.md`. |
 | 2026-11-25 (10) | P5 concluído por agent: motor puro, 9 golden cases, 14 testes, sem relógio/rede/IA; evidência em `docs/evidencias/p5.md`. |
 | 2026-11-25 (11) | Governança humana documentada: gate de crise, E1/E2/E3, checklist de consentimento/privacidade; divergência `REPEAT_*` registrada como `SPECIFICATION CONFLICT`; evidência em `docs/evidencias/governanca.md`. |
+| 2026-11-25 (12) | P6 estrutural concluído: tokens em 3 camadas, light/dark, componentes com placeholders sintéticos; veredito de design `rework — escopo incompleto` até auditoria renderizada; evidência em `docs/evidencias/p6-design.md`. |
+| 2026-11-25 (13) | P1/P2 concluídos: 17 modelos tenant-scoped, `FORCE RLS`, trigger append-only, DAL parametrizado, seed sintético; 23 testes de dados; evidência em `docs/evidencias/p1-p2.md`. |
+| 2026-11-25 (14) | Integração final verde: `audit`, `prisma validate/generate`, `lint`, `typecheck`, `test` (48), `build` e `diff --check`; evidência em `docs/evidencias/integracao-final.md`. Commits por feature preservados. |
 
 ---
 
