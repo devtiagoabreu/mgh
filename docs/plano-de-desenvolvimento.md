@@ -330,6 +330,8 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-25 (7) | Plano consolidado por 3 agents (arquitetura, design, psicologia/governança) e aprovado para execução. |
 | 2026-11-25 (8) | Branch `feature/mgh-phase-a-foundation` criada; `.env`/`.env.example` e este documento criados; bootstrap Next.js iniciado. |
 | 2026-11-25 (9) | P0 concluído: versões/gates/papéis/tenant contratados; `audit`, `typecheck`, `test` (11), `lint`, `build` e `diff --check` verdes; evidência em `docs/evidencias/p0.md`. |
+| 2026-11-25 (10) | P5 concluído por agent: motor puro, 9 golden cases, 14 testes, sem relógio/rede/IA; evidência em `docs/evidencias/p5.md`. |
+| 2026-11-25 (11) | Governança humana documentada: gate de crise, E1/E2/E3, checklist de consentimento/privacidade; divergência `REPEAT_*` registrada como `SPECIFICATION CONFLICT`; evidência em `docs/evidencias/governanca.md`. |
 
 ---
 
