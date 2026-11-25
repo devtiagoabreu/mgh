@@ -1,0 +1,17 @@
+# MGH context 002
+
+> Canonical sliced Markdown source for AI export. Start with `00-mapa-de-fatiamento.md`.
+
+- [00-mapa-de-fatiamento.md](00-mapa-de-fatiamento.md): master map of all 11 sources.
+- [fontes/mapa-de-governo-humano/00-indice.md](fontes/mapa-de-governo-humano/00-indice.md): Mapa de Governo Humano — MGH (20 parts).
+- [fontes/reuniao-desenvolvedor/00-indice.md](fontes/reuniao-desenvolvedor/00-indice.md): Reunião Desenvolvedor (7 parts).
+- [fontes/anx-003-bank-docx/00-indice.md](fontes/anx-003-bank-docx/00-indice.md): ANX-003 — Banco Canônico (docx) (3 parts).
+- [fontes/fase-3-consolidacao/00-indice.md](fontes/fase-3-consolidacao/00-indice.md): Fase 3 — Consolidação Executiva e Contratação (3 parts).
+- [fontes/anx-003-xlsx/00-indice.md](fontes/anx-003-xlsx/00-indice.md): ANX-003 — Banco Canônico (xlsx) (1 parts).
+- [fontes/anx-004-xlsx/00-indice.md](fontes/anx-004-xlsx/00-indice.md): ANX-004 — Sequência de Aplicação (1 parts).
+- [fontes/anx-005-xlsx/00-indice.md](fontes/anx-005-xlsx/00-indice.md): ANX-005 — Matriz de Scoring (1 parts).
+- [fontes/anx-015-xlsx/00-indice.md](fontes/anx-015-xlsx/00-indice.md): ANX-015 — Golden Dataset (1 parts).
+- [fontes/anx-016-xlsx/00-indice.md](fontes/anx-016-xlsx/00-indice.md): ANX-016 — Matriz de Rastreabilidade (1 parts).
+- [fontes/developer-handoff-pdf/00-indice.md](fontes/developer-handoff-pdf/00-indice.md): Developer Handoff Package (PDF) (2 parts).
+- [fontes/base-operacional-xlsx/00-indice.md](fontes/base-operacional-xlsx/00-indice.md): Base Operacional da Onda 0 (7 parts).
+- [decisoes/01-saas-multitenant-mentor-mentorados.md](decisoes/01-saas-multitenant-mentor-mentorados.md): PROD-TEN-001 — SaaS multitenant mentor/mentorados.
