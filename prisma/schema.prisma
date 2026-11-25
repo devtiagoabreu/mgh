@@ -1,0 +1,338 @@
+// MGH Fase A — modelo de dados tenant-scoped (P1 + P2).
+// Fonte: docs/002/decisoes/01-saas-multitenant-mentor-mentorados.md
+// e docs/plano-de-desenvolvimento.md (P1/P2). Nenhum texto canônico de item,
+// opção, SELF ou consentimento é armazenado neste schema.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["public", "vault"]
+}
+
+/// Papéis da Fase A. MENTOR_ASSISTANT está DEFERIDO e não existe no modelo.
+enum PhaseARole {
+  PLATFORM_ADMIN
+  MENTOR_OWNER
+  MENTEE
+
+  @@schema("public")
+}
+
+enum RunStatus {
+  IN_PROGRESS
+  COMPLETED
+  INVALIDATED
+
+  @@schema("public")
+}
+
+/// Workspace do mentor/programa. `tenantId` espelha `id` (CHECK no SQL).
+model Tenant {
+  id          String             @id @default(uuid()) @db.Uuid
+  tenantId    String             @map("tenant_id") @db.Uuid
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
+  deletedAt   DateTime?          @db.Timestamptz(3)
+  memberships TenantMembership[]
+
+  @@unique([tenantId])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("tenants")
+  @@schema("public")
+}
+
+/// Identidade mínima sem PII. Dados pessoais ficam em vault.participant_identities.
+model User {
+  id                    String                @id @default(uuid()) @db.Uuid
+  tenantId              String                @map("tenant_id") @db.Uuid
+  createdAt             DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime              @updatedAt @db.Timestamptz(3)
+  deletedAt             DateTime?             @db.Timestamptz(3)
+  memberships           TenantMembership[]
+  participantIdentities ParticipantIdentity[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("users")
+  @@schema("public")
+}
+
+model TenantMembership {
+  id        String     @id @default(uuid()) @db.Uuid
+  tenantId  String     @map("tenant_id") @db.Uuid
+  userId    String     @db.Uuid
+  role      PhaseARole
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime?  @db.Timestamptz(3)
+  tenant    Tenant     @relation(fields: [tenantId], references: [tenantId])
+  user      User       @relation(fields: [tenantId, userId], references: [tenantId, id])
+
+  @@unique([tenantId, userId])
+  @@unique([tenantId, id])
+  @@index([tenantId, role])
+  @@map("tenant_memberships")
+  @@schema("public")
+}
+
+/// Vault: único local autorizado a conter PII, e ainda assim cifrada.
+/// `participantRef` é opaco e não é usado como chave analítica direta.
+model ParticipantIdentity {
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  userId         String    @db.Uuid
+  participantRef String
+  displayNameEnc Bytes?
+  emailEnc       Bytes?
+  consentRef     String?
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt      DateTime? @db.Timestamptz(3)
+  user           User      @relation(fields: [tenantId, userId], references: [tenantId, id])
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, participantRef])
+  @@index([tenantId, userId])
+  @@map("participant_identities")
+  @@schema("vault")
+}
+
+// ---------------------------------------------------------------------------
+// Catálogo versionado. Apenas identificadores de versão e contagens estruturais;
+// nenhum texto de item, opção ou regra canônica.
+// ---------------------------------------------------------------------------
+
+model InstrumentVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  version   String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  runs      Run[]
+
+  @@unique([tenantId, version])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("instrument_versions")
+  @@schema("public")
+}
+
+model ItemBankVersion {
+  id                   String            @id @default(uuid()) @db.Uuid
+  tenantId             String            @map("tenant_id") @db.Uuid
+  version              String
+  status               String            @default("DRAFT")
+  itemCount            Int               @default(0)
+  canonicalTextPresent Boolean           @default(false)
+  createdAt            DateTime          @default(now()) @db.Timestamptz(3)
+  runs                 Run[]
+  derivedScoreRuns     DerivedScoreRun[]
+
+  @@unique([tenantId, version])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("item_bank_versions")
+  @@schema("public")
+}
+
+model ScoringVersion {
+  id               String            @id @default(uuid()) @db.Uuid
+  tenantId         String            @map("tenant_id") @db.Uuid
+  version          String
+  ruleCount        Int               @default(0)
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  runs             Run[]
+  derivedScoreRuns DerivedScoreRun[]
+
+  @@unique([tenantId, version])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("scoring_versions")
+  @@schema("public")
+}
+
+model SequenceVersion {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  version       String
+  scenarioCount Int      @default(0)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  runs          Run[]
+
+  @@unique([tenantId, version])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("sequence_versions")
+  @@schema("public")
+}
+
+model GoldenDatasetVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  version   String
+  caseCount Int      @default(0)
+  status    String   @default("WAITING_BANK")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([tenantId, version])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("golden_dataset_versions")
+  @@schema("public")
+}
+
+// ---------------------------------------------------------------------------
+// Runs, RAW append-only e derivados recomputáveis.
+// ---------------------------------------------------------------------------
+
+model Run {
+  id                  String            @id @default(uuid()) @db.Uuid
+  tenantId            String            @map("tenant_id") @db.Uuid
+  participantRef      String
+  status              RunStatus         @default(IN_PROGRESS)
+  instrumentVersionId String            @db.Uuid
+  itemBankVersionId   String            @db.Uuid
+  scoringVersionId    String            @db.Uuid
+  sequenceVersionId   String            @db.Uuid
+  createdAt           DateTime          @default(now()) @db.Timestamptz(3)
+  completedAt         DateTime?         @db.Timestamptz(3)
+  updatedAt           DateTime          @updatedAt @db.Timestamptz(3)
+  instrumentVersion   InstrumentVersion @relation(fields: [tenantId, instrumentVersionId], references: [tenantId, id])
+  itemBankVersion     ItemBankVersion   @relation(fields: [tenantId, itemBankVersionId], references: [tenantId, id])
+  scoringVersion      ScoringVersion    @relation(fields: [tenantId, scoringVersionId], references: [tenantId, id])
+  sequenceVersion     SequenceVersion   @relation(fields: [tenantId, sequenceVersionId], references: [tenantId, id])
+  responseRaws        ResponseRaw[]
+  responseEvents      ResponseEvent[]
+  derivedScoreRuns    DerivedScoreRun[]
+  occurrences         Occurrence[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@map("runs")
+  @@schema("public")
+}
+
+/// Append-only. Sem updatedAt; UPDATE/DELETE bloqueados por policy + trigger.
+model ResponseRaw {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  runId         String   @db.Uuid
+  sequenceIndex Int
+  scenarioRef   String
+  optionRef     String
+  recordedAt    DateTime @default(now()) @db.Timestamptz(3)
+  run           Run      @relation(fields: [tenantId, runId], references: [tenantId, id])
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, runId, sequenceIndex])
+  @@index([tenantId, runId])
+  @@map("response_raws")
+  @@schema("public")
+}
+
+/// Append-only. Sem updatedAt; UPDATE/DELETE bloqueados por policy + trigger.
+model ResponseEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  runId      String   @db.Uuid
+  eventType  String
+  occurredAt DateTime @default(now()) @db.Timestamptz(3)
+  run        Run      @relation(fields: [tenantId, runId], references: [tenantId, id])
+
+  @@unique([tenantId, id])
+  @@index([tenantId, runId, occurredAt])
+  @@map("response_events")
+  @@schema("public")
+}
+
+/// Derivado separado por runId + versões; nunca sobrescreve RAW.
+model DerivedScoreRun {
+  id                String              @id @default(uuid()) @db.Uuid
+  tenantId          String              @map("tenant_id") @db.Uuid
+  runId             String              @db.Uuid
+  scoringVersionId  String              @db.Uuid
+  itemBankVersionId String              @db.Uuid
+  inputHash         String
+  status            String              @default("COMPUTED")
+  computedAt        DateTime            @default(now()) @db.Timestamptz(3)
+  run               Run                 @relation(fields: [tenantId, runId], references: [tenantId, id])
+  scoringVersion    ScoringVersion      @relation(fields: [tenantId, scoringVersionId], references: [tenantId, id])
+  itemBankVersion   ItemBankVersion     @relation(fields: [tenantId, itemBankVersionId], references: [tenantId, id])
+  values            DerivedScoreValue[]
+
+  @@unique([tenantId, runId, scoringVersionId, itemBankVersionId])
+  @@unique([tenantId, id])
+  @@index([tenantId, runId])
+  @@map("derived_score_runs")
+  @@schema("public")
+}
+
+model DerivedScoreValue {
+  id                String          @id @default(uuid()) @db.Uuid
+  tenantId          String          @map("tenant_id") @db.Uuid
+  derivedScoreRunId String          @db.Uuid
+  dimensionRef      String
+  value             Decimal         @db.Decimal(12, 6)
+  createdAt         DateTime        @default(now()) @db.Timestamptz(3)
+  derivedScoreRun   DerivedScoreRun @relation(fields: [tenantId, derivedScoreRunId], references: [tenantId, id])
+
+  @@unique([tenantId, derivedScoreRunId, dimensionRef])
+  @@unique([tenantId, id])
+  @@index([tenantId, derivedScoreRunId])
+  @@map("derived_score_values")
+  @@schema("public")
+}
+
+model ChangeLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  entityType String
+  entityId   String
+  action     String
+  reason     String
+  actor      String
+  changes    Json?
+  occurredAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, entityType, entityId])
+  @@map("change_logs")
+  @@schema("public")
+}
+
+model Occurrence {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  runId          String?  @db.Uuid
+  occurrenceType String
+  occurredAt     DateTime @default(now()) @db.Timestamptz(3)
+  run            Run?     @relation(fields: [tenantId, runId], references: [tenantId, id])
+
+  @@unique([tenantId, id])
+  @@index([tenantId, runId, occurredAt])
+  @@map("occurrences")
+  @@schema("public")
+}
+
+/// Recibo obrigatório de toda operação via service_role/BYPASSRLS.
+model AuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  actor        String
+  action       String
+  tenantScope  String
+  reason       String
+  resource     String?
+  changes      Json?
+  timestampUtc DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, timestampUtc])
+  @@map("audit_logs")
+  @@schema("public")
+}

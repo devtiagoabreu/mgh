@@ -15,9 +15,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma migrate deploy",
+    "prisma:generate": "prisma generate --config prisma/prisma.config.ts",
+    "prisma:validate": "prisma validate --config prisma/prisma.config.ts",
+    "prisma:migrate": "prisma migrate dev --config prisma/prisma.config.ts",
+    "prisma:deploy": "prisma migrate deploy --config prisma/prisma.config.ts",
     "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
