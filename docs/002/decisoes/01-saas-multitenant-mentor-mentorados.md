@@ -1,10 +1,12 @@
 ---
 name: 01-saas-multitenant-mentor-mentorados
 description: Decisão PROD-TEN-001 — SaaS multitenant com mentor como dono do tenant e mentorados como participantes
-source: "decisão do desenvolvedor — 2026-11-25"
-version: 0.1
+source:
+  - "decisão do desenvolvedor — 2026-11-25"
+  - "https://alissoncampos.com/ — consultado em 2026-11-26"
+version: 0.2
 status: CANONICAL_DECISION
-verified: 2026-11-25
+verified: 2026-11-26
 classification: CONFIDENTIAL
 canonical: true
 ---
@@ -19,7 +21,11 @@ instrumento, sequência, scoring, regras de interpretação ou Fase A.
 
 O MGH será entregue como **SaaS multitenant**. O tenant é o **workspace do
 mentor / programa de mentoria**. O mentor idealizador, **Alisson Campos**, é o
-primeiro dono de tenant (`MENTOR_OWNER`). Os mentorados são participantes
+primeiro dono de tenant (`MENTOR_OWNER`) e o autor do guia didático da Fase A
+(`docs/guia-didatico-fase-a.md`). Sua atuação como mentor de gestores,
+fundador da M2M (Mentoria para Gestores) e criador do GTalk está registrada em
+`https://alissoncampos.com/` (consultado em 26/11/2026). **Tiago de Abreu é o
+desenvolvedor do projeto**, não o mentor. Os mentorados são participantes
 vinculados a exatamente um tenant.
 
 | Conceito | Mapeamento no produto |
@@ -156,3 +162,19 @@ Nenhum item vira `PASS` sem evidência objetiva.
 
 Estes bloqueios não impedem o desenho multitenant, mas impedem publicação,
 O0 com participantes reais e E2E com texto literal.
+
+## 10. Registro de alteração — 2026-11-26 (v0.2)
+
+- Alteração **apenas factual**: registro da autoria do guia didático e da
+  procedência pública da atuação de Alisson Campos como mentor. Nenhuma
+  regra de produto, isolamento, papel, sequência, scoring, interpretação
+  ou Fase A foi alterada.
+- Alisson Campos: mentor idealizador, primeiro `MENTOR_OWNER` e autor de
+  `docs/guia-didatico-fase-a.md`.
+- Tiago de Abreu: desenvolvedor do projeto; não é o mentor nem o autor do
+  guia.
+- Procedência: `https://alissoncampos.com/` — mentor de gestores, fundador
+  da M2M (Mentoria para Gestores) e criador do GTalk; consultado em
+  26/11/2026.
+- Em caso de conflito entre esta nota e as seções 1–9, prevalecem as seções
+  1–9; esta nota apenas documenta a procedência da atribuição.
