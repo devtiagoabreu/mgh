@@ -446,3 +446,12 @@ branches locais e remotas. Nenhum PR foi aberto.
 Frentes em aberto (inalteradas): recuperação de `ANX-003`, consentimento e
 Privacy Notice, RPO/RTO com restore testado e auditoria renderizada de
 acessibilidade. A regra §3.6 continua vigente.
+
+### 2026-11-26 — Correção do build na Vercel
+
+O primeiro build na Vercel falhou em `lib/db/client.ts` (`TS2339`:
+`PrismaClient` ausente em `@prisma/client`). Causa: os scripts de instalação do
+Prisma não são aprovados no ambiente da Vercel, então o client não era gerado
+antes de `next build`. Correção: `package.json → build` agora executa
+`prisma generate --config prisma/prisma.config.ts && next build`. Nada de
+metodologia, gates ou regras de score foi alterado.
