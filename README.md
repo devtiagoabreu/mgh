@@ -1,8 +1,8 @@
 # MGH — Mapa de Governaça Humana
 
-Pilot Core da Fase A do MGH™. Repositório privado de implementação, com
-contexto metodológico canônico em `docs/002` e acervo original intacto em
-`docs/001`.
+Pilot Core da Fase A do MGH™. Repositório público para visualização, sem
+licença de redistribuição, com contexto metodológico canônico em `docs/002`
+e acervo original intacto em `docs/001`.
 
 > A metodologia é experimental. Nada aqui é diagnóstico, laudo, avaliação de
 > competência ou fundamento isolado para decisão profissional.
@@ -17,7 +17,8 @@ contexto metodológico canônico em `docs/002` e acervo original intacto em
 - `docs/001` — acervo binário original; não editar.
 
 Em conflito: anexo canônico (`ANX-*`) > documento narrativo > histórico de
-conversa. `docs/exemplo_projeto_mgh.txt` é dump de IA, não é fonte de regra.
+conversa. `docs/exemplo_projeto_mgh.txt` foi descartado em 26/11/2026 e não
+deve ser recriado.
 
 ## Stack
 
@@ -67,6 +68,6 @@ Cada fase só é considerada concluída com comando + resultado registrados.
 
 ## Licença
 
-Código privado, sem licença de redistribuição. A metodologia MGH™ é propriedade
-intelectual registrada como `CONFIDENTIAL - METHODOLOGY IP` nos documentos
-derivados.
+Código e metodologia sem licença de redistribuição (ver `LICENSE`). A
+metodologia MGH™ é propriedade intelectual registrada como
+`CONFIDENTIAL - METHODOLOGY IP` nos documentos derivados.

@@ -426,3 +426,23 @@ To github.com:devtiagoabreu/mgh.git
 Estado após o push: `git status --short --branch` limpo, sem ahead/behind.
 `origin/main` permanece em `de13285`; **nenhum merge e nenhum PR** foram
 feitos. A `main` não recebeu alterações.
+
+### 2026-11-26 — Licença proprietária, consolidação em `main` e limpeza
+
+Decisões do usuário nesta sessão:
+
+- o repositório **permanece público** no GitHub;
+- a licença MIT do commit inicial foi substituída por licença proprietária sem
+  redistribuição, alinhada a `README.md`, `package.json` (`private: true`,
+  `license: UNLICENSED`) e à classificação `CONFIDENTIAL - METHODOLOGY IP`;
+- a Fase A passa a viver somente em `main`. As branches
+  `feature/mgh-phase-a-foundation` e `docs/002-contexto-canonico` são removidas
+  após o merge — nenhum commit é perdido, todo o histórico fica em `main`.
+
+Ações executadas: `LICENSE`, `README.md` e este histórico atualizados; merge
+fast-forward da branch de feature em `main`; push de `main`; exclusão das
+branches locais e remotas. Nenhum PR foi aberto.
+
+Frentes em aberto (inalteradas): recuperação de `ANX-003`, consentimento e
+Privacy Notice, RPO/RTO com restore testado e auditoria renderizada de
+acessibilidade. A regra §3.6 continua vigente.

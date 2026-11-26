@@ -1,21 +1,20 @@
-MIT License
+LICENÇA PROPRIETÁRIA — USO RESTRITO
 
-Copyright (c) 2026 Tiago de Abreu
+Copyright (c) 2026 Tiago de Abreu. Todos os direitos reservados.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Este repositório é público apenas para visualização do estado do projeto.
+Nenhum direito de uso, cópia, modificação, distribuição, sublicenciamento ou
+criação de obras derivadas é concedido sobre o código, os documentos ou a
+metodologia MGH™ aqui contidos, total ou parcialmente.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+A metodologia MGH™ e seus anexos canônicos (`ANX-*`) são classificados como
+`CONFIDENTIAL - METHODOLOGY IP` nos documentos do projeto. O acervo em
+`docs/001` e o contexto canônico em `docs/002` são material proprietário.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Uso diferente de visualização somente com autorização escrita do titular dos
+direitos. Esta licença substitui integralmente a licença MIT presente no
+commit inicial do repositório.
+
+O material é fornecido "como está", sem garantias. Nada aqui é diagnóstico,
+laudo, avaliação de competência ou fundamento isolado para decisão
+profissional.
