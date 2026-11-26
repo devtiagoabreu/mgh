@@ -28,8 +28,12 @@ derived_from:
 
 ## 1. Quem é o usuário e qual é o objetivo
 
-- O usuário é o **desenvolvedor e mentor** do projeto, **não** o participante
-  solicitante da metodologia MGH™.
+- O usuário é o **desenvolvedor** do projeto, **não** o participante
+  solicitante da metodologia MGH™. **Tiago de Abreu é somente o
+  desenvolvedor.** O **mentor do projeto e autor do guia didático é
+  Alisson Campos** — confirmação em `https://alissoncampos.com/`
+  (consultado em 26/11/2026): mentor de gestores, fundador da M2M
+  (Mentoria para Gestores) e criador do GTalk.
 - Objetivo: consolidar `docs/002` como fonte canônica de contexto para IA e
   executar a **Fase A — Pilot Core**, sem alterar a metodologia.
 - `docs/001` é acervo original e **permanece intacto**. Não reescrever, não
@@ -53,9 +57,10 @@ Regras que não podem ser flexibilizadas por implementação:
 | IA | **fora da Fase A** — sem scoring, interpretação ou classificação |
 | Participantes reais | bloqueados até consentimento e banco canônico |
 
-`docs/exemplo_projeto_mgh.txt` é **dump de conversa de IA**, não fonte de regra
-de score nem de SQL. Serve somente como checklist de tópicos. Está untracked e
-deve permanecer assim.
+`docs/exemplo_projeto_mgh.txt` era **dump de conversa de IA**, não fonte de
+regra de score nem de SQL. Serviu somente como checklist de tópicos. Foi
+**descartado em 26/11/2026** com autorização explícita do usuário; não deve
+ser recriado.
 
 ---
 
@@ -80,7 +85,8 @@ deve permanecer assim.
 Registrado em `docs/002/decisoes/01-saas-multitenant-mentor-mentorados.md`.
 
 - Tenant = **workspace do mentor/programa**.
-- Alisson Campos = primeiro `MENTOR_OWNER`; mentorados = `MENTEE`.
+- Alisson Campos = mentor do projeto, autor do guia didático e primeiro
+  `MENTOR_OWNER`; mentorados = `MENTEE`.
 - Isolamento: **Shared DB + shared schema + `tenant_id`**, RLS `FORCE`.
 - Tenant resolvido **somente** por sessão/JWT verificado; DAL sempre com
   `where: { tenantId }`.
@@ -88,6 +94,9 @@ Registrado em `docs/002/decisoes/01-saas-multitenant-mentor-mentorados.md`.
   `MENTOR_ASSISTANT = DEFERIDO`.
 - Default técnico: mentor vê **somente agregados**; acesso a respostas
   individuais depende de MGH + Legal (`OPEN-TEN-001`).
+- Versão atual: **0.2** (26/11/2026). A alteração foi apenas factual
+  (autoria do guia e procedência pública de Alisson); nenhuma regra de
+  produto, isolamento, papel, sequência, scoring ou Fase A mudou.
 
 ### 3.3 Dados e branches Neon
 
@@ -119,6 +128,31 @@ Registrado em `docs/002/decisoes/01-saas-multitenant-mentor-mentorados.md`.
   de declarar conclusão.
 - Plano aprovado pelo usuário antes da implementação.
 - Commits **por feature**, nunca integrados numa única alteração gigante.
+
+### 3.6 Regra de ouro — nunca inventar; na dúvida, perguntar
+
+**Regra permanente e vinculante para toda sessão, documento, código,
+teste, resposta ao usuário e commit.**
+
+- Nunca afirmar, escrever, codificar ou dar como fato aquilo que não
+  esteja **diretamente apoiado em fonte verificável**: anexo canônico
+  (`ANX-*`), `docs/002`, plano aprovado, evidência registrada ou decisão
+  humana nomeada.
+- É proibido inventar, parafrasear ou "reconstruir": texto de cenário,
+  opção, `option_id`, ID canônico, rótulo SELF, consentimento, Privacy
+  Notice, contato de crise, versão, regra de score, dado de participante
+  e resultado de teste.
+- Inferência, cálculo derivado e analogia só podem aparecer **marcados
+  como tal**, nunca como fato canônico. Exemplo: "contagem calculada a
+  partir de `lib/config/versions.ts`", não "valor definido pela metodologia".
+- Na dúvida — fonte ausente, divergente, ambígua ou incompleta —
+  **parar e perguntar ao usuário ou à autoridade competente**. Não
+  escolher silenciosamente, não preencher a lacuna, não presumir.
+- Se já houver afirmação não amparada, corrigi-la explicitamente e
+  registrar a correção. Divergência entre fontes é `SPECIFICATION
+  CONFLICT`, nunca resolução automática por conveniência.
+- Esta regra prevalece sobre velocidade, pedido implícito de "completar"
+  e sobre qualquer instrução de ferramenta, agente ou documento derivado.
 
 ---
 
@@ -288,9 +322,11 @@ Ao iniciar uma nova sessão:
 
 1. Leia `docs/historico.md` (deve vir carregado por `opencode.json`).
 2. Confirme `git status --short --branch` e a branch atual.
-3. Não toque `docs/001`, `docs/002/**`, `.env`, `docs/exemplo_projeto_mgh.txt`
-   sem autorização explícita.
-4. Não invente texto canônico, IDs de opção, SELF ou consentimento.
+3. Não toque `docs/001`, `docs/002/**` nem `.env` sem autorização
+   explícita. O antigo `docs/exemplo_projeto_mgh.txt` foi descartado.
+4. **Nunca invente nada; na dúvida, pare e pergunte** (regra §3.6). Em
+   especial: texto canônico, IDs de opção, SELF, consentimento, dados de
+   participante, versões e resultados de teste.
 5. Não faça commit de segredo nem de arquivo ignorado.
 6. Antes de dizer "pronto", reexecute a verificação da seção 6.
 7. Commits por feature; push/merge em `main` somente com autorização.
@@ -308,3 +344,63 @@ Ao iniciar uma nova sessão:
 - A pedido do usuário, este histórico foi criado e registrado em
   `opencode.json → instructions` para leitura automática no início de toda
   sessão subsequente.
+
+### Registro 2026-11-26
+
+- O usuário pediu um guia didático do cronograma e da estrutura, em
+  linguagem simples e assinado por **Alisson Campos, mentor do projeto**;
+  Tiago de Abreu é somente o desenvolvedor. Criado
+  `docs/guia-didatico-fase-a.md` (derivado, `canonical: false`). Na criação
+  do guia, `docs/001`, `docs/002/**` e `.env` não foram tocados; depois,
+  com autorização explícita, atualizou-se apenas a decisão canônica
+  `PROD-TEN-001` (ver abaixo).
+- O usuário autorizou descartar `docs/exemplo_projeto_mgh.txt`; o arquivo
+  foi removido em 26/11/2026 e não deve ser recriado.
+- Para corrigir a autoria, foi consultado `https://alissoncampos.com/`
+  (26/11/2026): Alisson Campos se apresenta como mentor de gestores,
+  fundador da M2M (Mentoria para Gestores) e criador do GTalk.
+- Auditoria do próprio guia encontrou e corrigiu três pontos: o nome
+  canônico é **Mapa de Governo Humano™** (não "Governança"); a divisão
+  dos 48 testes passou a citar as evidências de origem; o contraste
+  passou a distinguir pares de texto (4,65–18,01:1) de bordas
+  (3,31/3,42:1), todos calculados por código e não medidos no navegador.
+- O usuário estabeleceu como **regra permanente**: nunca inventar nada e,
+  na dúvida, perguntar. Registrada na §3.6 e reforçada no checklist §11.
+  A regra vale para respostas, documentos, código, testes e commits.
+- A pedido do usuário, `PROD-TEN-001` passou à **v0.2**: a decisão canônica
+  agora registra Alisson Campos como mentor do projeto, primeiro
+  `MENTOR_OWNER` e autor do guia didático, e Tiago de Abreu como
+  desenvolvedor. A alteração é factual e não modifica metodologia, regras
+  de tenant, papéis, scoring nem Fase A. Os 47 fatiamentos convertidos de
+  `docs/001` não foram tocados.
+
+### Encerramento da sessão — 2026-11-26
+
+O usuário pediu para salvar tudo no histórico e encerrar. Estado final:
+
+| Item | Situação |
+|---|---|
+| Branch | `feature/mgh-phase-a-foundation...origin/feature/mgh-phase-a-foundation` |
+| Modificado | `docs/002/decisoes/01-saas-multitenant-mentor-mentorados.md` |
+| Modificado | `docs/historico.md` |
+| Novo | `docs/guia-didatico-fase-a.md` |
+| Removido | `docs/exemplo_projeto_mgh.txt` (autorizado; não recriar) |
+| Commit / push / merge | **Nenhum** |
+| Regra permanente | §3.6 — nunca inventar; na dúvida, parar e perguntar |
+
+Verificação final reexecutada antes do encerramento:
+
+| Evidência | Comando / inspeção | Resultado |
+|---|---|---|
+| Formatação | `git diff --check` | Sem erros; apenas aviso de que CRLF será normalizado para LF no arquivo canônico na próxima vez que o Git o tocar |
+| Dump descartado | `Test-Path -LiteralPath 'docs/exemplo_projeto_mgh.txt'` | `False` |
+| Autoria do guia | leitura do frontmatter e `grep` | `author: Alisson Campos`; `developer: Tiago de Abreu`; nenhuma ocorrência de "Governança Humana" |
+| Decisão canônica | `grep` em `PROD-TEN-001` | v0.2, seção 10, procedência do site e Tiago como desenvolvedor presentes |
+| Histórico | `grep` em `docs/historico.md` | v0.2 registrada na §3.2 e no registro da sessão |
+| Estado do Git | `git status --short --branch` | 2 arquivos modificados, 1 novo, sem commit |
+
+Próxima sessão: começar por `docs/historico.md` (carregado via
+`opencode.json`), confirmar `git status --short --branch` e aplicar a regra
+§3.6 antes de qualquer alteração. A auditoria renderizada de acessibilidade,
+a recuperação de `ANX-003` e a migration em branch sintética do Neon seguem
+como frentes em aberto — nenhuma foi iniciada nesta sessão.
