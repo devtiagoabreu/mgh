@@ -404,3 +404,25 @@ Próxima sessão: começar por `docs/historico.md` (carregado via
 §3.6 antes de qualquer alteração. A auditoria renderizada de acessibilidade,
 a recuperação de `ANX-003` e a migration em branch sintética do Neon seguem
 como frentes em aberto — nenhuma foi iniciada nesta sessão.
+
+### Retomada após encerramento — commit e push autorizados
+
+Após o encerramento acima, o usuário autorizou explicitamente commit e push.
+Foram feitos commits separados por feature, conforme a convenção do projeto:
+
+| Commit | Feature |
+|---|---|
+| `267ff77` | Guia didático da Fase A (`docs/guia-didatico-fase-a.md`) |
+| `7f5d2ce` | `PROD-TEN-001` v0.2 — autoria e procedência |
+| `1f4350d` | Histórico: regra §3.6, registros e verificação final |
+
+Push executado com sucesso:
+
+```text
+To github.com:devtiagoabreu/mgh.git
+   9404065..1f4350d  feature/mgh-phase-a-foundation -> feature/mgh-phase-a-foundation
+```
+
+Estado após o push: `git status --short --branch` limpo, sem ahead/behind.
+`origin/main` permanece em `de13285`; **nenhum merge e nenhum PR** foram
+feitos. A `main` não recebeu alterações.
