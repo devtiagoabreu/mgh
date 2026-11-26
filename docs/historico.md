@@ -275,9 +275,9 @@ policies de RLS dependem de `set_config('app.current_tenant_id', $1, true)`.
 
 | ID | Estado |
 |---|---|
-| `REQ-INST-012` | `WAITING_BANK` — faltam textos literais para publicação e E2E |
-| `ANX-003` | `DRAFT — SOURCE RECOVERY REQUIRED`; 0/48 cenários e 0 IDs canônicos |
-| `OPEN-INST-001` | rótulos/texto final de `SELF-01..08` pendentes |
+| `REQ-INST-012` | textos literais recuperados no documento mestre e exibidos na demonstração; publicação/E2E formais dependem da autoridade MGH |
+| `ANX-003` | o xlsx mantém `SOURCE_REQUIRED`; o documento mestre traz os 48 enunciados/opções e o registro ANX-003 traz códigos/ordem/56 respostas. Divergência não resolvida |
+| `OPEN-INST-001` | afirmações SELF transcritas de `docs/002`; rótulos finais de aplicação continuam sujeitos à decisão MGH |
 | `OPEN-LEGAL-001/002` | consentimento e Privacy Notice pendentes |
 | `OPEN-TEN-001` | mentor ver respostas individuais depende de MGH + Legal |
 | `OPEN-TECH-006` | RPO/RTO e restore testado pendentes |
@@ -455,3 +455,78 @@ Prisma não são aprovados no ambiente da Vercel, então o client não era gerad
 antes de `next build`. Correção: `package.json → build` agora executa
 `prisma generate --config prisma/prisma.config.ts && next build`. Nada de
 metodologia, gates ou regras de score foi alterado.
+
+### 2026-11-26 — Migration aplicada e botões de informação ("i")
+
+- A migration `20261125120000_phase_a_foundation` foi aplicada ao Neon
+  `ep-raspy-paper-bcbsruzj` (`NEON_BRANCH=local`) via `DIRECT_URL` injetado
+  apenas no processo do comando. `prisma migrate status` confirmou
+  `Database schema is up to date!`. Nada foi commitado nem exposto.
+- O Prisma 7 não carrega `.env` quando existe `prisma.config.ts`; por isso o
+  comando de migration precisa da variável no ambiente do processo.
+- Foram adicionados botões "i" no cabeçalho, em cada etapa e no rodapé. Cada
+  um abre um modal com uma explicação estrutural (8 tópicos em
+  `components/structural-copy.ts`). Os textos são derivados de
+  `docs/historico.md` e `docs/governanca/*.md`: não são texto canônico,
+  consentimento nem regra de score.
+- O modal reaproveita `StructuralDialog` (Esc, armadilha de Tab, `inert`, foco
+  inicial e retorno ao gatilho); título, descrição e rótulo de fechamento
+  passaram a ser configuráveis. Nenhuma biblioteca nova foi adicionada.
+- Verificação reexecutada: `typecheck`, `lint`, `git diff --check`, 9 arquivos /
+  48 testes e `build` — todos limpos.
+- Naquele ponto, a tela ainda não trazia perguntas porque `ANX-003` estava
+  registrado como `SOURCE_REQUIRED`. Criar enunciados "parecidos" violaria a
+  regra §3.6; os botões "i" tornavam isso explícito. A recuperação literal
+  posterior está registrada no último capítulo desta seção.
+- Auditoria renderizada de acessibilidade (axe/Lighthouse, leitor de tela,
+  200/400%, 1280×800 e 390×844) **continua pendente**. Gates verdes no código
+  não bastam para aprovar a UI; o veredito P6 segue `rework — escopo incompleto`.
+
+### 2026-11-26 — Recuperação literal do instrumento na demonstração
+
+A pedido do usuário, a superfície passou a exibir o material canônico de
+`docs/001`/`docs/002`, sem placeholders e sem paráfrase. O usuário confirmou
+que a aplicação não está divulgada e autorizou o uso dos textos na tela.
+
+- Novo módulo `lib/canonical/instrument.ts`: 48 cenários, opções, 4 telas PRC
+  com 3 avaliações cada, 8 itens SELF, feedback, tela final, abertura,
+  contexto e frase metodológica de consentimento — todos transcritos de
+  `docs/002`.
+- Sequência religada em `components/structural-preview.tsx`: consentimento →
+  abertura → contexto → instruções → 48 cenários → transição → SELF →
+  feedback → confirmação. Continua sendo apenas superfície estrutural: sem
+  API, persistência, score, relatório, perfil, resposta individual nem IA.
+- Códigos, ordem e contagem: `PC-001` é o primeiro, `PC-011R` o último;
+  44 escolhas + 12 avaliações independentes = 56 respostas pontuáveis. Os
+  códigos/facetas não são exibidos ao participante.
+- Divergência preservada: a tela de boas-vindas transcreve a **TELA 0** de
+  `07-evidencias-e-pilotagem.md` (linhas 930–950). O item 34 de
+  `16-handoff-02-architecture-e-instrument.md` (linhas 4009–4023) registra
+  outra versão como texto metodológico congelado. Ambas ficam identificadas
+  no botão "i" de abertura, sem escolha silenciosa: **`SPECIFICATION
+  CONFLICT`**, decisão reservada à autoridade MGH.
+- O xlsx `ANX-003` continua com `scenario_text_canonical = SOURCE_REQUIRED`.
+  O documento mestre contém os 48 enunciados/opções e o registro ANX-003
+  contém códigos/ordem/contagem. A divergência não foi resolvida
+  automaticamente.
+- Novo teste `tests/canonical/instrument.test.ts` compara o módulo às fontes:
+  ordem/códigos do ANX-003, enunciados e alternativas do documento mestre,
+  consentimento, SELF, feedback e as duas variantes de abertura.
+
+Verificação reexecutada após os últimos ajustes:
+
+| Evidência | Comando / inspeção | Resultado |
+|---|---|---|
+| Conferência literal externa | `node C:\Users\promo\AppData\Local\Temp\opencode\verify-canonical.js` | `source sections: 48`, `ts scenarios: 48`, `scored responses: 56`, `ALL CHECKS PASSED` |
+| Testes | `npm test` | 10 arquivos, 52 testes aprovados |
+| Tipos | `npm run typecheck` | limpo |
+| Lint | `npm run lint` | limpo |
+| Build | `npm run build` | compilou; rotas `/` e `/_not-found` estáticas |
+| Auditoria de dependências | `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| Schema Prisma | `npm run prisma:validate` | válido |
+| Formatação do diff | `git diff --check` | limpo |
+
+Estado do Git: alterações em `main`, **sem commit e sem push** nesta etapa.
+Piloto com participantes reais continua bloqueado: faltam reconciliação formal
+do banco, consentimento/Privacy Notice finais, RPO/RTO com restore testado e
+auditoria renderizada de acessibilidade. A regra §3.6 permanece vigente.
