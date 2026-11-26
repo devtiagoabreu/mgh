@@ -1,13 +1,26 @@
-import { PLACEHOLDER } from "./structural-copy";
+import {
+  FINAL_BUTTON,
+  FINAL_TEXT,
+  FINAL_TITLE,
+} from "@/lib/canonical/instrument";
 
-/** Confirmação neutra: sem parabéns, sem relatório, sem próxima ação vendida. */
-export function NeutralConfirmation() {
+/** Encerramento literal: sem parabéns, sem relatório e sem score. */
+export function NeutralConfirmation({ onFinish }: { onFinish: () => void }) {
   return (
     <section className="mgh-card" aria-labelledby="mgh-confirmation-title">
       <h2 id="mgh-confirmation-title" className="mgh-heading-2">
-        Confirmação
+        {FINAL_TITLE}
       </h2>
-      <p className="mgh-copy">{PLACEHOLDER}</p>
+      {FINAL_TEXT.map((paragraph) => (
+        <p key={paragraph} className="mgh-copy">
+          {paragraph}
+        </p>
+      ))}
+      <div className="mgh-actions">
+        <button type="button" className="mgh-button" onClick={onFinish}>
+          {FINAL_BUTTON}
+        </button>
+      </div>
     </section>
   );
 }

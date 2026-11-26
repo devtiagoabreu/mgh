@@ -1,14 +1,14 @@
-/**
- * Textos de domínio da superfície estrutural (P6).
- *
- * TODO o texto de instrumento, cenário, opção, SELF, feedback, confirmação e
- * consentimento é o marcador sintético obrigatório. Nenhuma redação definitiva,
- * canônica ou jurídica é produzida aqui.
- */
-export const PLACEHOLDER = "[PLACEHOLDER SINTÉTICO — NÃO CANÔNICO]";
+import { FROZEN_OPENING_VARIANT } from "@/lib/canonical/instrument";
 
-/** Contagens estruturais do plano operacional — não são dados de resposta. */
-export const SCENARIO_TOTAL = 48;
+/**
+ * Textos de interface da superfície da Fase A.
+ *
+ * O conteúdo do instrumento (cenários, opções, SELF, feedback, abertura e
+ * encerramento) está em `lib/canonical/instrument.ts`, transcrito de
+ * `docs/002`. Aqui ficam apenas rótulos de controle e explicações da própria
+ * demonstração — nunca redação canônica do instrumento.
+ */
+export { SCENARIO_TOTAL } from "@/lib/canonical/instrument";
 export const SELF_TOTAL = 8;
 
 export const AUTOSAVE_LABELS = {
@@ -19,11 +19,106 @@ export const AUTOSAVE_LABELS = {
 } as const;
 
 export type AutosaveState = keyof typeof AUTOSAVE_LABELS;
+export type ConsentDecision = "accept" | "decline";
 
-/** Rótulos de controle (UI), distintos do texto de consentimento. */
-export const CONSENT_CONTROLS = {
-  accept: "Aceitar",
-  decline: "Não aceitar",
+/**
+ * Explicações exibidas nos modais dos botões "i". Redação derivada de
+ * `docs/historico.md` e `docs/governanca/*.md`; não é texto do instrumento,
+ * redação jurídica de consentimento nem regra de score.
+ */
+export const INFO_TOPICS = {
+  demonstracao: {
+    label: "Informações sobre esta demonstração",
+    title: "Sobre esta demonstração",
+    description: "O que esta tela mostra e o que ela não faz.",
+    details: [
+      "A sequência usa os textos literais do instrumento recuperados de docs/002. A navegação fica apenas na memória local do navegador.",
+      "Não há API, persistência, score, relatório, perfil nem resposta individual.",
+      "A IA está fora da Fase A: sem scoring, interpretação ou classificação.",
+    ],
+  },
+  consentimento: {
+    label: "Informações sobre consentimento e privacidade",
+    title: "Consentimento e privacidade",
+    description: "O que é texto metodológico e o que ainda depende de revisão jurídica.",
+    details: [
+      "A afirmativa exibida é o texto metodológico do piloto, transcrito de docs/002. Ela não é o termo jurídico final.",
+      "A redação jurídica final e a Privacy Notice dependem de avaliação MGH e Jurídico (OPEN-LEGAL-001/002).",
+      "Os rótulos dos controles são da interface. Participantes reais só entram após consentimento final e banco canônico aprovados.",
+    ],
+  },
+  procedencia: {
+    label: "Informações sobre a procedência dos textos",
+    title: "Procedência dos textos",
+    description: "De onde vêm os enunciados, as opções e as instruções exibidas.",
+    details: [
+      "Os 48 cenários e as opções foram transcritos de docs/002/fontes/mapa-de-governo-humano/07-evidencias-e-pilotagem.md, linhas 982-1436.",
+      "A abertura exibida transcreve a TELA 0 de 07-evidencias-e-pilotagem.md; o item 34 de 16-handoff-02-architecture-e-instrument.md registra uma variante congelada, exibida no botão 'i' de abertura.",
+      "Os códigos dos itens e a contagem de 56 respostas pontuáveis vêm do registro ANX-003 em docs/002. Nada foi parafraseado.",
+    ],
+  },
+  abertura: {
+    label: "Informações sobre os textos de abertura",
+    title: "Textos de abertura",
+    description:
+      "Duas versões registradas nas fontes canônicas; divergência não resolvida.",
+    details: [
+      "A tela de boas-vindas transcreve a TELA 0 de 07-evidencias-e-pilotagem.md, linhas 930 a 950.",
+      "O item 34 de 16-handoff-02-architecture-e-instrument.md, linhas 4009 a 4023, registra outra versão como texto metodológico congelado:",
+      ...FROZEN_OPENING_VARIANT.map(
+        (paragraph) => `Variante congelada: ${paragraph}`,
+      ),
+      "Divergência registrada como SPECIFICATION CONFLICT. Nenhuma versão foi escolhida silenciosamente; a decisão cabe à autoridade MGH.",
+    ],
+  },
+  banco: {
+    label: "Informações sobre o banco de itens",
+    title: "Banco de itens (ANX-003)",
+    description: "Estado da reconciliação entre o documento mestre e a planilha do banco.",
+    details: [
+      "A planilha ANX-003 marca scenario_text_canonical como SOURCE_REQUIRED. O documento mestre contém os 48 enunciados e as opções na mesma ordem e com os mesmos códigos.",
+      "Essa divergência está registrada para decisão da autoridade MGH. Ela não foi resolvida automaticamente.",
+      "Os códigos e as facetas não são exibidos ao participante: a interface mostra somente a situação e as alternativas.",
+    ],
+  },
+  self: {
+    label: "Informações sobre o registro reflexivo",
+    title: "Registro reflexivo (SELF)",
+    description: "O que é o SELF e por que ele não entra no score.",
+    details: [
+      "São oito afirmações em escala de 1 a 5, transcritas de docs/002.",
+      "Os itens SELF ficam fora do Score Engine e não alteram as respostas dos 48 cenários.",
+    ],
+  },
+  score: {
+    label: "Informações sobre score e IA",
+    title: "Score e IA",
+    description: "O que esta demonstração não calcula e o que fica fora da Fase A.",
+    details: [
+      "O Score Engine é determinístico e roda fora da interface; esta demonstração não calcula score.",
+      "Feedback pós-teste e relações de consistência também ficam fora do score.",
+      "A IA está fora da Fase A: sem scoring, interpretação ou classificação.",
+    ],
+  },
+  bloqueio: {
+    label: "Informações sobre o bloqueio de participantes reais",
+    title: "Participantes reais",
+    description: "Por que o piloto com participantes reais continua bloqueado.",
+    details: [
+      "A aplicação não está divulgada. Não há participantes reais nem dados pessoais nesta superfície.",
+      "Faltam: reconciliação formal do banco canônico, consentimento e Privacy Notice finais, RPO/RTO com restore testado e auditoria renderizada de acessibilidade.",
+    ],
+  },
+  operacao: {
+    label: "Informações sobre deploy, recuperação e acessibilidade",
+    title: "Deploy, recuperação e acessibilidade",
+    description: "Estado técnico do deploy e do que ainda falta validar.",
+    details: [
+      "O build na Vercel passou e a migration da Fase A foi aplicada ao banco sintético.",
+      "RPO e RTO estão vazios e o restore ainda não foi testado.",
+      "A auditoria renderizada de acessibilidade — axe/Lighthouse, leitor de tela, 200/400%, 1280×800 e 390×844 — ainda não foi executada. Gates verdes no código não bastam para aprovar a interface.",
+    ],
+  },
 } as const;
 
-export type ConsentDecision = keyof typeof CONSENT_CONTROLS;
+export type InfoTopicKey = keyof typeof INFO_TOPICS;

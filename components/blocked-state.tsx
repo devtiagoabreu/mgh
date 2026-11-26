@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { PLACEHOLDER } from "./structural-copy";
 
 type BlockedStateProps = {
   /** Razão em nível de interface — nunca redação de consentimento. */
@@ -20,7 +19,9 @@ export function BlockedState({ reason }: BlockedStateProps) {
       <h3 id="mgh-blocked-title" className="mgh-heading-3">
         Acesso indisponível
       </h3>
-      <p className="mgh-copy">{reason ?? PLACEHOLDER}</p>
+      <p className="mgh-copy">
+        {reason ?? "Acesso indisponível nesta demonstração estrutural."}
+      </p>
       <p className="mgh-note">Nenhuma resposta foi registrada.</p>
     </section>
   );

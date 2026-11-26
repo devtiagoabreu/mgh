@@ -7,6 +7,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  SCENARIOS,
+  SCENARIO_TOTAL,
+  SELF_ITEMS,
+  type Scenario,
+} from "@/lib/canonical/instrument";
 import { AutosaveStatus } from "./autosave-status";
 import { BlockedState } from "./blocked-state";
 import { ConsentGate } from "./consent-gate";
@@ -15,36 +21,41 @@ import { EmptyState } from "./empty-state";
 import { ErrorState } from "./error-state";
 import { FeedbackPanel } from "./feedback-panel";
 import { ForcedChoice } from "./forced-choice";
+import { InfoButton } from "./info-button";
+import { InfoDialog } from "./info-dialog";
 import { LoadingState } from "./loading-state";
 import { NeutralConfirmation } from "./neutral-confirmation";
-import { OrdinalScale } from "./ordinal-scale";
+import { OpeningPanel } from "./opening-panel";
+import { PreInstructions } from "./pre-instructions";
+import { RatingGroup } from "./rating-group";
 import { ScenarioCard } from "./scenario-card";
-import { SelfPrompt } from "./self-prompt";
+import { SelfPanel } from "./self-prompt";
 import { StructuralDialog } from "./structural-dialog";
 import { ThemeToggle } from "./theme-toggle";
-import {
-  PLACEHOLDER,
-  SCENARIO_TOTAL,
-  SELF_TOTAL,
-  type ConsentDecision,
+import { TransitionPanel } from "./transition-panel";
+import type {
+  ConsentDecision,
+  InfoTopicKey,
 } from "./structural-copy";
 
 type Stage =
   | "consent"
+  | "opening"
   | "context"
+  | "instructions"
   | "scenario"
+  | "transition"
   | "self"
   | "feedback"
   | "confirmation";
 
 type Inspection = "none" | "loading" | "empty" | "error" | "blocked";
 
-const CHOICE_OPTIONS = [
-  { id: "option-a", label: PLACEHOLDER },
-  { id: "option-b", label: PLACEHOLDER },
-] as const;
+type DialogState =
+  | { kind: "exit" }
+  | { kind: "info"; topic: InfoTopicKey }
+  | null;
 
-const ORDINAL_POINTS = 4;
 const INSPECTION_STATES: readonly Inspection[] = [
   "loading",
   "empty",
@@ -53,25 +64,28 @@ const INSPECTION_STATES: readonly Inspection[] = [
 ];
 
 /**
- * Demonstração estrutural da P6. Toda a navegação é memória local: não há
- * API, persistência, score, relatório, perfil nem resposta individual.
+ * Sequência canônica da Fase A em memória local: consentimento, abertura,
+ * contexto, instruções, 48 cenários, transição, SELF, feedback e encerramento.
+ * Não há API, persistência, score, relatório, perfil nem resposta individual.
  */
 export function StructuralPreview() {
   const [stage, setStage] = useState<Stage>("consent");
   const [consentDeclined, setConsentDeclined] = useState(false);
   const [scenarioIndex, setScenarioIndex] = useState(1);
   const [choice, setChoice] = useState("");
-  const [rating, setRating] = useState("");
-  const [selfText, setSelfText] = useState("");
+  const [ratings, setRatings] = useState<Record<string, string>>({});
+  const [selfValues, setSelfValues] = useState<Record<string, string>>({});
+  const [feedbackAnswers, setFeedbackAnswers] = useState<Record<string, string>>({});
+  const [feedbackDetails, setFeedbackDetails] = useState<Record<string, string>>({});
   const [answerError, setAnswerError] = useState(false);
   const [inspection, setInspection] = useState<Inspection>("none");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialog, setDialog] = useState<DialogState>(null);
 
   const mainRef = useRef<HTMLElement>(null);
   const exitRef = useRef<HTMLButtonElement>(null);
+  const infoReturnRef = useRef<HTMLElement | null>(null);
   const stageMounted = useRef(false);
   const scenarioHeadingId = useId();
-  const selfId = useId();
   const answerErrorId = useId();
 
   useEffect(() => {
@@ -87,10 +101,17 @@ export function StructuralPreview() {
     setConsentDeclined(false);
     setScenarioIndex(1);
     setChoice("");
-    setRating("");
-    setSelfText("");
+    setRatings({});
+    setSelfValues({});
+    setFeedbackAnswers({});
+    setFeedbackDetails({});
     setAnswerError(false);
     setInspection("none");
+  }
+
+  function openInfo(topic: InfoTopicKey, trigger: HTMLButtonElement | null) {
+    infoReturnRef.current = trigger;
+    setDialog({ kind: "info", topic });
   }
 
   function handleConsent(decision: ConsentDecision) {
@@ -99,22 +120,29 @@ export function StructuralPreview() {
       return;
     }
     setConsentDeclined(false);
-    setStage("context");
+    setStage("opening");
   }
 
+  const current: Scenario | undefined = SCENARIOS[scenarioIndex - 1];
+  const ratingsComplete =
+    current?.kind === "rating" &&
+    current.subitems.every((_, index) => ratings[String(index)] !== undefined);
+
   function advanceScenario() {
-    if (choice === "" || rating === "") {
+    const answered =
+      current?.kind === "choice" ? choice !== "" : ratingsComplete;
+    if (!answered) {
       setAnswerError(true);
       return;
     }
     setAnswerError(false);
+    setChoice("");
+    setRatings({});
     if (scenarioIndex < SCENARIO_TOTAL) {
       setScenarioIndex(scenarioIndex + 1);
-      setChoice("");
-      setRating("");
       return;
     }
-    setStage("self");
+    setStage("transition");
   }
 
   let content: ReactNode;
@@ -142,72 +170,104 @@ export function StructuralPreview() {
       content = <BlockedState />;
     }
   } else if (stage === "consent") {
-    content = consentDeclined ? (
+    content = (
       <>
-        <BlockedState reason="Participação não aceita. Nenhuma resposta foi registrada." />
-        <div className="mgh-actions">
-          <button
-            type="button"
-            className="mgh-button mgh-button--secondary"
-            onClick={() => setConsentDeclined(false)}
-          >
-            Voltar ao consentimento
-          </button>
-        </div>
+        {consentDeclined ? (
+          <>
+            <BlockedState reason="Participação não aceita. Nenhuma resposta foi registrada." />
+            <div className="mgh-actions">
+              <button
+                type="button"
+                className="mgh-button mgh-button--secondary"
+                onClick={() => setConsentDeclined(false)}
+              >
+                Voltar ao consentimento
+              </button>
+            </div>
+          </>
+        ) : (
+          <ConsentGate onDecision={handleConsent} />
+        )}
+        <InfoButton topic="consentimento" onOpen={openInfo} />
       </>
-    ) : (
-      <ConsentGate onDecision={handleConsent} />
+    );
+  } else if (stage === "opening") {
+    content = (
+      <>
+        <OpeningPanel onStart={() => setStage("context")} />
+        <InfoButton topic="abertura" onOpen={openInfo} />
+      </>
     );
   } else if (stage === "context") {
     content = (
       <>
-        <ContextPanel />
-        <div className="mgh-actions">
-          <button
-            type="button"
-            className="mgh-button"
-            onClick={() => setStage("scenario")}
-          >
-            Iniciar cenários
-          </button>
-        </div>
+        <ContextPanel onContinue={() => setStage("instructions")} />
+        <InfoButton topic="procedencia" onOpen={openInfo} />
       </>
     );
-  } else if (stage === "scenario") {
+  } else if (stage === "instructions") {
     content = (
-      <ScenarioCard index={scenarioIndex} headingId={scenarioHeadingId}>
-        <ForcedChoice
-          name="mgh-forced-choice"
-          options={CHOICE_OPTIONS}
-          value={choice}
-          onChange={setChoice}
-          describedBy={answerError ? answerErrorId : undefined}
-        />
-        <OrdinalScale
-          name="mgh-ordinal-scale"
-          points={ORDINAL_POINTS}
-          value={rating}
-          onChange={setRating}
-          describedBy={answerError ? answerErrorId : undefined}
-        />
-        {answerError ? (
-          <p id={answerErrorId} className="mgh-field-error" role="alert">
-            Selecione uma opção e um ponto para continuar.
-          </p>
-        ) : null}
-        <AutosaveStatus />
-        <div className="mgh-actions">
-          <button type="button" className="mgh-button" onClick={advanceScenario}>
-            {scenarioIndex < SCENARIO_TOTAL ? "Próximo cenário" : "Concluir cenários"}
-          </button>
-        </div>
-      </ScenarioCard>
+      <>
+        <PreInstructions onStart={() => setStage("scenario")} />
+        <InfoButton topic="procedencia" onOpen={openInfo} />
+      </>
+    );
+  } else if (stage === "scenario" && current) {
+    content = (
+      <>
+        <ScenarioCard scenario={current} headingId={scenarioHeadingId}>
+          {current.kind === "choice" ? (
+            <ForcedChoice
+              name="mgh-forced-choice"
+              options={current.options}
+              value={choice}
+              onChange={setChoice}
+              describedBy={answerError ? answerErrorId : undefined}
+            />
+          ) : (
+            <RatingGroup
+              scenario={current}
+              values={ratings}
+              onChange={(index, value) =>
+                setRatings((previous) => ({ ...previous, [index]: value }))
+              }
+              describedBy={answerError ? answerErrorId : undefined}
+            />
+          )}
+          {answerError ? (
+            <p id={answerErrorId} className="mgh-field-error" role="alert">
+              Responda todos os campos desta tela para continuar.
+            </p>
+          ) : null}
+          <AutosaveStatus />
+          <div className="mgh-actions">
+            <button type="button" className="mgh-button" onClick={advanceScenario}>
+              {scenarioIndex < SCENARIO_TOTAL
+                ? "Próximo cenário"
+                : "Concluir cenários"}
+            </button>
+          </div>
+        </ScenarioCard>
+        <InfoButton topic="banco" onOpen={openInfo} />
+      </>
+    );
+  } else if (stage === "transition") {
+    content = (
+      <>
+        <TransitionPanel onContinue={() => setStage("self")} />
+        <InfoButton topic="procedencia" onOpen={openInfo} />
+      </>
     );
   } else if (stage === "self") {
     content = (
       <>
-        <p className="mgh-kicker">{`Registro reflexivo 1 de ${SELF_TOTAL}`}</p>
-        <SelfPrompt id={selfId} value={selfText} onChange={setSelfText} />
+        <p className="mgh-kicker">{`${SELF_ITEMS.length} afirmações`}</p>
+        <SelfPanel
+          values={selfValues}
+          onChange={(code, value) =>
+            setSelfValues((previous) => ({ ...previous, [code]: value }))
+          }
+        />
         <div className="mgh-actions">
           <button
             type="button"
@@ -224,12 +284,22 @@ export function StructuralPreview() {
             Pular registro
           </button>
         </div>
+        <InfoButton topic="self" onOpen={openInfo} />
       </>
     );
   } else if (stage === "feedback") {
     content = (
       <>
-        <FeedbackPanel />
+        <FeedbackPanel
+          answers={feedbackAnswers}
+          details={feedbackDetails}
+          onAnswer={(id, value) =>
+            setFeedbackAnswers((previous) => ({ ...previous, [id]: value }))
+          }
+          onDetail={(id, value) =>
+            setFeedbackDetails((previous) => ({ ...previous, [id]: value }))
+          }
+        />
         <div className="mgh-actions">
           <button
             type="button"
@@ -239,17 +309,14 @@ export function StructuralPreview() {
             Ver confirmação
           </button>
         </div>
+        <InfoButton topic="score" onOpen={openInfo} />
       </>
     );
   } else {
     content = (
       <>
-        <NeutralConfirmation />
-        <div className="mgh-actions">
-          <button type="button" className="mgh-button" onClick={resetAll}>
-            Reiniciar demonstração
-          </button>
-        </div>
+        <NeutralConfirmation onFinish={resetAll} />
+        <InfoButton topic="bloqueio" onOpen={openInfo} />
       </>
     );
   }
@@ -260,15 +327,16 @@ export function StructuralPreview() {
         <header className="mgh-header">
           <div className="mgh-header__brand">
             <p className="mgh-kicker">MGH — Pilot Core</p>
-            <h1 className="mgh-heading-1">Superfície estrutural</h1>
+            <h1 className="mgh-heading-1"> Sequência do instrumento</h1>
           </div>
           <div className="mgh-actions">
+            <InfoButton topic="demonstracao" onOpen={openInfo} />
             <ThemeToggle />
             <button
               ref={exitRef}
               type="button"
               className="mgh-button mgh-button--ghost"
-              onClick={() => setDialogOpen(true)}
+              onClick={() => setDialog({ kind: "exit" })}
             >
               Sair
             </button>
@@ -285,49 +353,55 @@ export function StructuralPreview() {
         </main>
 
         <footer className="mgh-footer">
-          <details className="mgh-disclosure">
-            <summary>Inspecionar estados estruturais</summary>
-            <div className="mgh-disclosure__body">
-              <p className="mgh-field-help">
-                Painel apenas da demonstração — não faz parte do instrumento.
-              </p>
-              <div
-                className="mgh-actions"
-                role="group"
-                aria-label="Estados estruturais"
-              >
-                {INSPECTION_STATES.map((state) => (
-                  <button
-                    key={state}
-                    type="button"
-                    className="mgh-button mgh-button--secondary"
-                    onClick={() => setInspection(state)}
-                  >
-                    {state}
-                  </button>
-                ))}
-                {inspection !== "none" ? (
-                  <button
-                    type="button"
-                    className="mgh-button mgh-button--ghost"
-                    onClick={() => setInspection("none")}
-                  >
-                    Voltar ao fluxo
-                  </button>
-                ) : null}
+          <div className="mgh-footer__row">
+            <details className="mgh-disclosure">
+              <summary>Inspecionar estados estruturais</summary>
+              <div className="mgh-disclosure__body">
+                <p className="mgh-field-help">
+                  Painel apenas da demonstração — não faz parte do instrumento.
+                </p>
+                <div
+                  className="mgh-actions"
+                  role="group"
+                  aria-label="Estados estruturais"
+                >
+                  {INSPECTION_STATES.map((state) => (
+                    <button
+                      key={state}
+                      type="button"
+                      className="mgh-button mgh-button--secondary"
+                      onClick={() => setInspection(state)}
+                    >
+                      {state}
+                    </button>
+                  ))}
+                  {inspection !== "none" ? (
+                    <button
+                      type="button"
+                      className="mgh-button mgh-button--ghost"
+                      onClick={() => setInspection("none")}
+                    >
+                      Voltar ao fluxo
+                    </button>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </details>
+            </details>
+            <InfoButton topic="operacao" onOpen={openInfo} />
+          </div>
         </footer>
       </div>
 
-      {dialogOpen ? (
+      {dialog?.kind === "exit" ? (
         <StructuralDialog
           titleId="mgh-dialog-title"
           descriptionId="mgh-dialog-description"
+          title="Sair da demonstração?"
+          description="Nenhuma resposta será registrada."
+          closeLabel="Voltar à demonstração"
           returnFocusRef={exitRef}
           inertRootId="mgh-app-shell"
-          onClose={() => setDialogOpen(false)}
+          onClose={() => setDialog(null)}
         >
           <div className="mgh-actions">
             <button
@@ -335,13 +409,22 @@ export function StructuralPreview() {
               className="mgh-button mgh-button--secondary"
               onClick={() => {
                 resetAll();
-                setDialogOpen(false);
+                setDialog(null);
               }}
             >
               Encerrar demonstração
             </button>
           </div>
         </StructuralDialog>
+      ) : null}
+
+      {dialog?.kind === "info" ? (
+        <InfoDialog
+          topic={dialog.topic}
+          returnFocusRef={infoReturnRef}
+          inertRootId="mgh-app-shell"
+          onClose={() => setDialog(null)}
+        />
       ) : null}
     </>
   );

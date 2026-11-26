@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
-import { PLACEHOLDER } from "./structural-copy";
 
 type StructuralDialogProps = {
   titleId: string;
   descriptionId: string;
+  title: ReactNode;
+  description: ReactNode;
+  closeLabel: string;
   returnFocusRef: RefObject<HTMLElement | null>;
   inertRootId: string;
   children: ReactNode;
@@ -23,6 +25,9 @@ const FOCUSABLE =
 export function StructuralDialog({
   titleId,
   descriptionId,
+  title,
+  description,
+  closeLabel,
   returnFocusRef,
   inertRootId,
   children,
@@ -91,10 +96,10 @@ export function StructuralDialog({
         aria-describedby={descriptionId}
       >
         <h2 id={titleId} className="mgh-heading-2">
-          Sair da demonstração?
+          {title}
         </h2>
         <p id={descriptionId} className="mgh-copy">
-          {PLACEHOLDER}
+          {description}
         </p>
         {children}
         <div className="mgh-actions">
@@ -104,7 +109,7 @@ export function StructuralDialog({
             className="mgh-button"
             onClick={onClose}
           >
-            Voltar à demonstração
+            {closeLabel}
           </button>
         </div>
       </div>

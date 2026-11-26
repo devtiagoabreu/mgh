@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { PLACEHOLDER } from "./structural-copy";
 
 type EmptyStateProps = {
   action?: ReactNode;
@@ -12,7 +11,10 @@ export function EmptyState({ action }: EmptyStateProps) {
       <h3 id="mgh-empty-title" className="mgh-heading-3">
         Nada para mostrar
       </h3>
-      <p className="mgh-copy">{PLACEHOLDER}</p>
+      <p className="mgh-copy">
+        Estado estrutural sem conteúdo. Nenhuma resposta do instrumento é
+        exibida aqui.
+      </p>
       {action}
     </section>
   );

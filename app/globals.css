@@ -361,6 +361,18 @@ body {
   border-block-start: 1px solid var(--mgh-color-border-subtle);
 }
 
+.mgh-footer__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mgh-space-3);
+}
+
+.mgh-footer__row .mgh-disclosure {
+  flex: 1 1 16rem;
+}
+
 .mgh-card {
   display: grid;
   gap: var(--mgh-space-4);
@@ -441,9 +453,45 @@ body {
   cursor: not-allowed;
 }
 
+.mgh-info-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  font: inherit;
+  font-size: var(--mgh-font-label);
+  font-weight: var(--mgh-weight-bold);
+  border: 1px solid var(--mgh-color-border);
+  border-radius: var(--mgh-radius-pill);
+  background: var(--mgh-color-surface);
+  color: var(--mgh-color-text-muted);
+  cursor: pointer;
+  transition: background var(--mgh-motion-fast), color var(--mgh-motion-fast);
+}
+
+.mgh-info-button:hover {
+  background: var(--mgh-color-surface-sunken);
+  color: var(--mgh-color-text);
+}
+
+.mgh-info-details {
+  display: grid;
+  gap: var(--mgh-space-3);
+}
+
 .mgh-progress {
   display: grid;
   gap: var(--mgh-space-2);
+}
+
+.mgh-progress__label {
+  margin: 0;
+  font-size: var(--mgh-font-label);
+  font-weight: var(--mgh-weight-medium);
+  color: var(--mgh-color-text-muted);
 }
 
 .mgh-progress__meta {
@@ -502,6 +550,12 @@ body {
   gap: var(--mgh-space-2);
 }
 
+.mgh-choice-list--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mgh-space-2);
+}
+
 .mgh-choice {
   display: flex;
   align-items: center;
@@ -532,6 +586,12 @@ body {
   cursor: pointer;
 }
 
+.mgh-choice--compact {
+  min-height: 44px;
+  min-inline-size: 44px;
+  justify-content: center;
+}
+
 .mgh-choice__text {
   font-size: var(--mgh-font-body);
 }
@@ -546,6 +606,18 @@ body {
   font-weight: var(--mgh-weight-medium);
 }
 
+.mgh-input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--mgh-space-2) var(--mgh-space-3);
+  font: inherit;
+  font-size: var(--mgh-font-body);
+  color: var(--mgh-color-text);
+  background: var(--mgh-field-bg);
+  border: 1px solid var(--mgh-field-border);
+  border-radius: var(--mgh-radius-control);
+}
+
 .mgh-textarea {
   width: 100%;
   min-height: calc(var(--mgh-space-16) * 2);
@@ -557,6 +629,19 @@ body {
   border: 1px solid var(--mgh-field-border);
   border-radius: var(--mgh-radius-control);
   resize: vertical;
+}
+
+.mgh-rating-group,
+.mgh-self-item,
+.mgh-feedback-detail {
+  display: grid;
+  gap: var(--mgh-space-3);
+}
+
+.mgh-self-item,
+.mgh-feedback-detail {
+  padding-block-start: var(--mgh-space-4);
+  border-block-start: 1px solid var(--mgh-color-border-subtle);
 }
 
 .mgh-field-help {
@@ -696,6 +781,7 @@ body {
 
 @media (forced-colors: active) {
   .mgh-button,
+  .mgh-info-button,
   .mgh-card,
   .mgh-choice,
   .mgh-state,
