@@ -32,7 +32,7 @@ export const INFO_TOPICS = {
     title: "Sobre esta demonstração",
     description: "O que esta tela mostra e o que ela não faz.",
     details: [
-      "A sequência usa os textos literais do instrumento recuperados de docs/002. A navegação fica apenas na memória local do navegador.",
+      "A sequência usa textos literais do instrumento. O acervo original fica em docs/001; a versão usada aqui vem de docs/002. A navegação fica apenas na memória local do navegador.",
       "Não há API, persistência, score, relatório, perfil nem resposta individual.",
       "A IA está fora da Fase A: sem scoring, interpretação ou classificação.",
     ],
@@ -42,9 +42,9 @@ export const INFO_TOPICS = {
     title: "Consentimento e privacidade",
     description: "O que é texto metodológico e o que ainda depende de revisão jurídica.",
     details: [
-      "A afirmativa exibida é o texto metodológico do piloto, transcrito de docs/002. Ela não é o termo jurídico final.",
+      "A afirmativa exibida é o texto metodológico do piloto, transcrito de docs/002/fontes/mapa-de-governo-humano/07-evidencias-e-pilotagem.md. Ela não é o termo jurídico final.",
       "A redação jurídica final e a Privacy Notice dependem de avaliação MGH e Jurídico (OPEN-LEGAL-001/002).",
-      "Os rótulos dos controles são da interface. Participantes reais só entram após consentimento final e banco canônico aprovados.",
+      "Os rótulos dos controles são da interface. Participantes reais só entram após consentimento final e banco canônico aprovado em docs/002 (ANX-003).",
     ],
   },
   procedencia: {
@@ -52,19 +52,20 @@ export const INFO_TOPICS = {
     title: "Procedência dos textos",
     description: "De onde vêm os enunciados, as opções e as instruções exibidas.",
     details: [
+      "docs/001 é o acervo original. docs/002 é a versão fatiada para consulta; foi dela que esta tela tirou os textos.",
       "Os 48 cenários e as opções foram transcritos de docs/002/fontes/mapa-de-governo-humano/07-evidencias-e-pilotagem.md, linhas 982-1436.",
-      "A abertura exibida transcreve a TELA 0 de 07-evidencias-e-pilotagem.md; o item 34 de 16-handoff-02-architecture-e-instrument.md registra uma variante congelada, exibida no botão 'i' de abertura.",
-      "Os códigos dos itens e a contagem de 56 respostas pontuáveis vêm do registro ANX-003 em docs/002. Nada foi parafraseado.",
+      "A abertura exibida transcreve a TELA 0 desse mesmo arquivo; o item 34 de docs/002/fontes/mapa-de-governo-humano/16-handoff-02-architecture-e-instrument.md registra uma variante congelada, exibida no botão 'i' de abertura.",
+      "Os códigos dos itens e a contagem de 56 respostas pontuáveis vêm de docs/002/fontes/anx-003-xlsx/01-00-readme.md. Nada foi parafraseado.",
     ],
   },
   abertura: {
     label: "Informações sobre os textos de abertura",
     title: "Textos de abertura",
     description:
-      "Duas versões registradas nas fontes canônicas; divergência não resolvida.",
+      "Duas versões registradas em docs/002; divergência não resolvida.",
     details: [
-      "A tela de boas-vindas transcreve a TELA 0 de 07-evidencias-e-pilotagem.md, linhas 930 a 950.",
-      "O item 34 de 16-handoff-02-architecture-e-instrument.md, linhas 4009 a 4023, registra outra versão como texto metodológico congelado:",
+      "A tela de boas-vindas transcreve a TELA 0 de docs/002/fontes/mapa-de-governo-humano/07-evidencias-e-pilotagem.md, linhas 930 a 950.",
+      "O item 34 de docs/002/fontes/mapa-de-governo-humano/16-handoff-02-architecture-e-instrument.md, linhas 4009 a 4023, registra outra versão como texto metodológico congelado:",
       ...FROZEN_OPENING_VARIANT.map(
         (paragraph) => `Variante congelada: ${paragraph}`,
       ),
@@ -74,9 +75,9 @@ export const INFO_TOPICS = {
   banco: {
     label: "Informações sobre o banco de itens",
     title: "Banco de itens (ANX-003)",
-    description: "Estado da reconciliação entre o documento mestre e a planilha do banco.",
+    description: "Estado da reconciliação entre os arquivos em docs/002.",
     details: [
-      "A planilha ANX-003 marca scenario_text_canonical como SOURCE_REQUIRED. O documento mestre contém os 48 enunciados e as opções na mesma ordem e com os mesmos códigos.",
+      "docs/002/fontes/anx-003-xlsx/01-00-readme.md marca scenario_text_canonical como SOURCE_REQUIRED. docs/002/fontes/mapa-de-governo-humano/07-evidencias-e-pilotagem.md contém os 48 enunciados e as opções na mesma ordem e com os mesmos códigos.",
       "Essa divergência está registrada para decisão da autoridade MGH. Ela não foi resolvida automaticamente.",
       "Os códigos e as facetas não são exibidos ao participante: a interface mostra somente a situação e as alternativas.",
     ],
@@ -86,7 +87,7 @@ export const INFO_TOPICS = {
     title: "Registro reflexivo (SELF)",
     description: "O que é o SELF e por que ele não entra no score.",
     details: [
-      "São oito afirmações em escala de 1 a 5, transcritas de docs/002.",
+      "São oito afirmações em escala de 1 a 5, transcritas de docs/002/fontes/mapa-de-governo-humano/07-evidencias-e-pilotagem.md.",
       "Os itens SELF ficam fora do Score Engine e não alteram as respostas dos 48 cenários.",
     ],
   },
@@ -106,7 +107,7 @@ export const INFO_TOPICS = {
     description: "Por que o piloto com participantes reais continua bloqueado.",
     details: [
       "A aplicação não está divulgada. Não há participantes reais nem dados pessoais nesta superfície.",
-      "Faltam: reconciliação formal do banco canônico, consentimento e Privacy Notice finais, RPO/RTO com restore testado e auditoria renderizada de acessibilidade.",
+      "Faltam: reconciliação formal do banco canônico em docs/002 (ANX-003), consentimento e Privacy Notice finais, RPO/RTO com restore testado e auditoria renderizada de acessibilidade.",
     ],
   },
   operacao: {
