@@ -125,8 +125,8 @@ metodologia, gates, textos canônicos nem o plano P0–P7 abaixo.
 | F0 | Auth.js com Credentials (e-mail/senha), credencial global e sessão tenant-scoped | Concluída e publicada em `main` (`36d8778`); login legado removido; ambiente local operacional |
 | F1 | Preferência de aparência no `User`, com cookie-espelho validado | Concluída e comitada em `main` (`43adab5`); validada somente no local; push neste ciclo |
 | F2 | Tokens do MGH Design System v1.0 traduzidos para CSS | Implementada, validada localmente e comitada em `main` (`0a030c4`); push neste ciclo |
-| F3 | Seletor de tema no cabeçalho e em `Perfil → Aparência` | Não iniciada |
-| F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Não iniciada |
+| F3 | Seletor de tema no cabeçalho e em `Perfil → Aparência` | Concluída e publicada em `main` (`c2a9358`); validada localmente em claro/escuro |
+| F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Concluída localmente; `/app` visão geral, `/app/mgh` instrumento, `/app/perfil` mantido |
 | F5 | Cadastros sintéticos de tenant, membros e coorte; planos sem cobrança | Não iniciada |
 | F6 | MGH em governança: sem score, KPIs D/I/S/C, agregados ou respostas individuais | Não iniciada |
 
@@ -428,6 +428,14 @@ A F3 foi implementada e validada somente no local. O usuário decidiu: texto
 obsidian sobre `purple-electric` no botão primário (4,54:1 calculado), DS
 ativo apenas no tema escuro e criação de `Perfil → Aparência` com três opções.
 `SYSTEM` limpa a coluna e o cookie. Nenhum texto canônico, ID, SELF,
-consentimento, versão, gate ou regra de score foi alterado. O próximo passo
-continua dependendo de decisão separada: reconciliação de `ANX-003`,
+consentimento, versão, gate ou regra de score foi alterado.
+
+A F4 foi implementada e validada somente no local. `/app` passou a ser a visão
+geral estrutural, o instrumento passou a viver em `/app/mgh` e `/app/perfil`
+continua com o seletor de aparência. A casca usa navegação lateral no desktop
+e cabeçalho compacto no mobile, com link ativo por `aria-current`. Nenhum nome
+do Parking Lot foi exibido; módulos inativos aparecem apenas como
+"indisponíveis nesta fase". Não há KPI, score, contagem, relatório ou resposta
+individual na visão geral. Nenhuma operação foi feita contra o Neon. O próximo
+passo continua dependendo de decisão separada: reconciliação de `ANX-003`,
 consentimento/Privacy Notice, RPO/RTO e auditoria com leitor de tela real.

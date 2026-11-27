@@ -85,8 +85,9 @@ Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
 | Registro documental da F2 | commit documental neste ciclo | 0 + 91 | ≈ 35 min |
 | Correção do `CONTINUAR` antes da hidratação | commit neste ciclo | 35 + 65 | ≈ 1 h |
 | F3 — seletor de aparência, Perfil e DS no tema escuro | commit neste ciclo | 340 + 120 | ≈ 7 h 30 min |
+| F4 — casca SaaS `/app`, navegação e instrumento em `/app/mgh` | commit neste ciclo | 309 + 90 | ≈ 7 h |
 
-**Total estimado das features publicadas:** ≈ 293 h 20 min.
+**Total estimado das features publicadas:** ≈ 300 h 20 min.
 O total é a soma das estimativas acima; não é tempo medido.
 
 ---
@@ -102,6 +103,14 @@ checagens locais passaram com 15 arquivos / 84 testes, build com
 A auditoria em navegador cobriu 1440×900 e 390×844 com axe sem violações nem
 `incomplete`, além da persistência das três opções e da aplicação do DS só no
 tema escuro (≈ 45 min de auditoria fora do repositório, estimativa).
+
+A frente F4 concluiu a casca SaaS local em `/app`: visão geral estrutural,
+instrumento em `/app/mgh`, `Perfil` preservado, navegação lateral no desktop e
+barra compacta no mobile. Os gates locais passaram com 16 arquivos / 90
+testes, build com três rotas dinâmicas sob `/app`, auditoria axe limpa em
+1440×900 e 390×844, Lighthouse de acessibilidade `1` nas três rotas e
+verificação do fluxo de saída/reinício (≈ 45 min de auditoria fora do
+repositório, estimativa). Nenhuma operação foi feita contra o Neon.
 
 Evidências já produzidas nas frentes F0/F0.1, F1 e F2: `typecheck`, `lint`,
 `test` (14 arquivos / 75 testes), `build`, `prisma:validate`, `audit` (0

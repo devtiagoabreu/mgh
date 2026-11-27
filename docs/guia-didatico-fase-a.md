@@ -522,6 +522,15 @@ como estavam. O aplicativo
 continua disponível apenas em `http://localhost:3000` para testes internos;
 nenhum participante real foi liberado.
 
+A casca SaaS também ganhou uma visão geral em `/app`: nela, o MGH aparece como
+único módulo ativo e os demais são apenas descritos como indisponíveis. O
+instrumento passou a abrir em `/app/mgh`, e `Perfil → Aparência` continuou no
+mesmo lugar. No computador, a navegação fica na lateral; no celular, ela vira
+uma barra compacta. A visão geral não mostra notas, contagens, gráficos nem
+respostas de participantes — ela apenas organiza o acesso. Os textos do
+instrumento, os códigos, os gates e a regra de score permanecem exatamente
+como estavam.
+
 — **Alisson Campos**
 Desenvolvido por **Tiago de Abreu**.
 

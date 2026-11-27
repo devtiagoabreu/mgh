@@ -1224,3 +1224,61 @@ O veredito P6 permanece `rework — escopo incompleto`: axe limpo não substitui
 leitor de tela real nem crítica visual humana. Nenhum participante real foi
 liberado. A regra §3.6 continua vigente. Servidor `npm run dev` segue ligado,
 PID `24092`.
+
+### 2026-11-27 — F4 concluída localmente: casca SaaS do workspace
+
+Antes da escrita, o usuário escolheu: `/app` como visão geral, instrumento em
+`/app/mgh`, `/app/perfil` mantido; módulos inativos com texto neutro, sem nomes
+do Parking Lot; sidebar no desktop e navegação compacta no mobile; visão geral
+somente estrutural, sem KPIs, scores ou contagens. Nenhuma dessas decisões
+alterou metodologia, textos canônicos, IDs, SELF, consentimento, versões,
+gates ou regra de score.
+
+Implementação (somente local; nenhuma operação contra o Neon):
+
+- `app/app/layout.tsx`: casca autenticada de todas as rotas `/app/...`. Chama
+  `requireVerifiedSession()` e monta a navegação compartilhada.
+- `components/workspace-nav.tsx`: cliente com `usePathname()`, três destinos
+  (`Visão geral`, `MGH`, `Perfil`) e `aria-current="page"` no destino ativo.
+  Nenhum nome de módulo congelado é exibido.
+- `app/app/page.tsx`: visão geral estrutural. Mostra o módulo ativo, texto
+  neutro para os demais e o estado da demonstração. Não importa
+  `@/lib/canonical/instrument` nem `@/lib/engine`; não há score, KPI, contagem
+  ou resposta individual.
+- `app/app/mgh/page.tsx`: rota do instrumento. Revalida sessão e lê apenas a
+  preferência de aparência do `User`; continua renderizando o mesmo
+  `StructuralPreview`, sem tocar no componente canônico.
+- `app/app/perfil/page.tsx`: link de retorno passou a apontar para `/app/mgh`.
+- `app/actions/appearance.ts`: passou a revalidar também `/app/mgh`.
+- `app/globals.css`: layout `.mgh-workspace`, navegação compacta no mobile e
+  sidebar sticky no desktop; `forced-colors` cobre os novos elementos.
+- `tests/workspace/f4.test.ts`: seis testes de paridade da casca, link ativo,
+  ausência de nomes do Parking Lot e preservação do instrumento.
+
+Verificação reexecutada antes deste registro:
+
+| Evidência | Resultado |
+|---|---|
+| `npx next typegen` + `npm run typecheck` | limpos (typegen necessário após criar a rota) |
+| `npm run lint` | limpo |
+| `npm test` | 16 arquivos, 90 testes aprovados |
+| `npm run build` | compilou; `/`, `/api/auth/[...nextauth]`, `/app`, `/app/mgh` e `/app/perfil` dinâmicos; `/login` e `/_not-found` estáticos |
+| `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| `npm run prisma:validate` | schema válido |
+| `git diff --check` | limpo |
+| Navegador CDP 1440×900 e 390×844, claro/escuro | axe sem `violations` e sem `incomplete`; sem overflow e sem alvos < 24×24 |
+| Lighthouse de acessibilidade | score `1` em `/app`, `/app/mgh` e `/app/perfil` |
+| Teclado | skip link visível no foco; Enter leva a `#mgh-conteudo` |
+| Fluxo preservado | `Sair da demonstração?` com `Encerrar sessão`, `Reiniciar sequência MGH` e `Voltar à demonstração`; foco inicial no último, `inert` no shell; reiniciar volta ao consentimento sem encerrar sessão |
+| Gate | sem cookie de sessão, `/app` redireciona para `/login` |
+
+Para validar as rotas autenticadas foi gerado um cookie de sessão de teste
+somente no ambiente local, a partir da identidade sintética já existente e de
+`AUTH_SECRET` lido de `.env.local` sem exibi-lo. A preferência foi trocada para
+`DARK` pela própria interface e depois restaurada para `LIGHT`; nenhuma senha
+foi lida, alterada ou rotacionada, e nenhum dado foi escrito no Neon.
+
+O veredito P6 permanece `rework — escopo incompleto`: gates verdes não
+substituem leitor de tela real nem crítica visual humana. Nenhum participante
+real foi liberado. A regra §3.6 continua vigente. Servidor `npm run dev`
+segue ligado em `http://localhost:3000`, PID `24092`.
