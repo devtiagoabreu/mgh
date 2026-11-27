@@ -27,6 +27,7 @@ const MODEL_NAMES = [
   "Tenant",
   "User",
   "TenantMembership",
+  "ToolGrant",
   "ParticipantIdentity",
   "InstrumentVersion",
   "ItemBankVersion",
@@ -91,6 +92,44 @@ describe("P1/P2 — schema tenant-scoped", () => {
     );
     expect(migration).toContain('CREATE TABLE "auth_credentials"');
     expect(migration).not.toContain("ROW LEVEL SECURITY");
+  });
+
+  it("registra a obrigatoriedade de trocar a primeira senha na credencial", () => {
+    const auth = models().find((model) => model.name === "AuthCredential");
+    expect(auth?.body).toMatch(
+      /mustChangePassword\s+Boolean\s+@default\(false\)\s+@map\("must_change_password"\)/,
+    );
+    const migration = readFileSync(
+      resolve(
+        process.cwd(),
+        "prisma/migrations/20261127190000_f5_1_tool_grants/migration.sql",
+      ),
+      "utf8",
+    );
+    expect(migration).toContain(
+      'ALTER TABLE "auth_credentials" ADD COLUMN     "must_change_password" BOOLEAN NOT NULL DEFAULT false;',
+    );
+    expect(migration).not.toContain(
+      'ALTER TABLE public."auth_credentials" ENABLE ROW LEVEL SECURITY',
+    );
+    expect(migration).not.toContain("password_hash");
+  });
+
+  it("modela ToolGrant como concessão tenant-scoped sem PII", () => {
+    const grant = models().find((model) => model.name === "ToolGrant");
+    expect(grant, "modelo ToolGrant ausente").toBeDefined();
+    expect(grant?.body).toMatch(/toolKey\s+String\s+@map\("tool_key"\)/);
+    expect(grant?.body).toMatch(/@@unique\(\[tenantId, userId, toolKey\]\)/);
+    expect(grant?.body).toMatch(/@@index\(\[tenantId, toolKey\]\)/);
+    expect(grant?.body).toMatch(/@@map\("tool_grants"\)/);
+    expect(grant?.body).toMatch(
+      /user\s+User\s+@relation\(fields: \[tenantId, userId\], references: \[tenantId, id\]\)/,
+    );
+    for (const name of ["Tenant", "User"]) {
+      expect(models().find((model) => model.name === name)?.body).toMatch(
+        /toolGrants\s+ToolGrant\[\]/,
+      );
+    }
   });
 
   it("mantém apenas os papéis da Fase A e nenhum MENTOR_ASSISTANT", () => {

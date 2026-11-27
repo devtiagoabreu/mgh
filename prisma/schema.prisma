@@ -46,6 +46,7 @@ model Tenant {
   updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
   deletedAt   DateTime?          @db.Timestamptz(3)
   memberships TenantMembership[]
+  toolGrants  ToolGrant[]
 
   @@unique([tenantId])
   @@unique([tenantId, id])
@@ -64,6 +65,7 @@ model User {
   appearancePreference  AppearancePreference? @map("appearance_preference")
   memberships           TenantMembership[]
   participantIdentities ParticipantIdentity[]
+  toolGrants            ToolGrant[]
 
   @@unique([tenantId, id])
   @@index([tenantId])
@@ -90,20 +92,42 @@ model TenantMembership {
   @@schema("public")
 }
 
+/// Concessão tenant-scoped de um instrumento técnico a um usuário.
+/// A chave é validada pela allowlist em lib/tools/catalog.ts; nenhum texto
+/// metodológico, versão de banco ou regra de score é armazenado aqui.
+model ToolGrant {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @map("tenant_id") @db.Uuid
+  userId    String    @db.Uuid
+  toolKey   String    @map("tool_key")
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  tenant    Tenant    @relation(fields: [tenantId], references: [tenantId])
+  user      User      @relation(fields: [tenantId, userId], references: [tenantId, id])
+
+  @@unique([tenantId, userId, toolKey])
+  @@index([tenantId, toolKey])
+  @@map("tool_grants")
+  @@schema("public")
+}
+
 /// Registro de autenticação fora do escopo tenant.
 ///
 /// O login precisa encontrar um e-mail global antes de existir tenant verificado.
 /// Por isso esta tabela não participa do RLS. O campo tenant_id é apenas vínculo
 /// com User/TenantMembership, nunca critério de isolamento de acesso.
 model AuthCredential {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String    @unique
-  passwordHash String    @map("password_hash")
-  userId       String    @map("user_id") @db.Uuid
-  tenantId     String    @map("tenant_id") @db.Uuid
-  active       Boolean   @default(true)
-  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  id                 String   @id @default(uuid()) @db.Uuid
+  email              String   @unique
+  passwordHash       String   @map("password_hash")
+  userId             String   @map("user_id") @db.Uuid
+  tenantId           String   @map("tenant_id") @db.Uuid
+  active             Boolean  @default(true)
+  mustChangePassword Boolean  @default(false) @map("must_change_password")
+  createdAt          DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime @updatedAt @db.Timestamptz(3)
 
   @@index([tenantId, userId])
   @@map("auth_credentials")

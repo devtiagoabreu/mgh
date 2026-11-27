@@ -67,6 +67,18 @@ export async function getPrisma(): Promise<TenantDbClient> {
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   } as unknown as ConstructorParameters<typeof PrismaClient>[0];
   const client = asTenantDbClient(new PrismaClient(options));
+  if (process.env.NODE_ENV !== "development") {
+    globalForPrisma.mghPrisma = client;
+    return client;
+  }
+  // Em desenvolvimento o cache global sobrevive a mudanças de schema.
+  // Um cliente gerado antes da migration não expõe `toolGrant`.
+  const probe = client as unknown as { toolGrant?: unknown };
+  if (!probe.toolGrant) {
+    throw new Error(
+      "Prisma Client desatualizado: execute npm run prisma:generate e reinicie o servidor de desenvolvimento.",
+    );
+  }
   globalForPrisma.mghPrisma = client;
   return client;
 }

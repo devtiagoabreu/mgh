@@ -1,18 +1,20 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const schema = readFileSync(
   resolve(process.cwd(), "prisma/schema.prisma"),
   "utf8",
 );
-const sql = readFileSync(
-  resolve(
-    process.cwd(),
-    "prisma/migrations/20261125120000_phase_a_foundation/migration.sql",
-  ),
-  "utf8",
-);
+
+const migrationsDir = resolve(process.cwd(), "prisma/migrations");
+const sql = readdirSync(migrationsDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .sort((a, b) => a.name.localeCompare(b.name))
+  .map((entry) =>
+    readFileSync(join(migrationsDir, entry.name, "migration.sql"), "utf8"),
+  )
+  .join("\n");
 
 interface TableInfo {
   readonly qualified: string;
@@ -50,7 +52,7 @@ function policyBlock(table: string, action: string): string {
 describe("P1 — migration RLS", () => {
   it("habilita e força RLS em toda tabela de tenant", () => {
     const tables = tenantTables();
-    expect(tables.length).toBe(17);
+    expect(tables.length).toBe(18);
     for (const table of tables) {
       expect(
         sql,
@@ -89,6 +91,23 @@ describe("P1 — migration RLS", () => {
       }
     }
     expect(sql).not.toContain("${");
+  });
+
+  it("adiciona a coluna de primeira senha sem incluir auth_credentials no RLS", () => {
+    const migration = readFileSync(
+      resolve(
+        process.cwd(),
+        "prisma/migrations/20261127190000_f5_1_tool_grants/migration.sql",
+      ),
+      "utf8",
+    );
+    expect(migration).toContain(
+      'ALTER TABLE "auth_credentials" ADD COLUMN     "must_change_password" BOOLEAN NOT NULL DEFAULT false;',
+    );
+    expect(migration).not.toContain(
+      'ALTER TABLE public."auth_credentials" ENABLE ROW LEVEL SECURITY',
+    );
+    expect(migration).not.toContain("password_hash");
   });
 
   it("bloqueia UPDATE/DELETE de RAW e eventos por policy e trigger", () => {

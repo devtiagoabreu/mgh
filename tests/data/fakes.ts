@@ -5,6 +5,11 @@ export interface CallLog {
   readonly args: unknown;
 }
 
+export interface DelegateOptions {
+  readonly findMany?: (args?: unknown) => Promise<unknown[]>;
+  readonly findFirst?: (args: unknown) => Promise<unknown>;
+}
+
 export interface FakeClient {
   readonly client: TenantDbClient;
   readonly calls: CallLog[];
@@ -36,6 +41,10 @@ function delegate(name: string, calls: CallLog[]) {
       calls.push({ kind: `${name}.update`, args });
       return {};
     },
+    updateMany: async (args: unknown) => {
+      calls.push({ kind: `${name}.updateMany`, args });
+      return { count: 1 };
+    },
     delete: async (args: unknown) => {
       calls.push({ kind: `${name}.delete`, args });
       return {};
@@ -44,9 +53,11 @@ function delegate(name: string, calls: CallLog[]) {
 }
 
 const DELEGATE_NAMES = [
+  "authCredential",
   "tenant",
   "user",
   "tenantMembership",
+  "toolGrant",
   "participantIdentity",
   "instrumentVersion",
   "itemBankVersion",
@@ -63,11 +74,29 @@ const DELEGATE_NAMES = [
   "auditLog",
 ] as const;
 
-export function createFakeClient(): FakeClient {
+export function createFakeClient(options: {
+  readonly delegates?: Record<string, DelegateOptions>;
+} = {}): FakeClient {
   const calls: CallLog[] = [];
   const delegates: Record<string, unknown> = {};
   for (const name of DELEGATE_NAMES) {
-    delegates[name] = delegate(name, calls);
+    const base = delegate(name, calls);
+    const overrides = options.delegates?.[name];
+    delegates[name] = {
+      ...base,
+      findMany: overrides?.findMany
+        ? async (args?: unknown) => {
+            calls.push({ kind: `${name}.findMany`, args });
+            return overrides.findMany!(args);
+          }
+        : base.findMany,
+      findFirst: overrides?.findFirst
+        ? async (args: unknown) => {
+            calls.push({ kind: `${name}.findFirst`, args });
+            return overrides.findFirst!(args);
+          }
+        : base.findFirst,
+    };
   }
   const client = {
     $queryRaw: async (strings: TemplateStringsArray, ...values: unknown[]) => {

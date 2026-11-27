@@ -12,9 +12,21 @@ export interface RawQueryExecutor {
 }
 
 export interface SimpleDelegate {
-  findFirst(args: { where: Record<string, unknown> }): Promise<unknown>;
-  findMany(args?: { where?: Record<string, unknown> }): Promise<unknown[]>;
+  findFirst(args: {
+    where: Record<string, unknown>;
+    select?: Record<string, unknown>;
+  }): Promise<unknown>;
+  findMany(args?: {
+    where?: Record<string, unknown>;
+    include?: Record<string, unknown>;
+    select?: Record<string, unknown>;
+    orderBy?: Record<string, unknown>;
+  }): Promise<unknown[]>;
   create(args: { data: Record<string, unknown> }): Promise<unknown>;
+  updateMany(args: {
+    where: Record<string, unknown>;
+    data: Record<string, unknown>;
+  }): Promise<unknown>;
   upsert(args: {
     where: Record<string, unknown>;
     create: Record<string, unknown>;
@@ -31,6 +43,13 @@ export interface AuthCredentialDelegate extends SimpleDelegate {
   findUnique(args: {
     where: { email: string };
   }): Promise<unknown | null>;
+  findFirst(args: {
+    where: Record<string, unknown>;
+  }): Promise<unknown | null>;
+  updateMany(args: {
+    where: Record<string, unknown>;
+    data: Record<string, unknown>;
+  }): Promise<unknown>;
 }
 
 /** Superfície usada apenas na resolução da credencial, antes da sessão. */
@@ -39,12 +58,14 @@ export interface AuthDbClient extends RawQueryExecutor {
 }
 
 export interface TenantDbClient extends RawQueryExecutor {
+  authCredential: AuthCredentialDelegate;
   $transaction<T>(
     fn: (tx: TenantDbClient) => Promise<T>,
   ): Promise<T>;
   tenant: SimpleDelegate;
   user: SimpleDelegate;
   tenantMembership: SimpleDelegate;
+  toolGrant: SimpleDelegate;
   participantIdentity: SimpleDelegate;
   instrumentVersion: SimpleDelegate;
   itemBankVersion: SimpleDelegate;
