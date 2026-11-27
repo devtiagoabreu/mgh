@@ -509,6 +509,16 @@ tela real e crítica visual humana. A migration local já foi aplicada e os
 textos do instrumento já foram recuperados na demonstração; as divergências
 registradas continuam reservadas à autoridade MGH.
 
+### Atualização operacional de 27/11/2026
+
+A demonstração local passou por duas correções que não tocam a metodologia:
+o botão `CONTINUAR` agora reconhece caixas marcadas antes da página terminar
+de carregar, e o tema passou a ter um seletor completo em `Perfil → Aparência`
+(claro, escuro e seguir o sistema). Os textos do instrumento, os códigos, os
+gates e a regra de score permanecem exatamente como estavam. O aplicativo
+continua disponível apenas em `http://localhost:3000` para testes internos;
+nenhum participante real foi liberado.
+
 — **Alisson Campos**
 Desenvolvido por **Tiago de Abreu**.
 

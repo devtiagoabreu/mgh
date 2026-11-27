@@ -1,6 +1,13 @@
 "use client";
 
-import { useId, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import {
   CONSENT_BUTTON,
   CONSENT_CHECKBOXES,
@@ -22,12 +29,33 @@ export function ConsentGate({ onDecision, info }: ConsentGateProps) {
   const [accepted, setAccepted] = useState<boolean[]>(() =>
     CONSENT_CHECKBOXES.map(() => false),
   );
+  const inputs = useRef<Array<HTMLInputElement | null>>([]);
   const allAccepted = accepted.every(Boolean);
   const statementId = useId();
 
+  /**
+   * Um clique antes da hidratação altera o DOM, mas não o estado React: o
+   * botão ficaria desabilitado com as caixas visivelmente marcadas. Ao montar,
+   * o estado passa a refletir o que o navegador já está exibindo.
+   */
+  useEffect(() => {
+    const fromDom = CONSENT_CHECKBOXES.map(
+      (_, index) => inputs.current[index]?.checked ?? false,
+    );
+    setAccepted((current) =>
+      current.every((value, index) => value === fromDom[index])
+        ? current
+        : fromDom,
+    );
+  }, []);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!allAccepted) {
+    const fromDom = CONSENT_CHECKBOXES.map(
+      (_, index) => inputs.current[index]?.checked ?? false,
+    );
+    setAccepted(fromDom);
+    if (!fromDom.every(Boolean)) {
       return;
     }
     onDecision("accept");
@@ -51,6 +79,9 @@ export function ConsentGate({ onDecision, info }: ConsentGateProps) {
         {CONSENT_CHECKBOXES.map((label, index) => (
           <label key={label} className="mgh-choice">
             <input
+              ref={(element) => {
+                inputs.current[index] = element;
+              }}
               className="mgh-choice__input"
               type="checkbox"
               checked={accepted[index]}

@@ -417,3 +417,9 @@ Os quatro documentos operacionais foram atualizados antes do commit
 `Perfil → Aparência`**, que também decidirá o FINDING de contraste do botão
 primário e quando ativar `data-ds`. Deploy público da casca SaaS depende de
 decisão e configuração separadas na Vercel.
+
+A correção do botão `CONTINUAR` — sincronização do estado React com o DOM
+quando o clique ocorre antes da hidratação — foi validada em navegador e será
+comitada separadamente da F3. Ela não altera metodologia, textos canônicos,
+códigos, gates nem regra de score. O Neon continua reservado para ser refeito
+depois com a aplicação: nenhuma migration, seed ou escrita será executada lá.

@@ -1077,3 +1077,83 @@ computadas não substitui leitor de tela real nem crítica visual humana.
 Commit da F2 em `main`: `0a030c4` (5 arquivos, 703 inserções, incluindo o
 documento de origem agora versionado). Push autorizado neste ciclo, após o
 registro documental. Nenhuma operação contra o Neon foi feita na F2.
+
+Servidor de desenvolvimento deixado **ligado e destacado do terminal** a
+pedido do usuário, para testes manuais: `http://localhost:3000`, PID `37392`,
+log em `C:\Users\promo\AppData\Local\Temp\opencode\mgh-dev-server.out.log`.
+O `next dev` regenerou `next-env.d.ts` apontando para `.next/dev/types`; o
+arquivo foi revertido para a versão versionada e o `git status` ficou limpo.
+
+### 2026-11-27 — Rotação da credencial sintética no banco local
+
+O usuário precisou entrar para testar e autorizou gerar uma nova senha
+sintética **somente no PostgreSQL local** (`mgh_local`, via `DIRECT_URL` de
+`.env.local`). O Neon não foi tocado. A senha anterior não era recuperável:
+um hash scrypt não é reversível e o valor em claro nunca foi versionado.
+
+- Nova senha gerada fora do repositório, exibida **uma única vez** ao usuário
+  no chat e guardada apenas como hash scrypt em `AUTH_SEED_PASSWORD_HASH`
+  (`.env.local`, fora do Git) e em `auth_credentials`.
+- Seed idempotente executado sem `--env-file=.env` (que carregaria as URLs do
+  Neon): `node prisma/seed-auth.mjs` com `DIRECT_URL` e
+  `AUTH_SEED_TENANT_ID` lidos de `.env.local`. Resultado:
+  `Auth seed: ok (3 identidades sintéticas)`.
+- Verificação em banco: as três credenciais (`owner@example.test`,
+  `mentee@example.test`, `admin@example.test`) estão `active: true` e
+  `passwordMatches: true` para a nova senha.
+- Verificação em navegador (CDP): cookies limpos, login com
+  `owner@example.test` e a nova senha resultou em `/app`, sem erro.
+- Nenhum segredo foi escrito em código, documento, log de commit ou arquivo
+  temporário versionado; os scripts temporários de verificação foram
+  removidos.
+
+### 2026-11-27 — Correção do `CONTINUAR` antes da hidratação
+
+O usuário relatou que, em determinadas condições, as caixas de consentimento
+apareciam marcadas mas o botão `CONTINUAR` permanecia desabilitado.
+
+- Causa diagnosticada: um clique no DOM antes da hidratação do React mudava o
+  `checked` dos inputs, mas o estado `accepted` do componente continuava
+  `false`. O botão era calculado apenas desse estado.
+- Correção em `components/consent-gate.tsx`: refs para os inputs, `useEffect`
+  de montagem que sincroniza o estado com o que o navegador já exibe e
+  revalidação do DOM no `handleSubmit` antes de chamar `onDecision("accept")`.
+- Verificação em navegador com clique real: `checked: [true, true]`,
+  `CONTINUAR` habilitado e avanço para `MAPA DE GOVERNO HUMANO™`, sem erros de
+  console. Nenhum texto canônico, ID, SELF, consentimento, versão, gate ou
+  regra de score foi alterado.
+- Estado naquele ponto: correção pronta e validada, sem commit.
+
+### 2026-11-27 — Kit de design instalado globalmente
+
+O usuário autorizou a instalação do pacote de skills e agentes de interface:
+
+- 33 skills em `C:\Users\promo\.config\opencode\skills\external`, 1 agente
+  `interface-reviewer` em `.config\opencode\agents\external`, 84 referências
+  `DESIGN.md` e servidor MCP `awwwards` registrado no `opencode.json` global.
+- Provenância e licenças das fontes estão em `PROVENANCE.md`. Nenhum texto
+  canônico do MGH foi importado de fonte externa.
+- SkillSpector com `--no-llm` avaliou 60 skills: nenhuma passou do gate 60.
+  Maior pontuação foi `26 MEDIUM`; `oil-ui` pontuou `0`.
+- Para a F3 foram selecionadas `designing-frontend-interfaces`,
+  `reviewing-interface-quality`, `applying-themes` e `oil-ui`. O MCP
+  `awwwards` foi usado apenas em busca preliminar, sem resultado aplicável;
+  nenhuma decisão visual foi copiada de site externo.
+
+### 2026-11-27 — Diagnóstico local vs. rede
+
+- O usuário confirmou que `http://localhost:3000` está funcionando e pediu
+  para manter `npm run dev` ligado para testes manuais. O problema relatado
+  na rede ficou fora de escopo nesta rodada, por decisão do usuário.
+- Servidor reiniciado: PID atual `24092`, listener na porta 3000. O log segue
+  em `C:\Users\promo\AppData\Local\Temp\opencode\mgh-dev-server.out.log`.
+- O Chrome CDP usado nos testes é headless e separado da aba visível do
+  usuário (`--user-data-dir=...\chrome-mgh`). Nele, tema, `Sair`, diálogos,
+  estados estruturais e botão `Entrar` passaram com clique real e
+  programático, sem exceção de hidratação.
+- Teste de host: `/login` em `127.0.0.1:3000` e `192.168.0.108:3000` exibiu
+  o erro genérico esperado para senha inválida. Esses hosts não explicam o
+  comportamento relatado na rede.
+- Console do usuário continha apenas mensagens normais: React DevTools,
+  `[HMR] connected`, `[Fast Refresh]` e `favicon.ico 404` (inofensivo).
+- Nenhuma alteração foi feita contra o Neon.
