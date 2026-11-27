@@ -4,7 +4,7 @@ description: Histórico operacional canônico do projeto MGH — decisões, exec
 source: docs/002/context.md
 version: 0.1
 status: ACTIVE
-verified: 2026-11-25
+verified: 2026-11-27
 classification: CONFIDENTIAL - METHODOLOGY IP
 canonical: false
 derived_from:
@@ -719,3 +719,167 @@ Estado do Git: frente de UI pronta em `main`; o usuário autorizou **commit e
 push** nesta rodada. Código em `d430a12`; o registro documental e o push
 completam a rodada. A documentação operacional foi atualizada antes do
 commit (§3.7).
+
+### 2026-11-27 — F0: autenticação real e sessão tenant-scoped (implementação local)
+
+O usuário respondeu `pronto` para iniciar a execução do plano aprovado. A
+frente F0 troca o login demo por Auth.js com Credentials (e-mail/senha), sem
+alterar metodologia, textos canônicos, gates, regra de score, `PROD-TEN-001`
+v0.2 nem `createTenantContextFromVerifiedClaims`.
+
+Decisões aplicadas nesta frente:
+
+- `next-auth@5.0.0-beta.32` foi instalado porque declara suporte a Next 16 e
+  React 19. `package.json` e lockfile foram alterados; `npm install` reportou
+  `found 0 vulnerabilities` e avisos de scripts não aprovados (`prisma`,
+  `@prisma/engines`, `esbuild`). `npm approve-scripts` não foi executado.
+- A credencial vive em `auth_credentials`, registro global **sem RLS**. O
+  e-mail é globalmente único. `tenant_id` nessa tabela é apenas vínculo com
+  `users`/`tenant_memberships`, nunca critério de isolamento de acesso.
+- A ordem de `resolveAuthIdentity()` é: localizar e-mail → conferir hash da
+  senha → somente então consultar `TenantMembership` ativa com RLS, usando
+  `set_config('app.current_tenant_id', tenantId, true)` em transação. Nenhum
+  header, query, cookie lido diretamente ou parâmetro de request decide o
+  tenant.
+- A sessão é JWT. O callback `jwt` grava `mghUserId`, `mghTenantId`, `mghRole` e
+  um `mghSessionId` estável; o callback `session` os expõe ao servidor.
+  `lib/auth/session.ts` revalida todos os claims antes de formar o contexto e
+  falha fechado.
+- Rotas ativas: `/login` público, `/api/auth/[...nextauth]` com `GET`/`POST`,
+  `/` com redirect autenticado e `/app` como workspace. `pages.signIn` é
+  `/login`. O logout usa `signOut` do Auth.js.
+- `prisma/seed-auth.mjs` é sintético e idempotente: `owner@example.test`,
+  `mentee@example.test` e `admin@example.test` (este último opcional), com hash
+  lido de `AUTH_SEED_PASSWORD_HASH`. Nenhuma senha em texto claro foi
+  versionada. Escritas tenant-scoped do seed rodam em transação com
+  `set_config`; `auth_credentials` é gravado fora dessa transação.
+- `DemoLogin`/`DemoSession` permanecem no schema somente para rollback. O
+  fluxo ativo não os usa. `lib/auth/demo-password.ts` virou re-export de
+  compatibilidade para `lib/auth/password.ts` (scrypt com salt).
+- `AUTH_TRUST_HOST` não está preenchido no `.env` local. `auth.ts` confia no
+  host em desenvolvimento, quando `VERCEL=1` ou quando a variável é `true`;
+  produção fora da Vercel precisa da variável explícita. `.env.example`
+  documenta `AUTH_URL`, `AUTH_TRUST_HOST`, `AUTH_SECRET` e
+  `AUTH_SEED_PASSWORD_HASH` sem valores.
+
+Verificação reexecutada nesta etapa:
+
+| Evidência | Comando / inspeção | Resultado |
+|---|---|---|
+| Tipos | `npm run typecheck` | limpo |
+| Lint | `npm run lint` | limpo |
+| Testes | `npm test` | 12 arquivos, 62 testes aprovados |
+| Build | `npm run build` | compilou; `/`, `/api/auth/[...nextauth]` e `/app` dinâmicos; `/login` e `/_not-found` estáticos |
+| Auditoria de dependências | `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| Schema Prisma | `npm run prisma:validate` | válido |
+| Formatação do diff | `git diff --check` | limpo |
+| Paridade da credencial | `tests/auth/identity.test.ts` | senha conferida antes da consulta tenant-scoped; senha errada, credencial inativa, membro inativo e papel `MENTOR_ASSISTANT` rejeitados |
+
+Estado naquele ponto: alterações em `main`, sem commit e sem push; migration e
+seed ainda não aplicados.
+
+### 2026-11-27 — F0 validada em banco e navegador
+
+O usuário autorizou explicitamente aplicar migration e seed, mas escolheu
+`Aguardar validação` para commit/push. `DIRECT_URL` foi lido do `.env` local e
+injetado apenas no ambiente dos processos; nenhum valor foi exibido nem
+versionado.
+
+- `npm run prisma:deploy` aplicou `20261127120000_auth_credentials`. Depois,
+  `npx prisma migrate status --config prisma/prisma.config.ts` confirmou
+  `Database schema is up to date!` (3 migrations).
+- `npm run db:seed:auth` rodou duas vezes de forma idempotente e terminou com
+  `Auth seed: ok (3 identidades sintéticas)`. A senha sintética foi gerada
+  fora do repositório, guardada só como hash scrypt e rotacionada antes da
+  validação final; a senha final foi exibida uma única vez ao usuário e não
+  aparece em código, documento, log de commit nem arquivo temporário.
+- O aviso do `pg` sobre `sslmode=require` é informativo: a versão atual trata
+  o modo como `verify-full`. Nenhuma URL foi alterada.
+- Servidor `next dev` iniciado com `AUTH_TRUST_HOST=true` apenas no processo e
+  encerrado ao final. Chrome headless com CDP em `127.0.0.1:9222` foi usado
+  para o fluxo; cookies `authjs.*` foram limpos antes do teste.
+
+Validação renderizada:
+
+| Verificação | Resultado |
+|---|---|
+| `/` sem sessão redireciona para `/login` | `redirectAnonimo: true` |
+| Senha errada exibe apenas `Usuário ou senha inválidos.` | `erroGenerico: true` |
+| Login válido abre `/app` | `loginValido: true` |
+| E-mail do titular aparece no cabeçalho | `emailNoCabecalho: true` |
+| Instrumento canônico aparece após o login | `instrumentoVisivel: true` |
+| `Sair` abre `Sair da demonstração?` | `dialogoSaida: true` |
+| `Encerrar sessão` volta a `/login` | `logout: true` |
+| Novo acesso a `/` volta a `/login` | `gateAposLogout: true` |
+
+O log do servidor registrou `CredentialsSignin` durante o teste de senha
+errada; isso é o comportamento esperado do Auth.js e não vaza detalhe ao
+usuário. Nenhum participante real foi liberado. A regra §3.6 continua vigente,
+o veredito P6 permanece `rework — escopo incompleto` e **commit/push seguem sem
+autorização nesta rodada**.
+
+### 2026-11-27 — Login legado removido
+
+O usuário autorizou remover `DemoLogin`/`DemoSession` e aplicar a migration ao
+Neon, mas manteve commit e push suspensos. `DIRECT_URL` foi lido do `.env`
+local e injetado apenas no ambiente dos processos; nenhum valor foi exibido ou
+versionado.
+
+- Os modelos `DemoLogin`/`DemoSession` saíram de `prisma/schema.prisma`, e a
+  migration `20261127150000_drop_demo_login` removeu `demo_logins` e
+  `demo_sessions`. O aviso do Prisma indicou 1 linha e 4 linhas,
+  respectivamente — apenas credenciais/sessões sintéticas do login antigo.
+- Foram excluídos `lib/auth/demo-session.ts`, `lib/auth/demo-password.ts`,
+  `tests/auth/demo-password.test.ts` e `prisma/seed-demo-login.mjs`.
+  `lib/db/types.ts` perdeu os delegates legados; `package.json` perdeu
+  `db:seed:demo`; `.env.example` perdeu `DEMO_SEED_USERNAME` e
+  `DEMO_PASSWORD_HASH`.
+- `prisma migrate dev --create-only` não pôde ser usado porque o ambiente do
+  shell é não interativo. O SQL foi gerado com
+  `prisma migrate diff --from-config-datasource --to-schema=prisma/schema.prisma --script`
+  e aplicado por `npm run prisma:deploy`. Depois,
+  `npx prisma migrate status --config prisma/prisma.config.ts` confirmou
+  `Database schema is up to date!` com 4 migrations.
+- O teste `tests/data/schema.test.ts` passou a exigir a ausência dos modelos
+  legados e a presença da migration de remoção. Os testes do re-export
+  `demo-password` foram removidos; o módulo ativo continua sendo
+  `lib/auth/password.ts`.
+- A superfície ativa não mudou: Auth.js com Credentials, `auth_credentials`
+  global sem RLS e acesso tenant-scoped somente após senha verificada.
+
+Verificação reexecutada após a remoção:
+
+| Evidência | Comando / inspeção | Resultado |
+|---|---|---|
+| Schema | `npm run prisma:validate` | válido |
+| Client | `npm run prisma:generate` | Prisma Client v7.10.1 gerado |
+| Migrations | `npm run prisma:deploy` + `npx prisma migrate status` | 4 migrations; `Database schema is up to date!` |
+| Tipos | `npm run typecheck` | limpo |
+| Lint | `npm run lint` | limpo |
+| Testes | `npm test` | 11 arquivos, 59 testes aprovados |
+| Build | `npm run build` | compilou; `/`, `/api/auth/[...nextauth]` e `/app` dinâmicos; `/login` e `/_not-found` estáticos |
+| Auditoria de dependências | `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| Formatação do diff | `git diff --check` | limpo |
+| Referências legadas | busca no repositório | restam apenas registros históricos e asserções de ausência nos testes |
+
+Estado do Git: alterações locais em `main`, **sem commit e sem push**. A regra
+§3.6 continua vigente, nenhum participante real foi liberado e o veredito P6
+permanece `rework — escopo incompleto`.
+
+### 2026-11-27 — PostgreSQL local disponível
+
+O usuário pediu para verificar se há PostgreSQL local para, por enquanto,
+subir o projeto sem depender do Neon. Foi confirmado:
+
+- binários em `C:\Program Files\PostgreSQL\16\bin` (`psql`, `postgres`,
+  `pg_ctl`, `initdb`, `pg_isready`, `createdb`, `dropdb`);
+- serviço `postgresql-x64-16` com status `Running` e `StartType Automatic`;
+- listener ativo em `127.0.0.1:5432` e `::/5432`, processo `postgres.exe`;
+- `pg_isready -h localhost -p 5432` responde `aceitando conexões`.
+
+`pg_hba.conf` exige `scram-sha-256` para conexões `local` e `host`; não há
+senha disponível para `postgres` ou `promo`, então **nenhuma conexão autenticada
+foi feita**, nenhum banco/role foi criado e `DATABASE_URL`/`DIRECT_URL` não
+foram alterados. A decisão de usar o banco local depende de credencial
+fornecida pelo usuário ou de autorização explícita para criar role e database
+dedicados. Nada disso foi implementado nesta rodada.

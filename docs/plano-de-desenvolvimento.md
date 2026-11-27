@@ -39,7 +39,7 @@ derived_from:
 
 ---
 
-## 1. Estado atual — 2026-11-26
+## 1. Estado atual — 2026-11-27
 
 | Item | Estado |
 |------|--------|
@@ -47,15 +47,17 @@ derived_from:
 | `main` | Contém toda a Fase A; branches de feature removidas após merge. Nenhum PR aberto |
 | Contexto canônico | `docs/002` (11 fontes, 47 fatimentos, 11 índices) |
 | Acervo original | `docs/001` (11 binários, intactos) |
-| Aplicação | Demonstração protegida por login no banco; instrumento canônico renderizado, sem score/IA/resultado |
-| Ambiente | `.env` local criado (não versionado), `.env.example` versionado |
-| Plano | P0, P1/P2, P5 e P6 estrutural verificados; integração final green em `docs/evidencias/integracao-final.md` |
-| Horas | `docs/horas-de-desenvolvimento.md`: estimativas por feature (≈ 245 h publicadas + ≈ 4 h 15 min da frente atual), nunca medição ou cobrança |
+| Aplicação | Workspace protegido por Auth.js (e-mail/senha); instrumento canônico renderizado, sem score/IA/resultado. Fluxo `/` → `/login` → `/app` → logout validado em navegador |
+| Ambiente | `.env` local criado (não versionado), `.env.example` versionado com chaves de Auth.js sem valores; `AUTH_TRUST_HOST=true` usado apenas no processo do servidor local |
+| Plano | P0, P1/P2, P5 e P6 estrutural verificados; integração final green em `docs/evidencias/integracao-final.md`. F0 implementada, com migration aplicada, seed sintético executado e fluxo validado; commit/push ainda não autorizados |
+| Horas | `docs/horas-de-desenvolvimento.md`: estimativas por feature, nunca medição nem cobrança |
 | Acessibilidade | Gates automatizados verdes; veredito P6 segue `rework — escopo incompleto` até leitor de tela e crítica visual humana |
 
 **Bloqueios que permanecem abertos:** `ANX-003` DRAFT (0/48 textos exatos,
 0 IDs canônicos), `REQ-INST-012 = WAITING_BANK`, `OPEN-INST-001`,
-`OPEN-LEGAL-001/002`, `OPEN-TECH-006`, `OPEN-TEN-001`.
+`OPEN-LEGAL-001/002`, `OPEN-TECH-006`, `OPEN-TEN-001`. F0 está validada em
+banco e navegador, mas permanece sem commit/push por decisão do usuário nesta
+rodada.
 
 ---
 
@@ -109,6 +111,24 @@ Vercel · GitHub. Runtime `nodejs` nas rotas que usam transação.
   entrada de score; dono humano nomeado, diferente do mentor se houver
   conflito.
 - Agregados com `n ≥ 5` e checagem de inferência por subtração.
+
+---
+
+## 2.5 Evolução SaaS aprovada (2026-11-27)
+
+Ordem aprovada pelo usuário para transformar a demonstração em casca SaaS
+multitenant com o MGH como módulo interno sob governança. Ela **não** altera
+metodologia, gates, textos canônicos nem o plano P0–P7 abaixo.
+
+| Frente | Escopo | Estado |
+|---|---|---|
+| F0 | Auth.js com Credentials (e-mail/senha), credencial global e sessão tenant-scoped | Validada em banco e navegador; login legado removido; aguardando autorização de commit/push |
+| F1 | Preferência de aparência no `User`, com cookie-espelho validado | Não iniciada |
+| F2 | Tokens do MGH Design System v1.0 traduzidos para CSS | Não iniciada |
+| F3 | Seletor de tema no cabeçalho e em `Perfil → Aparência` | Não iniciada |
+| F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Não iniciada |
+| F5 | Cadastros sintéticos de tenant, membros e coorte; planos sem cobrança | Não iniciada |
+| F6 | MGH em governança: sem score, KPIs D/I/S/C, agregados ou respostas individuais | Não iniciada |
 
 ---
 
@@ -341,6 +361,9 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-25 (13) | P1/P2 concluídos: 17 modelos tenant-scoped, `FORCE RLS`, trigger append-only, DAL parametrizado, seed sintético; 23 testes de dados; evidência em `docs/evidencias/p1-p2.md`. |
 | 2026-11-25 (14) | Integração final verde: `audit`, `prisma validate/generate`, `lint`, `typecheck`, `test` (48), `build` e `diff --check`; evidência em `docs/evidencias/integracao-final.md`. Commits por feature preservados. |
 | 2026-11-26 (15) | Controles de saída revisados: modal com `Encerrar sessão` e `Reiniciar sequência MGH`, cabeçalho com usuário/`Sair` à direita, ícones de 32×32 para “i” e tema e “i” de consentimento dentro do cartão. 48 estados reauditados e Lighthouse `1`; código em `d430a12`, com registro documental e push autorizados nesta rodada. |
+| 2026-11-27 (16) | F0 implementada localmente: Auth.js Credentials com e-mail/senha, `auth_credentials` global sem RLS, resolução de identidade com senha conferida antes do acesso tenant-scoped, sessão JWT revalidada, rotas `/login`, `/api/auth/[...nextauth]`, `/` e `/app`. Verificação local verde (12 arquivos / 62 testes); migration e seed ainda não aplicados, sem commit ou push. |
+| 2026-11-27 (17) | F0 validada: migration aplicada ao Neon (`Database schema is up to date!`), seed sintético idempotente (3 identidades), senha rotacionada e exibida uma única vez, fluxo `/` → `/login` → `/app` → logout verificado em navegador com CDP. Commit e push continuam suspensos por decisão do usuário. |
+| 2026-11-27 (18) | Login legado removido em feature separada: modelos, tabelas, seed, script, variáveis e testes `demo-password` excluídos; migration `20261127150000_drop_demo_login` aplicada. Verificação verde (11 arquivos / 59 testes); commit e push seguem suspensos. |
 
 ---
 
@@ -364,7 +387,8 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 
 1. Copie `.env.example` para `.env` (já criado).
 2. Preencha `DATABASE_URL` (pool) e `DIRECT_URL` (direta) do Neon.
-3. Ajuste `JWT_TENANT_CLAIM` e `JWT_ROLE_CLAIM` quando o auth for definido.
+3. Preencha `AUTH_SECRET`, `AUTH_URL` e `AUTH_TRUST_HOST`; `AUTH_SEED_PASSWORD_HASH`
+   recebe o hash sintético fora do Git, nunca a senha em texto claro.
 4. Não altere os gates `MGH_*` sem decisão registrada.
 5. Nunca commite `.env` e nunca cole segredos no chat; informe apenas quais
    variáveis já estão preenchidas. O agente lê o arquivo localmente sem
@@ -374,6 +398,11 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 
 ## 9. Próximo passo
 
-Concluir o bootstrap (P0), verificar `npm run lint`, `npm run typecheck`,
-`npm test` e `npm run build`, commits por tarefa verificada, e então delegar
-P1/P2 (dados e RLS) e P5 (motor) a agents com escopos separados.
+F0 está validada em banco e navegador, e o login legado já foi removido com
+migration aplicada. O usuário autorizou **commits locais sem push**; os quatro
+documentos operacionais foram atualizados antes dos commits. O push continua
+sem autorização. Em paralelo, foi confirmado PostgreSQL 16 local em
+`127.0.0.1:5432`, mas `scram-sha-256` exige credencial: nenhuma conexão,
+role ou banco local foi criado e as URLs não foram trocadas. Depois dos
+commits, o próximo passo é F1 (preferência de tema), salvo decisão diferente
+do usuário sobre o banco local.

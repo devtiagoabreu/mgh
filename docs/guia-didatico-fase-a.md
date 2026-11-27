@@ -211,11 +211,13 @@ que cada um faz:
 | `npm audit --audit-level=high` | Procura falhas de segurança conhecidas nas dependências | 0 vulnerabilidades |
 | `npm run prisma:validate` | Confere se o "projeto do banco" está válido | Válido |
 | `npm run prisma:generate` | Gera o código que conversa com o banco | Prisma Client v7.10.1 gerado |
+| Remoção do login antigo | Exclui as tabelas e o código do usuário único de teste | Migration aplicada; banco atualizado com 4 migrations |
 | `npm run lint` | Revê estilo e erros comuns de código | Limpo |
 | `npm run typecheck` | Confere tipos (evita erro de "tipo errado") | Limpo |
-| `npm test` | Roda os testes automáticos | 11 arquivos, 57 testes passaram |
-| `npm run build` | Monta a versão de produção | Compilou; `/` dinâmica, `/login` e `/_not-found` estáticas |
+| `npm test` | Roda os testes automáticos | 11 arquivos, 59 testes passaram |
+| `npm run build` | Monta a versão de produção | Compilou; `/`, `/api/auth/[...nextauth]` e `/app` dinâmicos; `/login` e `/_not-found` estáticos |
 | axe + Lighthouse | Verifica acessibilidade renderizada | 48 estados sem violações; score `1` no mobile e no desktop |
+| Fluxo real em navegador (CDP) | Entra, erra a senha, entra certo, abre o instrumento e encerra a sessão | 8 verificações positivas; senha errada mostra só mensagem genérica |
 | `git diff --check` | Procura espaços/quebras de linha problemáticos | Limpo |
 
 Na frente mais recente, o modal do `Sair` passou a oferecer `Encerrar sessão`
@@ -225,8 +227,22 @@ de 32×32 px, e o “i” de consentimento fica dentro do cartão, ao lado do
 título. Tudo isso foi reauditado nos dois temas e nos dois tamanhos de tela,
 sem alterar texto canônico nem regra de score.
 
+Na frente atual, o acesso passou a usar e-mail e senha com Auth.js. O e-mail
+fica em um registro global; a senha fica guardada como hash. O programa só
+consulta o workspace depois de conferir a senha. O “crachá” da sessão sai
+assinado e é conferido de novo antes de virar permissão de banco. As rotas
+são `/login` para entrar, `/app` para a área autenticada e `/` apenas para
+redirecionar. A migration foi aplicada, o banco recebeu três identidades
+sintéticas e o fluxo foi conferido no navegador: sem sessão, `/` leva ao
+login; senha errada mostra só a mensagem genérica; login correto abre `/app`;
+`Sair` abre a confirmação e `Encerrar sessão` volta ao login, que volta a
+bloquear o acesso. O login antigo, com um único usuário local, foi removido:
+tabelas, código, script e variáveis legadas saíram do projeto. Isso não mudou
+texto canônico, regra de score nem o fluxo agora ativo. Nenhuma pessoa real
+participou e nada foi publicado.
+
 Os testes automáticos cobrem configuração, autorização, dados/banco, motor
-de score, instrumento canônico e login da demonstração. Os 9 casos de ouro
+de score, instrumento canônico, login e resolução da credencial. Os 9 casos de ouro
 do motor cobrem,
 entre outros: aplicação completa (56/56), incompleta (55/56), opção
 desconhecida, versão divergente, regra ausente, SELF/RG injetados, DR
@@ -252,7 +268,8 @@ real e crítica visual humana.
 | `OPEN-TEN-001` | Mentor ver respostas individuais: decisão pendente. Default é somente agregados | MGH + Legal |
 | `OPEN-TECH-006` | RPO/RTO (quanto tempo podemos ficar fora e quanto dado perdemos) e restore testado pendentes | Tecnologia |
 | `SPECIFICATION CONFLICT` | Duas versões do desfecho de Gate Review: `REPEAT_WAVE` e `REPEAT_O0_WAVE`. As duas ficam registradas; nenhuma virou regra | MGH |
-| RLS em banco real | A migration já foi aplicada no Neon do branch local. Falta validação runtime com seed sintético de dois tenants e branches `qa/*`/`preview/*` | Tecnologia |
+| RLS em banco real | A migration da Fase A já foi aplicada no Neon do branch local. Falta validação runtime com seed sintético de dois tenants e branches `qa/*`/`preview/*` | Tecnologia |
+| F0 publicada | O login já funciona em banco e navegador, mas o usuário pediu para esperar antes de commit e push | Usuário |
 | Acessibilidade renderizada | axe/Lighthouse, 200/400%, forced colors, 1280×800 e 390×844 já foram auditados. Faltam leitor de tela real e crítica visual humana | Design/Acessibilidade |
 
 **Consequência direta:** piloto com participantes reais está **bloqueado**.
