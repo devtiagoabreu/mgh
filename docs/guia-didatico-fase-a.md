@@ -511,6 +511,8 @@ registradas continuam reservadas à autoridade MGH.
 
 ### Atualização operacional de 27/11/2026
 
+Em 27/11/2026, a F5.1 foi implementada parcialmente (`docs/plano-colaboradores-e-grants.md`, evid?ncia `docs/evidencias/f5-1.md`, status `PARTIAL`): o `MENTOR_OWNER` pode cadastrar profissionais, conceder/revogar o instrumento `MGH` por workspace e a troca de senha tempor?ria ? obrigat?ria no primeiro acesso. A migration F5.1 foi aplicada no PostgreSQL local e no Neon. O E2E limpo do zero p?s-corre??o RLS-read ainda est? pendente. N?o houve libera??o de participante real, nem persist?ncia de resposta, nem score/D/I/S/C.
+
 A demonstração local passou por duas correções que não tocam a metodologia:
 o botão `CONTINUAR` agora reconhece caixas marcadas antes da página terminar
 de carregar, e o tema passou a ter um seletor completo em `Perfil → Aparência`

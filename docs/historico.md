@@ -1383,3 +1383,51 @@ depois no Neon; nenhuma senha foi versionada.
   não configurou projeto, variáveis nem deploy; o link local temporário feito
   para inspeção foi removido, e nenhum token foi versionado. O push nesta rodada
   vai apenas para `origin` (`git@github.com:devtiagoabreu/mgh.git`).
+
+### 2026-11-27 — F5.1 aprovada: profissionais, grants e primeira senha
+
+O usuário aprovou `docs/plano-colaboradores-e-grants.md` com a resposta
+"pode fazer". A frente começa por registro documental e, na sequência, por
+schema/migration/allowlist no PostgreSQL local. Nenhuma operação foi feita
+contra o Neon nesta rodada e nenhum commit/push foi autorizado.
+
+Correção de escopo registrada: uma formulação anterior dizia que colaboradores
+não eram participantes. O usuário corrigiu: todo colaborador é participante dos
+instrumentos que o `MENTOR_OWNER` cadastrar no workspace, e o MGH é um entre
+vários instrumentos. O papel de login continua sendo `MENTEE`; nenhum papel
+novo foi criado. A decisão é de **produto**, tomada pelo usuário, e não substitui
+autoridade metodológica MGH.
+
+O usuário pediu persistência de respostas e cálculo de score, mas verificou-se
+que `ANX-005` em `docs/002` contém somente o README e que as regras em código
+são sintéticas (`SYNTHETIC_*`). Questionado, ele decidiu **manter o score
+bloqueado** e executar somente cadastro/grants. Portanto `ITEM_BANK_PUBLISHABLE`,
+`MGH_ALLOW_REAL_PARTICIPANTS` e os demais gates permanecem inalterados; nenhum
+participante real é liberado e o instrumento continua sem persistência de
+resposta nem cálculo de D/I/S/C.
+
+Estado neste ponto: Fase 0 do plano em execução (documentação), sem código,
+migration, banco ou remoto alterado por esta frente. A regra §3.6 continua
+vigente.
+### 2026-11-27 ? F5.1: profissionais, grants por instrumento e troca obrigat?ria de senha (parcial)
+
+O usu?rio aprovou `docs/plano-colaboradores-e-grants.md` (`APROVADO ? EM EXECU??O`) e autorizou commit/push ap?s conclus?o. Regra operacional registrada nesta sess?o: **toda opera??o de banco deve ser aplicada nos dois bancos** ? PostgreSQL local (`.env.local`) e Neon (`.env`) ? com `DIRECT_URL`/`DATABASE_URL` injetadas apenas no processo, sem exibir segredos.
+
+Distin??o de produto confirmada: o **SaaS multitenant** ? o produto; o **MGH** ? um motor/instrumento com dados can?nicos que roda dentro do SaaS. Todo colaborador ? participante dos instrumentos concedidos pelo `MENTOR_OWNER`; na Fase A, participantes reais, persist?ncia de resposta e score permanecem bloqueados. `ITEM_BANK_PUBLISHABLE`, `BANK-0.2` (DRAFT), `MGH_ALLOW_REAL_PARTICIPANTS` e regras de score permanecem inalterados.
+
+Implementa??o F5.1:
+
+- Cat?logo inicial allowlist somente `MGH` (`lib/tools/catalog.ts`).
+- Schema: `ToolGrant` tenant-scoped com RLS `FORCE`/policies; `AuthCredential.mustChangePassword`.
+- Migration `20261127190000_f5_1_tool_grants` aplicada nos **dois bancos**: local j? estava atualizado; Neon recebeu `prisma migrate deploy` nesta sess?o e ficou `Database schema is up to date!` (6/6).
+- DAL tenant-scoped para grants/colaboradores; cria??o de colaborador em transa??o tenant (User/Membership/Grant) e credencial global depois, hash scrypt; senha tempor?ria gerada no servidor e exibida uma ?nica vez na action.
+- Auth: `mustChangePassword` propagado em identidade/JWT/sess?o; `/trocar-senha`; bloqueio total de `/app*` at? troca; troca valida senha atual, grava novo hash e executa `signOut`.
+- UI/autoriza??o: `/app/profissionais` somente `MENTOR_OWNER`; navega??o/card MGH condicionais a grant ativo; `/app/mgh` protegido por `requireToolAccess("MGH")`; `MENTEE` sem acesso administrativo.
+- Corre??o de bug RLS-read: `hasToolGrant`/`listGrantedToolKeys`, `listCollaborators`, `listToolGrants`/`findToolGrant` passaram a usar transa??o com `set_config('app.current_tenant_id', ..., true)`. O sintoma observado antes da corre??o foi grant n?o reconhecido em `/app/profissionais` ap?s cria??o.
+
+A??o autorizada pelo usu?rio no Neon (m?nima): rota??o da senha do owner `devtiagoabreu@gmail.com` como hash scrypt (`ROWCOUNT=1`, atualiza??o de `password_hash` e `updatedAt`; `must_change_password` n?o existia no Neon antes da migration F5.1). Nenhum valor de senha, hash, token ou URL foi registrado.
+
+Verifica??o automatizada reexecutada ap?s corre??es: `prisma:validate`, `prisma:generate`, `typecheck`, `lint`, `npm test` (24 arquivos, 115 testes), `build`, `npm audit --audit-level=high` (`found 0 vulnerabilities`), `git diff --check` ? todos limpos.
+
+**Estado parcial:** E2E limpo do zero p?s-fix RLS-read n?o foi conclu?do nesta sess?o; evid?ncia registrada em `docs/evidencias/f5-1.md` com status `PARTIAL`. O veredito P6 permanece `rework ? escopo incompleto`. Nenhum participante real foi liberado. A regra ?3.6 continua vigente.
+

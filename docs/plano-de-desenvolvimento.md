@@ -368,6 +368,8 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-27 (19) | PostgreSQL 16 local dedicado (`mgh_local`) com 4 migrations aplicadas, seed sintético idempotente e RLS confirmado; `NODE_ENV` removido de `.env.local` para corrigir build. Fluxo completo validado em navegador e build limpo. Usuário autorizou push: F0 publicada em `main` e próxima frente F1 agendada. |
 | 2026-11-27 (20) | F1 implementada e validada somente no local: enum/campo de aparência no `User`, migration aplicada, cookie-espelho validado, Server Action tenant-scoped, boot sem `localStorage`, testes e verificação em navegador. Legado do Neon restaurado no banco a pedido do usuário; nova instrução veta mudanças no Neon e reserva sua reconstrução para depois. Commit em `43adab5`. |
 | 2026-11-27 (21) | F2 implementada: tokens do MGH DS v1.0 traduzidos para CSS em camada separada, ativação futura por `data-ds="mgh-v1"` sem alterar `data-theme`. Documento de origem versionado por decisão do usuário; glows da seção 2.3 escolhidos sobre a variante da seção 5. Teste de paridade, gate de valor cru e contrastes calculados; FINDING 4,23:1 no botão primário registrado sem correção silenciosa. Commit em `0a030c4`. |
+| 2026-11-27 (22) | F5.1 aprovada para cadastro de profissionais (`MENTEE`), concessão tenant-scoped de instrumentos com catálogo inicial apenas `MGH`, e troca obrigatória de senha. Correção registrada: colaboradores são participantes dos instrumentos concedidos. Score e persistência de respostas permanecem bloqueados por falta de matriz canônica; gates inalterados. Plano em `docs/plano-colaboradores-e-grants.md`. |
+| 2026-11-27 (23) | F5.1 implementada parcialmente: schema/migration RLS, DAL, auth `mustChangePassword`, `/trocar-senha`, `/app/profissionais`, grants condicionando navega??o/card/rota MGH. Migration aplicada em local e Neon (regra local+Neon). Corre??o RLS-read aplicada. Verifica??o automatizada verde (24 arquivos/115 testes). E2E limpo do zero p?s-fix pendente; evid?ncia `docs/evidencias/f5-1.md` status `PARTIAL`. |
 
 ---
 
@@ -460,3 +462,12 @@ contra o Neon com os mesmos zeros reais e a taxa suprimida. Deploy, variáveis e
 sincronização do fork na Vercel são responsabilidade do usuário; o agente apenas
 faz push em `origin` (`devtiagoabreu/mgh`). Nenhuma regra de produto, isolamento,
 papel, sequência, scoring ou Fase A mudou.
+
+A F5.1 foi aprovada pelo usuário e está em execução a partir de
+`docs/plano-colaboradores-e-grants.md`. Ela entrega cadastro de profissionais,
+concessão/revogação de instrumentos e troca obrigatória da primeira senha. O
+catálogo inicial contém somente `MGH`. Participantes reais, persistência de
+respostas e cálculo de score continuam bloqueados; `ITEM_BANK_PUBLISHABLE` e
+`MGH_ALLOW_REAL_PARTICIPANTS` não foram alterados. A implementação é validada
+primeiro no PostgreSQL local, sem operações no Neon e sem commit/push até
+autorização explícita.

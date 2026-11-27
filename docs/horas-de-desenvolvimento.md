@@ -82,6 +82,7 @@ Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
 | Ambiente local operacional e registro documental do push | commit documental neste ciclo | 0 + 75 | ≈ 30 min |
 | F1 — preferência de aparência no `User`, com cookie-espelho validado | `43adab5` | 329 + 98 | ≈ 7 h 15 min |
 | F2 — tokens do MGH Design System v1.0 traduzidos para CSS | `0a030c4` | 436 + 267 | ≈ 10 h 30 min |
+| F5.1 — profissionais, grants por instrumento e troca obrigatória de senha | (nesta rodada) | 357 + 0 | ≈ 8 h |
 | Registro documental da F2 | commit documental neste ciclo | 0 + 91 | ≈ 35 min |
 | Correção do `CONTINUAR` antes da hidratação | commit neste ciclo | 35 + 65 | ≈ 1 h |
 | F3 — seletor de aparência, Perfil e DS no tema escuro | commit neste ciclo | 340 + 120 | ≈ 7 h 30 min |
