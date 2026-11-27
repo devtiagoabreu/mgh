@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -21,7 +21,7 @@ function models(): ParsedModel[] {
   return result;
 }
 
-const DEMO_MODELS = new Set(["DemoLogin", "DemoSession"]);
+const NON_TENANT_MODELS = new Set(["AuthCredential"]);
 
 const MODEL_NAMES = [
   "Tenant",
@@ -45,7 +45,7 @@ const MODEL_NAMES = [
 
 describe("P1/P2 — schema tenant-scoped", () => {
   it("coloca tenantId mapeado para tenant_id em TODA tabela de tenant", () => {
-    const parsed = models().filter((model) => !DEMO_MODELS.has(model.name));
+    const parsed = models().filter((model) => !NON_TENANT_MODELS.has(model.name));
     expect(parsed.map((model) => model.name).sort()).toEqual(
       [...MODEL_NAMES].sort(),
     );
@@ -57,23 +57,40 @@ describe("P1/P2 — schema tenant-scoped", () => {
     }
   });
 
-  it("mantém a credencial da demonstração fora do escopo tenant", () => {
-    const demo = models().filter((model) => DEMO_MODELS.has(model.name));
-    expect(demo.map((model) => model.name).sort()).toEqual([
-      "DemoLogin",
-      "DemoSession",
-    ]);
-    for (const model of demo) {
-      expect(model.body, `modelo ${model.name} com tenantId`).not.toMatch(
-        /tenantId/,
-      );
-    }
-    expect(demo.find((model) => model.name === "DemoLogin")?.body).toMatch(
+  it("remove o login legado da demonstração", () => {
+    const names = models().map((model) => model.name);
+    expect(names).not.toContain("DemoLogin");
+    expect(names).not.toContain("DemoSession");
+    expect(schema).not.toMatch(/demo_logins|demo_sessions|mgh_demo_session/);
+
+    const dropMigration = readdirSync(
+      resolve(process.cwd(), "prisma/migrations"),
+    ).find((name) => name.endsWith("_drop_demo_login"));
+    if (!dropMigration) throw new Error("DROP_DEMO_MIGRATION_MISSING");
+    const migration = readFileSync(
+      resolve(process.cwd(), "prisma/migrations", dropMigration, "migration.sql"),
+      "utf8",
+    );
+    expect(migration).toContain('DROP TABLE "demo_sessions"');
+    expect(migration).toContain('DROP TABLE "demo_logins"');
+  });
+
+  it("mantém a credencial real fora do escopo RLS", () => {
+    const auth = models().find((model) => model.name === "AuthCredential");
+    expect(auth, "modelo AuthCredential ausente").toBeDefined();
+    expect(auth?.body).toMatch(/email\s+String\s+@unique/);
+    expect(auth?.body).toMatch(
       /passwordHash\s+String\s+@map\("password_hash"\)/,
     );
-    expect(demo.find((model) => model.name === "DemoSession")?.body).toMatch(
-      /tokenHash\s+String\s+@unique\s+@map\("token_hash"\)/,
+    const migration = readFileSync(
+      resolve(
+        process.cwd(),
+        "prisma/migrations/20261127120000_auth_credentials/migration.sql",
+      ),
+      "utf8",
     );
+    expect(migration).toContain('CREATE TABLE "auth_credentials"');
+    expect(migration).not.toContain("ROW LEVEL SECURITY");
   });
 
   it("mantém apenas os papéis da Fase A e nenhum MENTOR_ASSISTANT", () => {
@@ -100,11 +117,16 @@ describe("P1/P2 — schema tenant-scoped", () => {
 
   it("separa PII no Vault e mantém tabelas analíticas sem PII", () => {
     const piiPattern = /\b(email|displayName|fullName|phone|cpf)\w*\b/i;
+    const piiAllowed = new Set(["ParticipantIdentity", "AuthCredential"]);
     for (const model of models()) {
       const hasPii = piiPattern.test(model.body);
-      if (model.name === "ParticipantIdentity") {
+      if (piiAllowed.has(model.name)) {
         expect(hasPii).toBe(true);
-        expect(model.body).toMatch(/@@schema\("vault"\)/);
+        if (model.name === "ParticipantIdentity") {
+          expect(model.body).toMatch(/@@schema\("vault"\)/);
+        } else {
+          expect(model.body).toMatch(/email\s+String\s+@unique/);
+        }
       } else {
         expect(hasPii, `PII em ${model.name}`).toBe(false);
       }

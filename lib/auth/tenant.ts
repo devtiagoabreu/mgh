@@ -17,7 +17,8 @@ export interface VerifiedTenantContext {
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function assertNonEmptyUuid(value: unknown, field: string): string {
+/** Valida um UUID sem conferir procedência. A procedência é de quem chama. */
+export function assertUuid(value: unknown, field: string): string {
   if (typeof value !== "string" || !UUID_PATTERN.test(value)) {
     throw new Error(`INVALID_${field}`);
   }
@@ -31,10 +32,10 @@ export function createTenantContextFromVerifiedClaims(input: {
   sessionId: unknown;
 }): VerifiedTenantContext {
   return Object.freeze({
-    userId: assertNonEmptyUuid(input.userId, "USER_ID"),
-    tenantId: assertNonEmptyUuid(input.tenantId, "TENANT_ID"),
+    userId: assertUuid(input.userId, "USER_ID"),
+    tenantId: assertUuid(input.tenantId, "TENANT_ID"),
     role: assertPhaseARole(input.role),
-    sessionId: assertNonEmptyUuid(input.sessionId, "SESSION_ID"),
+    sessionId: assertUuid(input.sessionId, "SESSION_ID"),
   });
 }
 

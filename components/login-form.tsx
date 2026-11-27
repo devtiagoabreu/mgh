@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { loginAction } from "@/app/actions/auth";
 import { INITIAL_LOGIN_STATE } from "@/lib/auth/login-state";
 
-/** Formulário de acesso à demonstração. A credencial vive só no banco. */
+/** Formulário de acesso. A credencial vive só no registro de autenticação. */
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(
     loginAction,
@@ -21,15 +21,16 @@ export function LoginForm() {
       </p>
       <form action={formAction} className="mgh-login-form">
         <div className="mgh-field">
-          <label className="mgh-label" htmlFor="mgh-login-username">
-            Usuário
+          <label className="mgh-label" htmlFor="mgh-login-email">
+            E-mail
           </label>
           <input
-            id="mgh-login-username"
-            name="username"
+            id="mgh-login-email"
+            name="email"
+            type="email"
             className="mgh-input"
-            autoComplete="username"
-            maxLength={64}
+            autoComplete="email"
+            maxLength={254}
             required
           />
         </div>

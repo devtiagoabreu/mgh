@@ -1,59 +1,58 @@
 "use server";
 
+import { signIn, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { verifyDemoPassword } from "@/lib/auth/demo-password";
-import {
-  createDemoSession,
-  deleteDemoSession,
-} from "@/lib/auth/demo-session";
 import {
   INVALID_CREDENTIALS_MESSAGE,
   type LoginState,
 } from "@/lib/auth/login-state";
-import { getPrisma } from "@/lib/db/client";
 
 const LoginSchema = z.object({
-  username: z.string().trim().min(1).max(64),
+  email: z.string().trim().email().max(254),
   password: z.string().min(1).max(128),
 });
 
-type StoredLogin = {
-  id: string;
-  passwordHash: string;
-  active: boolean;
-};
+/** Auth.js devolve uma URL com `error=` ou lança AuthError. Nunca detalha. */
+function failedSignIn(result: unknown): boolean {
+  if (typeof result === "string") {
+    return /[?&]error=/.test(result);
+  }
+  if (typeof result === "object" && result !== null && "url" in result) {
+    return /[?&]error=/.test(String((result as { url: unknown }).url));
+  }
+  return false;
+}
 
 export async function loginAction(
   _state: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
-  const rawUsername = formData.get("username");
-  const rawPassword = formData.get("password");
   const parsed = LoginSchema.safeParse({
-    username: typeof rawUsername === "string" ? rawUsername : "",
-    password: typeof rawPassword === "string" ? rawPassword : "",
+    email: formData.get("email"),
+    password: formData.get("password"),
   });
-
   if (!parsed.success) {
     return { error: INVALID_CREDENTIALS_MESSAGE };
   }
 
-  const prisma = await getPrisma();
-  const login = (await prisma.demoLogin.findUnique({
-    where: { username: parsed.data.username },
-  })) as StoredLogin | null;
-
-  if (!login?.active || !verifyDemoPassword(parsed.data.password, login.passwordHash)) {
+  try {
+    const result = await signIn("credentials", {
+      email: parsed.data.email.toLowerCase(),
+      password: parsed.data.password,
+      redirect: false,
+      redirectTo: "/app",
+    });
+    if (failedSignIn(result)) {
+      return { error: INVALID_CREDENTIALS_MESSAGE };
+    }
+  } catch {
     return { error: INVALID_CREDENTIALS_MESSAGE };
   }
 
-  await createDemoSession(login.id);
-  redirect("/");
+  redirect("/app");
 }
 
-export async function logoutAction(formData: FormData): Promise<void> {
-  void formData;
-  await deleteDemoSession();
-  redirect("/login");
+export async function logoutAction(): Promise<void> {
+  await signOut({ redirectTo: "/login" });
 }

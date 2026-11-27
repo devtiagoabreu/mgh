@@ -20,12 +20,13 @@
     "prisma:migrate": "prisma migrate dev --config prisma/prisma.config.ts",
     "prisma:deploy": "prisma migrate deploy --config prisma/prisma.config.ts",
     "db:seed": "tsx prisma/seed.ts",
-    "db:seed:demo": "node --env-file=.env prisma/seed-demo-login.mjs"
+    "db:seed:auth": "node --env-file=.env prisma/seed-auth.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "next": "^16.4.6",
+    "next-auth": "^5.0.0-beta.32",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "zod": "^4.6.7"

@@ -1,4 +1,8 @@
-import { asTenantDbClient, type TenantDbClient } from "./types";
+import {
+  asTenantDbClient,
+  type AuthDbClient,
+  type TenantDbClient,
+} from "./types";
 
 /**
  * Singleton do Prisma para serverless (Vercel + Neon pooled).
@@ -65,6 +69,14 @@ export async function getPrisma(): Promise<TenantDbClient> {
   const client = asTenantDbClient(new PrismaClient(options));
   globalForPrisma.mghPrisma = client;
   return client;
+}
+
+/**
+ * A credencial não é tenant-scoped: o login precisa encontrá-la antes de haver
+ * sessão verificada. O cliente é o mesmo, mas a superfície exposta é mínima.
+ */
+export async function getAuthDb(): Promise<AuthDbClient> {
+  return (await getPrisma()) as unknown as AuthDbClient;
 }
 
 /** Permite injetar um cliente fake em testes sem tocar no singleton real. */

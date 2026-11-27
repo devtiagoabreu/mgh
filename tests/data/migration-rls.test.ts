@@ -21,9 +21,13 @@ interface TableInfo {
 
 function tenantTables(): TableInfo[] {
   const result: TableInfo[] = [];
-  const pattern = /model\s+\w+\s*\{([\s\S]*?)\n\}/g;
+  const pattern = /model\s+(\w+)\s*\{([\s\S]*?)\n\}/g;
   for (const match of schema.matchAll(pattern)) {
-    const body = match[1];
+    const modelName = match[1];
+    // auth_credentials guarda o vínculo userId/tenantId, mas não participa do
+    // isolamento RLS: é consultado no login, antes de haver sessão verificada.
+    if (modelName === "AuthCredential") continue;
+    const body = match[2];
     const mapName = body.match(/@@map\("([^"]+)"\)/)?.[1];
     if (!mapName) continue;
     if (!/tenantId\s+String\s+@map\("tenant_id"\)/.test(body)) continue;

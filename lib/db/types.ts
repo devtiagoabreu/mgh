@@ -23,18 +23,15 @@ export interface SimpleDelegate {
   count(args?: { where?: Record<string, unknown> }): Promise<number>;
 }
 
-export interface DemoLoginDelegate extends SimpleDelegate {
+export interface AuthCredentialDelegate extends SimpleDelegate {
   findUnique(args: {
-    where: { username: string };
+    where: { email: string };
   }): Promise<unknown | null>;
 }
 
-export interface DemoSessionDelegate extends SimpleDelegate {
-  findUnique(args: {
-    where: { tokenHash: string };
-    include?: { login?: true };
-  }): Promise<unknown | null>;
-  deleteMany(args: { where: Record<string, unknown> }): Promise<{ count: number }>;
+/** Superfície usada apenas na resolução da credencial, antes da sessão. */
+export interface AuthDbClient extends RawQueryExecutor {
+  authCredential: AuthCredentialDelegate;
 }
 
 export interface TenantDbClient extends RawQueryExecutor {
@@ -58,8 +55,6 @@ export interface TenantDbClient extends RawQueryExecutor {
   changeLog: SimpleDelegate;
   occurrence: SimpleDelegate;
   auditLog: SimpleDelegate;
-  demoLogin: DemoLoginDelegate;
-  demoSession: DemoSessionDelegate;
 }
 
 /** Adapta o PrismaClient real sem expor detalhes de implementação. */

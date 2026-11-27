@@ -1,4 +1,4 @@
-import type { VerifiedTenantContext } from "../auth/tenant";
+import { assertUuid, type VerifiedTenantContext } from "../auth/tenant";
 import { requireVerifiedTenantContext } from "./context";
 import type { TenantDbClient } from "./types";
 
@@ -16,6 +16,25 @@ export async function setTenantSession(
   await client.$queryRaw<unknown[]>`
     SELECT set_config('app.current_tenant_id', ${verified.tenantId}, true)
   `;
+}
+
+/**
+ * Usado somente na resolução da credencial: o tenantId vem de registro
+ * verificado no banco (senha conferida), nunca de request. A operação ainda
+ * roda em transação com RLS ativo, como qualquer acesso de tenant.
+ */
+export async function withCredentialTenant<T>(
+  client: TenantDbClient,
+  tenantId: string,
+  operation: (tx: TenantDbClient) => Promise<T>,
+): Promise<T> {
+  const verifiedTenantId = assertUuid(tenantId, "CREDENTIAL_TENANT_ID");
+  return client.$transaction(async (tx) => {
+    await tx.$queryRaw<unknown[]>`
+      SELECT set_config('app.current_tenant_id', ${verifiedTenantId}, true)
+    `;
+    return operation(tx);
+  });
 }
 
 /** Toda operação de tenant passa por transação com a sessão configurada. */
