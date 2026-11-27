@@ -150,3 +150,16 @@ export function setUserAppearancePreference(
     }),
   );
 }
+
+/** Volta a "seguir o sistema": a coluna nullable passa a ser null. */
+export function clearUserAppearancePreference(
+  client: TenantDbClient,
+  ctx: VerifiedTenantContext,
+): Promise<unknown> {
+  return withTenantTransaction(client, ctx, (tx) =>
+    tx.user.update({
+      where: tenantScopedWhere(ctx, { id: ctx.userId }),
+      data: { appearancePreference: null },
+    }),
+  );
+}

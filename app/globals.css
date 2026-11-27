@@ -609,6 +609,12 @@ body {
   border-color: var(--mgh-choice-selected-border);
 }
 
+/* F3: estado selecionado do seletor de aparência sem estado React espelho. */
+.mgh-appearance-options .mgh-choice:has(input:checked) {
+  background: var(--mgh-choice-selected-bg);
+  border-color: var(--mgh-choice-selected-border);
+}
+
 .mgh-choice__input {
   width: 24px;
   height: 24px;

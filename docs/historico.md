@@ -1157,3 +1157,70 @@ O usuário autorizou a instalação do pacote de skills e agentes de interface:
 - Console do usuário continha apenas mensagens normais: React DevTools,
   `[HMR] connected`, `[Fast Refresh]` e `favicon.ico 404` (inofensivo).
 - Nenhuma alteração foi feita contra o Neon.
+
+### 2026-11-27 — F3 concluída localmente: seletor de aparência e DS no escuro
+
+Antes de escrever, o usuário respondeu três decisões registradas no plano:
+
+1. FINDING do contraste: manter `purple-electric` como fundo e trocar o texto
+   para `obsidian-950` (4,54:1 calculado por código, não medido pela
+   metodologia).
+2. Ativação do DS: somente quando o tema resolvido é escuro. O modo claro da
+   F1 continua com a camada P6 intacta.
+3. Escopo: criar `Perfil → Aparência` com claro, escuro e seguir o sistema.
+
+Implementação (somente local; nenhuma operação contra o Neon):
+
+- `lib/appearance/preference.ts`: `MGH_DS_ATTRIBUTE_VALUE`,
+  `AppearanceChoiceSchema` (`LIGHT`/`DARK`/`SYSTEM`) e
+  `applyAppearanceAttributes()`, único helper a aplicar o par tema/DS no
+  cliente. O script de boot passou a definir `data-ds="mgh-v1"` apenas no
+  tema escuro e a removê-lo no claro, antes da primeira pintura.
+- `app/actions/appearance.ts`: `SYSTEM` limpa a coluna e apaga o
+  cookie-espelho; `LIGHT`/`DARK` gravam no `User` e no cookie validado.
+  Usuário e tenant vêm da sessão verificada. Revalida `/app` e
+  `/app/perfil`.
+- `lib/db/repositories.ts`: `clearUserAppearancePreference()`, também
+  tenant-scoped.
+- `components/appearance-selector.tsx` e `app/app/perfil/page.tsx`: nova rota
+  autenticada com três opções. Radios não controlados e estado visual via
+  CSS `:has()` — sem estado React espelho. A rota não lê nem grava dado do
+  instrumento.
+- `components/structural-preview.tsx`: link `Perfil` no cabeçalho.
+- `components/theme-toggle.tsx`: usa o helper único; o observador passou a
+  acompanhar também `data-ds`.
+- `app/mgh-ds-v1.css`: `--mgh-color-action-fg` agora é
+  `var(--mgh-ds-primitive-color-obsidian-950)`. A variante da seção 5 do
+  documento (glows 25px/0.3) permanece registrada como não aplicada.
+
+Verificação reexecutada antes deste registro:
+
+| Evidência | Resultado |
+|---|---|
+| `npm run typecheck` / `npm run lint` | limpos |
+| `npm test` | 15 arquivos, 84 testes aprovados |
+| `npm run build` | compilou; `/app/perfil` dinâmico, `/login` estático |
+| `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| `npm run prisma:validate` | schema válido |
+| `git diff --check` | limpo |
+| Navegador CDP, 1440×900 e 390×844 | axe sem `violations` e sem `incomplete`; sem overflow |
+
+Para validar as rotas autenticadas foi gerado um cookie de sessão de teste
+somente no ambiente local, a partir da identidade sintética já existente e
+de `AUTH_SECRET` lido de `.env.local` sem exibi-lo. Nenhuma senha foi lida,
+alterada ou rotacionada; nenhum dado foi escrito no Neon.
+
+Fluxo observado no navegador: `Perfil` abre a partir de `/app`; escolher
+claro aplica `data-theme="light"` e remove `data-ds` na hora, salva `LIGHT`
+no banco e `light` no cookie, e sobrevive ao recarregamento; escolher escuro
+aplica `data-theme="dark"` + `data-ds="mgh-v1"` e persiste `DARK`; seguir o
+sistema deixa a coluna `null` e remove o cookie, passando a seguir
+`prefers-color-scheme` no recarregamento (claro → sem DS; escuro → com DS).
+O toggle do cabeçalho usa o mesmo helper. O botão primário no DS mostrou
+fundo `rgb(139, 92, 246)` e texto `rgb(11, 14, 27)`, conferindo a correção
+do FINDING.
+
+O veredito P6 permanece `rework — escopo incompleto`: axe limpo não substitui
+leitor de tela real nem crítica visual humana. Nenhum participante real foi
+liberado. A regra §3.6 continua vigente. Servidor `npm run dev` segue ligado,
+PID `24092`.

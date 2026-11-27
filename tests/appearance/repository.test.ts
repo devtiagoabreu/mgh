@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  clearUserAppearancePreference,
   findUserAppearancePreference,
   setUserAppearancePreference,
 } from "../../lib/db/repositories";
@@ -30,6 +31,18 @@ describe("F1 — repositório de preferência", () => {
       args: {
         where: { tenantId: ctx.tenantId, id: ctx.userId },
         data: { appearancePreference: "DARK" },
+      },
+    });
+  });
+
+  it("limpa a preferência com filtro tenant-scoped ao seguir o sistema", async () => {
+    const { client, calls } = createFakeClient();
+    await clearUserAppearancePreference(client, ctx);
+    expect(calls).toContainEqual({
+      kind: "user.update",
+      args: {
+        where: { tenantId: ctx.tenantId, id: ctx.userId },
+        data: { appearancePreference: null },
       },
     });
   });

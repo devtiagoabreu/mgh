@@ -1,14 +1,17 @@
 "use client";
 
 import { setAppearanceAction } from "@/app/actions/appearance";
-import type { AppearancePreference } from "@/lib/appearance/preference";
+import {
+  applyAppearanceAttributes,
+  type AppearancePreference,
+} from "@/lib/appearance/preference";
 import { useEffect, useSyncExternalStore } from "react";
 
 function subscribe(onStoreChange: () => void) {
   const observer = new MutationObserver(onStoreChange);
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ["data-theme"],
+    attributeFilter: ["data-theme", "data-ds"],
   });
   return () => observer.disconnect();
 }
@@ -40,13 +43,13 @@ export function ThemeToggle({
     if (preference === null) return;
     const target = preference === "DARK" ? "dark" : "light";
     if (document.documentElement.dataset.theme !== target) {
-      document.documentElement.dataset.theme = target;
+      applyAppearanceAttributes(target);
     }
   }, [preference]);
 
   function toggle() {
     const next = isDark ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+    applyAppearanceAttributes(next);
     const formData = new FormData();
     formData.set("appearance", next.toUpperCase());
     void setAppearanceAction(formData);

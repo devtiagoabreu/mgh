@@ -2,6 +2,7 @@
 
 import { logoutAction } from "@/app/actions/auth";
 import type { AppearancePreference } from "@/lib/appearance/preference";
+import Link from "next/link";
 import {
   useEffect,
   useId,
@@ -367,6 +368,9 @@ export function StructuralPreview({
           <div className="mgh-actions">
             <InfoButton topic="demonstracao" onOpen={openInfo} />
             <ThemeToggle preference={appearancePreference} />
+            <Link href="/app/perfil" className="mgh-button mgh-button--ghost">
+              Perfil
+            </Link>
             <div className="mgh-header__session">
               <span className="mgh-kicker">{username}</span>
               <button

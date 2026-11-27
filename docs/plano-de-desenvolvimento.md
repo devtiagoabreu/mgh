@@ -423,3 +423,11 @@ quando o clique ocorre antes da hidratação — foi validada em navegador e ser
 comitada separadamente da F3. Ela não altera metodologia, textos canônicos,
 códigos, gates nem regra de score. O Neon continua reservado para ser refeito
 depois com a aplicação: nenhuma migration, seed ou escrita será executada lá.
+
+A F3 foi implementada e validada somente no local. O usuário decidiu: texto
+obsidian sobre `purple-electric` no botão primário (4,54:1 calculado), DS
+ativo apenas no tema escuro e criação de `Perfil → Aparência` com três opções.
+`SYSTEM` limpa a coluna e o cookie. Nenhum texto canônico, ID, SELF,
+consentimento, versão, gate ou regra de score foi alterado. O próximo passo
+continua dependendo de decisão separada: reconciliação de `ANX-003`,
+consentimento/Privacy Notice, RPO/RTO e auditoria com leitor de tela real.

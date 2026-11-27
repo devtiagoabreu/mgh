@@ -84,8 +84,9 @@ Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
 | F2 — tokens do MGH Design System v1.0 traduzidos para CSS | `0a030c4` | 436 + 267 | ≈ 10 h 30 min |
 | Registro documental da F2 | commit documental neste ciclo | 0 + 91 | ≈ 35 min |
 | Correção do `CONTINUAR` antes da hidratação | commit neste ciclo | 35 + 65 | ≈ 1 h |
+| F3 — seletor de aparência, Perfil e DS no tema escuro | commit neste ciclo | 340 + 120 | ≈ 7 h 30 min |
 
-**Total estimado das features publicadas:** ≈ 285 h 50 min.
+**Total estimado das features publicadas:** ≈ 293 h 20 min.
 O total é a soma das estimativas acima; não é tempo medido.
 
 ---
@@ -93,10 +94,14 @@ O total é a soma das estimativas acima; não é tempo medido.
 ## 4. Frente em andamento
 
 A F1 foi publicada em `43adab5` + `6815414` (push `265415e..6815414`); a F2
-foi comitada em `0a030c4`, com push autorizado neste ciclo. A correção do
-`CONTINUAR` está pronta e validada, com commit separado neste ciclo. A frente
-**F3 — seletor de tema no cabeçalho e em `Perfil → Aparência`** está em
-andamento no local, sem qualquer operação contra o Neon.
+foi comitada em `0a030c4`; a correção do `CONTINUAR` em `2eee2a0`. A frente
+**F3 — seletor de tema no cabeçalho e em `Perfil → Aparência`** foi concluída
+localmente, com commit neste ciclo e nenhuma operação contra o Neon. As
+checagens locais passaram com 15 arquivos / 84 testes, build com
+`/app/perfil` dinâmico, `audit` sem vulnerabilidades e `diff --check` limpo.
+A auditoria em navegador cobriu 1440×900 e 390×844 com axe sem violações nem
+`incomplete`, além da persistência das três opções e da aplicação do DS só no
+tema escuro (≈ 45 min de auditoria fora do repositório, estimativa).
 
 Evidências já produzidas nas frentes F0/F0.1, F1 e F2: `typecheck`, `lint`,
 `test` (14 arquivos / 75 testes), `build`, `prisma:validate`, `audit` (0

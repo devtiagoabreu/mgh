@@ -101,7 +101,10 @@
   --mgh-color-border-subtle: var(--mgh-ds-primitive-color-border-subtle);
   --mgh-color-action-bg: var(--mgh-ds-primitive-color-purple-electric);
   --mgh-color-action-hover-bg: var(--mgh-ds-primitive-color-purple-glow);
-  --mgh-color-action-fg: var(--mgh-ds-primitive-color-text);
+  /* Decisão F3 (27/11/2026): o documento especificava text-white sobre
+   * purple-electric; o cálculo WCAG dava 4,23:1. Troca-se apenas o texto
+   * para obsidian-950, que resulta em 4,54:1 com o mesmo fundo. */
+  --mgh-color-action-fg: var(--mgh-ds-primitive-color-obsidian-950);
   --mgh-color-focus: var(--mgh-ds-primitive-color-purple-glow);
   --mgh-color-selection-bg: var(--mgh-ds-primitive-color-purple-soft);
   --mgh-color-selection-border: var(--mgh-ds-primitive-color-purple-electric);

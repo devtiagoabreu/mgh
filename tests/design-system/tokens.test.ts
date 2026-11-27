@@ -233,12 +233,14 @@ describe("MGH Design System v1.0 em CSS", () => {
     expect(contrast(rose, obsidian950)).toBe("5.11");
     expect(contrast(purpleGlow, obsidian800)).toBe("3.06");
 
-    /* FINDING aberto: o documento define text-white sobre purple-electric.
-     * O cálculo derivado dá 4.23:1 — insuficiente para texto normal (4.5:1).
-     * A F2 não altera a decisão de design: sem troca silenciosa de cor. */
+    /* FINDING da F2: o documento define text-white sobre purple-electric;
+     * o cálculo derivado dá 4.23:1, abaixo de 4.5:1 para texto normal.
+     * Decisão F3 (usuário, 27/11/2026): manter o fundo e trocar o texto para
+     * obsidian-950, que resulta em 4.54:1. Nenhuma cor foi inventada. */
     expect(contrast(white, purple)).toBe("4.23");
+    expect(contrast(obsidian950, purple)).toBe("4.54");
     expect(declaration("--mgh-color-action-fg")).toBe(
-      "var(--mgh-ds-primitive-color-text)",
+      "var(--mgh-ds-primitive-color-obsidian-950)",
     );
     expect(declaration("--mgh-color-positive-fg")).toBe(
       "var(--mgh-ds-primitive-color-emerald)",

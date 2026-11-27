@@ -514,8 +514,11 @@ registradas continuam reservadas à autoridade MGH.
 A demonstração local passou por duas correções que não tocam a metodologia:
 o botão `CONTINUAR` agora reconhece caixas marcadas antes da página terminar
 de carregar, e o tema passou a ter um seletor completo em `Perfil → Aparência`
-(claro, escuro e seguir o sistema). Os textos do instrumento, os códigos, os
-gates e a regra de score permanecem exatamente como estavam. O aplicativo
+(claro, escuro e seguir o sistema). O tema escuro usa o MGH Design System
+v1.0; o claro continua com a aparência anterior. No botão primário, o texto
+passou a ser escuro sobre o roxo para atingir contraste adequado. Os textos
+do instrumento, os códigos, os gates e a regra de score permanecem exatamente
+como estavam. O aplicativo
 continua disponível apenas em `http://localhost:3000` para testes internos;
 nenhum participante real foi liberado.
 
