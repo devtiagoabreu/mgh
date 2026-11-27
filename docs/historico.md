@@ -530,3 +530,78 @@ Estado do Git: alterações em `main`, **sem commit e sem push** nesta etapa.
 Piloto com participantes reais continua bloqueado: faltam reconciliação formal
 do banco, consentimento/Privacy Notice finais, RPO/RTO com restore testado e
 auditoria renderizada de acessibilidade. A regra §3.6 permanece vigente.
+
+### 2026-11-26 — Login no banco, encerramento e botões “i”
+
+O usuário pediu que as questões não ficassem acessíveis sem login e forneceu a
+credencial `user01`. A senha **não** foi escrita em código, documento versionado
+nem commit; ficou apenas como hash no banco. O repositório é público, portanto
+o login protege a **tela**, não o histórico do GitHub.
+
+- Instalado `@prisma/adapter-pg@7.10.1` para o Prisma 7 usar a URL pooled da
+  Neon em runtime. O `npm install` emitiu aviso de scripts não aprovados
+  (`prisma`, `@prisma/engines`, `esbuild`); `npm approve-scripts` não foi
+  executado.
+- Novos modelos `DemoLogin` e `DemoSession`, **fora do escopo tenant**: sem
+  `tenant_id`, sem RLS e sem vínculo com participantes. A senha é scrypt com
+  salt; o cookie contém só o token bruto e o banco guarda o hash do token.
+- Migration `20261126220000_demo_login` aplicada ao Neon do branch local via
+  `DIRECT_URL` injetado apenas no processo do comando. Seed idempotente:
+  `npm run db:seed:demo`, usando `DEMO_SEED_USERNAME` e `DEMO_PASSWORD_HASH`
+  do `.env` local. `.env.example` documenta as chaves sem valores.
+- `app/page.tsx` agora verifica a sessão no servidor e redireciona para
+  `/login` quando não há acesso. `app/login/page.tsx` e
+  `components/login-form.tsx` usam server action com validação zod e mensagem
+  genérica `Usuário ou senha inválidos.` O cabeçalho da demonstração traz
+  `Encerrar sessão`, que remove a sessão no banco e apaga o cookie.
+- O cookie de sessão é `HttpOnly`, `SameSite=lax`, `secure` em produção e com
+  expiração de 8 horas. Nenhuma API, persistência de resposta, score, relatório,
+  perfil ou IA foi adicionada ao fluxo do instrumento.
+- Os botões “i” passaram a usar apenas a expressão **dados canônicos** na
+  interface: sem caminhos `docs/...`, nomes de arquivo, `ANX-003`, `TELA 0` nem
+  números de linha. Comentários de código não são exibidos ao usuário.
+- Correção do encerramento: `FINALIZAR` abre confirmação literal
+  (`Finalizar sua participação?`, `VOLTAR`, `FINALIZAR`) e leva à tela final
+  canônica (`Obrigado pela sua participação.`, `Sem resultado.`,
+  `Sem D/I/S/C.`), sem voltar ao consentimento. As duas versões registradas de
+  encerramento (`Obrigado.` e `Obrigado pela sua participação.`) permanecem
+  documentadas; divergência não resolvida, decisão reservada à autoridade MGH.
+- Skills usadas nesta frente: `authentication`, `nextjs-web-security`,
+  `prisma-orm` e `browser-use-automation`.
+- Aviso de segurança local: o valor de `AUTH_SECRET` no `.env` contém a mesma
+  sequência da senha fornecida. O valor não foi exibido nem alterado sem
+  autorização; recomenda-se substituí-lo por um valor aleatório independente.
+
+Verificação reexecutada:
+
+| Evidência | Comando / inspeção | Resultado |
+|---|---|---|
+| Tipos | `npm run typecheck` | limpo |
+| Lint | `npm run lint` | limpo |
+| Testes | `npm test` | 11 arquivos, 57 testes aprovados |
+| Build | `npm run build` | compilou; `/` dinâmica, `/login` e `/_not-found` estáticas |
+| Auditoria de dependências | `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| Schema Prisma | `npm run prisma:validate` | válido |
+| Formatação do diff | `git diff --check` | limpo |
+| Segredo versionado | busca literal da senha no repositório | nenhuma ocorrência |
+| Navegador (CDP) | `flow-login-check.mjs` | `/` → `/login`; senha errada exibe erro; login abre o instrumento; 48 cenários → confirmação → tela final sem resultado; logout volta a `/login` e o gate bloqueia novo acesso |
+
+Estado do Git: o usuário autorizou commit e push. Foram publicados em `main`,
+em commits separados por feature:
+
+| Commit | Feature |
+|---|---|
+| `e032200` | Login no banco: modelos, migration, seed, gate, login/logout e testes |
+| `8fb9119` | Encerramento canônico, confirmação de envio e botões “i” sem caminhos de arquivo |
+| `e90caa9` | Arquivo `AGENTS.md` gerado pelo Next.js |
+
+Push executado com sucesso:
+
+```text
+To github.com:devtiagoabreu/mgh.git
+   41e4511..e90caa9  main -> main
+```
+
+Este registro documental foi comitado em seguida. A auditoria renderizada de
+acessibilidade e as demais pendências listadas acima seguem em aberto; gates
+verdes não bastam para aprovar a UI. A regra §3.6 permanece vigente.
