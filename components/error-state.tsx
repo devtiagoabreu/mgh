@@ -13,9 +13,9 @@ export function ErrorState({ onRetry }: ErrorStateProps) {
       role="alert"
       aria-labelledby="mgh-error-title"
     >
-      <h3 id="mgh-error-title" className="mgh-heading-3">
+      <h2 id="mgh-error-title" className="mgh-heading-2">
         Não foi possível carregar
-      </h3>
+      </h2>
       <p className="mgh-copy">
         Nenhuma resposta foi registrada. Você pode tentar novamente.
       </p>

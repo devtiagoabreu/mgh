@@ -10,9 +10,9 @@ export function LoadingState() {
       aria-busy="true"
       aria-labelledby="mgh-loading-title"
     >
-      <h3 id="mgh-loading-title" className="mgh-heading-3">
+      <h2 id="mgh-loading-title" className="mgh-heading-2">
         Carregando estrutura
-      </h3>
+      </h2>
       <span className="mgh-skeleton" aria-hidden="true" />
       <p className="mgh-copy mgh-copy--muted">
         A estrutura está sendo preparada. Nenhuma resposta foi registrada.

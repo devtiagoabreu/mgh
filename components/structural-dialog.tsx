@@ -19,8 +19,8 @@ const FOCUSABLE =
 
 /**
  * Modal estrutural: nome, descrição, foco inicial, Esc, armadilha de Tab,
- * fundo `inert` e retorno de foco ao gatilho. Navegação nunca usa o padrão
- * de menu de comandos.
+ * fundo e skip link `inert`, e retorno de foco ao gatilho. Navegação nunca
+ * usa o padrão de menu de comandos.
  */
 export function StructuralDialog({
   titleId,
@@ -45,7 +45,9 @@ export function StructuralDialog({
     const previous = (returnFocusRef.current ??
       document.activeElement) as HTMLElement | null;
     const inertRoot = document.getElementById(inertRootId);
+    const skipLink = document.querySelector<HTMLElement>(".mgh-skip-link");
     inertRoot?.setAttribute("inert", "");
+    skipLink?.setAttribute("inert", "");
     initialFocusRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -81,6 +83,7 @@ export function StructuralDialog({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       inertRoot?.removeAttribute("inert");
+      skipLink?.removeAttribute("inert");
       previous?.focus();
     };
   }, [inertRootId, returnFocusRef]);

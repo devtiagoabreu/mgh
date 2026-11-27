@@ -16,9 +16,9 @@ export function BlockedState({ reason }: BlockedStateProps) {
       role="alert"
       aria-labelledby="mgh-blocked-title"
     >
-      <h3 id="mgh-blocked-title" className="mgh-heading-3">
+      <h2 id="mgh-blocked-title" className="mgh-heading-2">
         Acesso indisponível
-      </h3>
+      </h2>
       <p className="mgh-copy">
         {reason ?? "Acesso indisponível nesta demonstração estrutural."}
       </p>

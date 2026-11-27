@@ -22,11 +22,11 @@ export function InfoButton({ topic, onOpen }: InfoButtonProps) {
       ref={ref}
       type="button"
       className="mgh-info-button"
-      aria-label={info.label}
       title={info.label}
       onClick={() => onOpen(topic, ref.current)}
     >
-      <span aria-hidden="true">i</span>
+      <span>i</span>
+      <span className="mgh-visually-hidden">{info.label}</span>
     </button>
   );
 }
