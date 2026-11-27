@@ -30,7 +30,7 @@ export default async function ProfilePage() {
           <h1 className="mgh-heading-1">Perfil</h1>
         </div>
         <div className="mgh-actions">
-          <Link href="/app" className="mgh-button mgh-button--secondary">
+          <Link href="/app/mgh" className="mgh-button mgh-button--secondary">
             Voltar ao instrumento
           </Link>
           <div className="mgh-header__session">

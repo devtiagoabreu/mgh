@@ -43,5 +43,6 @@ export async function setAppearanceAction(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/app");
+  revalidatePath("/app/mgh");
   revalidatePath("/app/perfil");
 }

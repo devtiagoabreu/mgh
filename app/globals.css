@@ -291,6 +291,105 @@ body {
   }
 }
 
+/* Casca do workspace (F4): navegação compartilhada e conteúdo por rota. */
+.mgh-workspace {
+  display: grid;
+  gap: var(--mgh-space-6);
+  align-content: start;
+  min-height: 100dvh;
+  padding-inline: var(--mgh-space-4);
+  padding-block: var(--mgh-space-6);
+}
+
+.mgh-workspace__content {
+  min-width: 0;
+}
+
+.mgh-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mgh-space-2);
+  padding: var(--mgh-space-2) var(--mgh-space-3);
+  background: var(--mgh-color-surface-raised);
+  border: 1px solid var(--mgh-color-border-subtle);
+  border-radius: var(--mgh-radius-card);
+}
+
+.mgh-sidebar > .mgh-kicker,
+.mgh-sidebar__note {
+  display: none;
+}
+
+.mgh-sidebar__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mgh-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mgh-sidebar__link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--mgh-space-2) var(--mgh-space-4);
+  color: var(--mgh-color-text);
+  font-size: var(--mgh-font-label);
+  font-weight: var(--mgh-weight-medium);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--mgh-radius-control);
+}
+
+.mgh-sidebar__link:hover {
+  background: var(--mgh-color-surface-sunken);
+}
+
+.mgh-sidebar__link:focus-visible {
+  outline: 2px solid var(--mgh-color-focus);
+  outline-offset: 2px;
+}
+
+.mgh-sidebar__link[aria-current="page"] {
+  background: var(--mgh-color-selection-bg);
+  border-color: var(--mgh-color-selection-border);
+}
+
+.mgh-sidebar__note {
+  margin: 0;
+  color: var(--mgh-color-text-muted);
+  font-size: var(--mgh-font-caption);
+}
+
+@media (min-width: 60rem) {
+  .mgh-workspace {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: var(--mgh-space-8);
+    padding-inline: var(--mgh-space-8);
+  }
+
+  .mgh-sidebar {
+    position: sticky;
+    inset-block-start: var(--mgh-space-6);
+    display: grid;
+    gap: var(--mgh-space-4);
+    align-content: start;
+    padding: var(--mgh-space-4);
+  }
+
+  .mgh-sidebar > .mgh-kicker,
+  .mgh-sidebar__note {
+    display: block;
+  }
+
+  .mgh-sidebar__list {
+    display: grid;
+    gap: var(--mgh-space-2);
+  }
+}
+
 .mgh-header {
   display: flex;
   flex-wrap: wrap;
@@ -839,6 +938,8 @@ body {
   .mgh-card,
   .mgh-choice,
   .mgh-state,
+  .mgh-sidebar,
+  .mgh-sidebar__link,
   .mgh-dialog {
     border: 1px solid CanvasText;
   }
