@@ -48,16 +48,16 @@ derived_from:
 | Contexto canônico | `docs/002` (11 fontes, 47 fatimentos, 11 índices) |
 | Acervo original | `docs/001` (11 binários, intactos) |
 | Aplicação | Workspace protegido por Auth.js (e-mail/senha); instrumento canônico renderizado, sem score/IA/resultado. Fluxo `/` → `/login` → `/app` → logout validado em navegador |
-| Ambiente | `.env` local criado (não versionado), `.env.example` versionado com chaves de Auth.js sem valores; `AUTH_TRUST_HOST=true` usado apenas no processo do servidor local |
-| Plano | P0, P1/P2, P5 e P6 estrutural verificados; integração final green em `docs/evidencias/integracao-final.md`. F0 implementada, com migration aplicada, seed sintético executado e fluxo validado; commit/push ainda não autorizados |
+| Ambiente | `.env` (Neon) intacto e `.env.local` (PostgreSQL local `mgh_local`) não versionado; `.env.example` com chaves sem valores; aplicação local em `http://localhost:3000` |
+| Plano | P0, P1/P2, P5 e P6 estrutural verificados; integração final green em `docs/evidencias/integracao-final.md`. F0 implementada, validada em banco/navegador e publicada em `main` com push autorizado |
 | Horas | `docs/horas-de-desenvolvimento.md`: estimativas por feature, nunca medição nem cobrança |
 | Acessibilidade | Gates automatizados verdes; veredito P6 segue `rework — escopo incompleto` até leitor de tela e crítica visual humana |
 
 **Bloqueios que permanecem abertos:** `ANX-003` DRAFT (0/48 textos exatos,
 0 IDs canônicos), `REQ-INST-012 = WAITING_BANK`, `OPEN-INST-001`,
-`OPEN-LEGAL-001/002`, `OPEN-TECH-006`, `OPEN-TEN-001`. F0 está validada em
-banco e navegador, mas permanece sem commit/push por decisão do usuário nesta
-rodada.
+`OPEN-LEGAL-001/002`, `OPEN-TECH-006`, `OPEN-TEN-001`. F0 foi validada em
+banco e navegador e publicada em `main` com push autorizado; nenhum
+participante real foi liberado.
 
 ---
 
@@ -122,8 +122,8 @@ metodologia, gates, textos canônicos nem o plano P0–P7 abaixo.
 
 | Frente | Escopo | Estado |
 |---|---|---|
-| F0 | Auth.js com Credentials (e-mail/senha), credencial global e sessão tenant-scoped | Validada em banco e navegador; login legado removido; aguardando autorização de commit/push |
-| F1 | Preferência de aparência no `User`, com cookie-espelho validado | Não iniciada |
+| F0 | Auth.js com Credentials (e-mail/senha), credencial global e sessão tenant-scoped | Concluída e publicada em `main` (`36d8778`); login legado removido; ambiente local operacional |
+| F1 | Preferência de aparência no `User`, com cookie-espelho validado | Autorizada; próxima frente |
 | F2 | Tokens do MGH Design System v1.0 traduzidos para CSS | Não iniciada |
 | F3 | Seletor de tema no cabeçalho e em `Perfil → Aparência` | Não iniciada |
 | F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Não iniciada |
@@ -364,6 +364,7 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-27 (16) | F0 implementada localmente: Auth.js Credentials com e-mail/senha, `auth_credentials` global sem RLS, resolução de identidade com senha conferida antes do acesso tenant-scoped, sessão JWT revalidada, rotas `/login`, `/api/auth/[...nextauth]`, `/` e `/app`. Verificação local verde (12 arquivos / 62 testes); migration e seed ainda não aplicados, sem commit ou push. |
 | 2026-11-27 (17) | F0 validada: migration aplicada ao Neon (`Database schema is up to date!`), seed sintético idempotente (3 identidades), senha rotacionada e exibida uma única vez, fluxo `/` → `/login` → `/app` → logout verificado em navegador com CDP. Commit e push continuam suspensos por decisão do usuário. |
 | 2026-11-27 (18) | Login legado removido em feature separada: modelos, tabelas, seed, script, variáveis e testes `demo-password` excluídos; migration `20261127150000_drop_demo_login` aplicada. Verificação verde (11 arquivos / 59 testes); commit e push seguem suspensos. |
+| 2026-11-27 (19) | PostgreSQL 16 local dedicado (`mgh_local`) com 4 migrations aplicadas, seed sintético idempotente e RLS confirmado; `NODE_ENV` removido de `.env.local` para corrigir build. Fluxo completo validado em navegador e build limpo. Usuário autorizou push: F0 publicada em `main` e próxima frente F1 agendada. |
 
 ---
 
@@ -398,11 +399,12 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 
 ## 9. Próximo passo
 
-F0 está validada em banco e navegador, e o login legado já foi removido com
-migration aplicada. O usuário autorizou **commits locais sem push**; os quatro
-documentos operacionais foram atualizados antes dos commits. O push continua
-sem autorização. Em paralelo, foi confirmado PostgreSQL 16 local em
-`127.0.0.1:5432`, mas `scram-sha-256` exige credencial: nenhuma conexão,
-role ou banco local foi criado e as URLs não foram trocadas. Depois dos
-commits, o próximo passo é F1 (preferência de tema), salvo decisão diferente
-do usuário sobre o banco local.
+F0 está validada em banco e navegador, publicada em `main` com push
+autorizado; o login legado foi removido em feature separada. Os quatro
+documentos operacionais foram atualizados antes do commit documental e do
+push (regra §3.7). PostgreSQL 16 local dedicado está operacional para a
+demonstração (`npm run dev` em `http://localhost:3000`); `.env` (Neon) e
+`.env.local` (local) não foram trocados nem versionados. O próximo passo é
+**F1 — preferência de aparência no `User`, com cookie-espelho validado**,
+salvo decisão diferente do usuário. Deploy público da casca SaaS depende de
+decisão e configuração separadas na Vercel.

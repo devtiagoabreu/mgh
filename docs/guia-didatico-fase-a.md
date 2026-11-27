@@ -173,10 +173,14 @@ antes de participante real · `G7` restore testado e RPO/RTO decididos.
 | `51e1424` | branch | P6 estrutural: tokens em 3 camadas, componentes, acessibilidade projetada |
 | `57611d3` | branch | P1/P2: modelo tenant-scoped, RLS `FORCE`, DAL, seed sintético |
 | `3009899` | branch | Evidência final de integração |
+| `36d8778` | `main` | F0: Auth.js com Credentials e sessão tenant-scoped |
+| `6001748` | `main` | Registro documental de F0, remoção do legado e PostgreSQL local |
 
 **Situação do Git hoje:** a Fase A vive somente em `main`. As branches
 `feature/mgh-phase-a-foundation` e `docs/002-contexto-canonico` foram
 removidas após merge; nenhum commit foi perdido. **Nenhum PR foi aberto.**
+Os dois commits da frente F0 foram publicados em `main` com push autorizado
+pelo usuário; o registro documental deste ciclo acompanha o mesmo push.
 Commits continuam sendo feitos por feature — nunca numa alteração única
 gigante. Todo commit ou push é precedido pela atualização dos quatro
 documentos operacionais (regra §3.7 do histórico).
@@ -193,9 +197,15 @@ Em linguagem simples: é como contar quantas páginas um redator escreveu
 para calcular, de forma aproximada, quanto tempo levou. Serve para planejar, não para
 cobrar nem para provar trabalho.
 
-- Features já publicadas: **≈ 245 h estimadas**.
+- Features já publicadas (incluindo F0 e a remoção do login legado):
+  **≈ 266 h 30 min estimadas**.
 - Frente de modal de saída, cabeçalho e ícones, código em `d430a12`, com
   registro documental e push autorizados: **≈ 4 h 15 min estimadas**.
+- Frente F0 (autenticação real) e F0.1 (remoção do legado): ≈ 12 h 50 min
+  e ≈ 5 h 10 min estimadas, respectivamente; ambas com commit e push
+  autorizados.
+- Ambiente local operacional e registro documental deste ciclo: ≈ 30 min
+  estimados.
 - Features futuras: faixas macro (P3, P4, P7, pendências legais e de
   recuperação) no próprio documento.
 

@@ -883,3 +883,69 @@ foi feita**, nenhum banco/role foi criado e `DATABASE_URL`/`DIRECT_URL` não
 foram alterados. A decisão de usar o banco local depende de credencial
 fornecida pelo usuário ou de autorização explícita para criar role e database
 dedicados. Nada disso foi implementado nesta rodada.
+
+### 2026-11-27 — Ambiente local operacional com PostgreSQL dedicado
+
+O usuário forneceu a senha do role `postgres` e autorizou explicitamente a
+criação de recursos locais dedicados. Foram executados, sem versionar
+segredos:
+
+- criação do role e do database `mgh_local` no PostgreSQL 16 local; a senha
+  gerada foi exibida uma única vez e gravada somente em `.env.local`
+  (ignorado pelo Git);
+- `.env.local` reescrito com `DATABASE_URL` e `DIRECT_URL` apontando para o
+  mesmo database local; `.env` (Neon) permaneceu intacto;
+- 4 migrations aplicadas com `DIRECT_URL` injetado apenas no ambiente do
+  processo; `prisma migrate status` = `Database schema is up to date!`;
+- `AUTH_SEED_PASSWORD_HASH` gerado no formato `scrypt$...` a partir de senha
+  sintética aleatória, exibida uma única vez;
+  `AUTH_SEED_TENANT_ID` ajustado ao UUID sintético fixo exigido pelo seed;
+- seed idempotente executado duas vezes: `Auth seed: ok (3 identidades
+  sintéticas)`;
+- checagem de RLS: sem `app.current_tenant_id`, `tenants`/`users`/
+  `tenant_memberships` retornam `0`; com o tenant sintético, `1`/`3`/`3`.
+
+O fluxo foi validado em navegador (CDP) contra `http://localhost:3000`:
+`/` → `/login`; senha errada exibe `Usuário ou senha inválidos.`; login de
+`owner@example.test` abre `/app`; o diálogo `Sair da demonstração?` confirma
+o logout e leva a `/login`; `/` volta a redirecionar para `/login`; login de
+`mentee@example.test` abre `/app` sem exibir a identidade anterior. Um teste
+preliminar usando `127.0.0.1` não passou no gate pós-logout; **hipótese não
+confirmada**: diferença de host em relação a `AUTH_URL=http://localhost:3000`.
+Com `localhost`, todas as verificações passaram.
+
+O primeiro `npm run build` falhou em `/_global-error` (`useContext` nulo), com
+aviso de `NODE_ENV` não padrão. `NODE_ENV=development` foi removido de
+`.env.local` (o Next.js define `NODE_ENV` por fase) e, com `.next` limpo, o
+build passou: rotas `/`, `/api/auth/[...nextauth]` e `/app` dinâmicas;
+`/login` e `/_not-found` estáticas.
+
+Verificação reexecutada: `prisma:validate`, `typecheck`, `lint`,
+`npm test` (11 arquivos / 59 testes), `build`,
+`npm audit --audit-level=high` (`found 0 vulnerabilities`) e
+`git diff --check` — todos limpos.
+
+Estado do Git: `main...origin/main [ahead 2]`, **sem push nesta rodada**. O
+arquivo `docs/mgh-design-system/mgh-design-system-01.md` permanece untracked
+e preservado. Frentes em aberto inalteradas (ANX-003, consentimento, RPO/RTO,
+auditoria renderizada de acessibilidade). Nenhum participante real foi
+liberado; a regra §3.6 continua vigente.
+
+### 2026-11-27 — Push autorizado e aplicação local disponível
+
+O usuário autorizou explicitamente o push dos dois commits locais da frente
+F0 (`36d8778`, `6001748`) e a atualização documental deste ciclo. Em
+conformidade com a regra §3.7, os quatro documentos operacionais foram
+atualizados **antes** do commit do registro e do push.
+
+A aplicação pode ser executada localmente com `npm run dev`, que carrega
+`.env.local` e `.env`; o acesso é feito por `http://localhost:3000`. O host
+`localhost` é o correto para o fluxo de autenticação (o teste com
+`127.0.0.1` não passou no gate pós-logout; hipótese registrada na seção
+anterior). Nenhuma URL, credencial ou segredo foi versionado.
+
+Próxima frente autorizada: **F1 — preferência de aparência no `User` com
+cookie-espelho validado**, sem alterar metodologia, textos canônicos, gates
+nem regra de score. O deploy público da casca SaaS depende de decisão
+separada (variáveis de ambiente na Vercel e banco compatível); o ambiente
+local já atende à demonstração autenticada.

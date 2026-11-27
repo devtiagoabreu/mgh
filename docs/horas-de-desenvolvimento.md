@@ -77,8 +77,11 @@ Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
 | Registro documental do login e do push | `bf25460` | 0 + 75 | ≈ 30 min |
 | Responsividade e acessibilidade da superfície | `06085dc` + `0a2c2a5` | 30 + 290 | ≈ 3 h |
 | Modal de saída, cabeçalho e ícones de informação | `d430a12` + `f20216e` | 124 + 78 | ≈ 3 h |
+| F0 — Auth.js Credentials e sessão tenant-scoped | `36d8778` | 595 + 138 | ≈ 12 h 50 min |
+| F0.1 — remoção do login legado | `6001748` | 240 + 50 | ≈ 5 h 10 min |
+| Ambiente local operacional e registro documental do push | commit documental neste ciclo | 0 + 75 | ≈ 30 min |
 
-**Total estimado das features publicadas:** ≈ 248 h.
+**Total estimado das features publicadas:** ≈ 266 h 30 min.
 O total é a soma das estimativas acima; não é tempo medido.
 
 ---
@@ -87,21 +90,21 @@ O total é a soma das estimativas acima; não é tempo medido.
 
 | Feature | Estado | Base da estimativa | Estimativa |
 |---|---|---|---:|
-| F0 — Auth.js Credentials, credencial global e sessão tenant-scoped | validada em banco e navegador; aguardando autorização de commit/push | 595 linhas de código/config alteradas (≈ 11 h 54 min a 50 linhas/h) + documentação operacional (≈ 55 min a 150 linhas/h) | ≈ 12 h 50 min |
-| F0.1 — remoção do login legado (`DemoLogin`/`DemoSession`) | migration aplicada; aguardando autorização de commit/push | ≈ 240 linhas de código/config removidas ou ajustadas (≈ 4 h 48 min a 50 linhas/h) + documentação operacional (≈ 20 min a 150 linhas/h) | ≈ 5 h 10 min |
+| F1 — preferência de aparência no `User`, com cookie-espelho validado | autorizada; não iniciada | faixa macro de planejamento | 3–5 h |
 
-Evidências já produzidas nestas frentes: `typecheck`, `lint`, `test` (11
-arquivos / 59 testes), `build`, `prisma:validate`, `audit` (0
+Evidências já produzidas nas frentes F0/F0.1: `typecheck`, `lint`, `test`
+(11 arquivos / 59 testes), `build`, `prisma:validate`, `audit` (0
 vulnerabilidades) e `diff --check` limpos; build com `/`,
 `/api/auth/[...nextauth]` e `/app` dinâmicos e `/login` estático. Os testes
 de identidade provam que a senha é conferida antes da consulta tenant-scoped e
 que credencial inativa, senha errada, membro inativo e papel deferido são
-rejeitados. A migration de login foi aplicada, o seed sintético rodou duas
-vezes de forma idempotente e o fluxo completo foi validado em navegador com 8
-verificações positivas (≈ 30 min de auditoria fora do repositório). A remoção
-do legado aplicou `20261127150000_drop_demo_login` e confirmou 4 migrations com
-`Database schema is up to date!`. Commit e push seguem sem autorização. O
-veredito P6 permanece `rework — escopo incompleto`.
+rejeitados. A remoção do legado aplicou `20261127150000_drop_demo_login` e
+confirmou 4 migrations com `Database schema is up to date!`. O banco local
+`mgh_local` recebeu as 4 migrations, o seed sintético rodou duas vezes de
+forma idempotente, o RLS foi confirmado sem e com `app.current_tenant_id`, e o
+fluxo completo foi validado em navegador com 8 verificações positivas
+(≈ 30 min de auditoria fora do repositório). Commit e push autorizados e
+executados neste ciclo. O veredito P6 permanece `rework — escopo incompleto`.
 
 ---
 
