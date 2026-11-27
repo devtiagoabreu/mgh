@@ -80,31 +80,34 @@ Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
 | F0 — Auth.js Credentials e sessão tenant-scoped | `36d8778` | 595 + 138 | ≈ 12 h 50 min |
 | F0.1 — remoção do login legado | `6001748` | 240 + 50 | ≈ 5 h 10 min |
 | Ambiente local operacional e registro documental do push | commit documental neste ciclo | 0 + 75 | ≈ 30 min |
+| F1 — preferência de aparência no `User`, com cookie-espelho validado | `43adab5` | 329 + 98 | ≈ 7 h 15 min |
 
-**Total estimado das features publicadas:** ≈ 266 h 30 min.
+**Total estimado das features publicadas:** ≈ 273 h 45 min.
 O total é a soma das estimativas acima; não é tempo medido.
 
 ---
 
 ## 4. Frente em andamento
 
-| Feature | Estado | Base da estimativa | Estimativa |
-|---|---|---|---:|
-| F1 — preferência de aparência no `User`, com cookie-espelho validado | autorizada; não iniciada | faixa macro de planejamento | 3–5 h |
+Nenhuma frente em andamento. A F1 foi comitada em `main` (`43adab5`); o push
+está autorizado neste ciclo. A próxima frente planejada é **F2 — tokens do
+MGH Design System v1.0 traduzidos para CSS**, sem iniciar sem autorização.
 
-Evidências já produzidas nas frentes F0/F0.1: `typecheck`, `lint`, `test`
-(11 arquivos / 59 testes), `build`, `prisma:validate`, `audit` (0
+Evidências já produzidas nas frentes F0/F0.1 e F1: `typecheck`, `lint`,
+`test` (13 arquivos / 67 testes), `build`, `prisma:validate`, `audit` (0
 vulnerabilidades) e `diff --check` limpos; build com `/`,
 `/api/auth/[...nextauth]` e `/app` dinâmicos e `/login` estático. Os testes
 de identidade provam que a senha é conferida antes da consulta tenant-scoped e
 que credencial inativa, senha errada, membro inativo e papel deferido são
 rejeitados. A remoção do legado aplicou `20261127150000_drop_demo_login` e
 confirmou 4 migrations com `Database schema is up to date!`. O banco local
-`mgh_local` recebeu as 4 migrations, o seed sintético rodou duas vezes de
-forma idempotente, o RLS foi confirmado sem e com `app.current_tenant_id`, e o
-fluxo completo foi validado em navegador com 8 verificações positivas
-(≈ 30 min de auditoria fora do repositório). Commit e push autorizados e
-executados neste ciclo. O veredito P6 permanece `rework — escopo incompleto`.
+`mgh_local` recebeu 5 migrations após a F1 e o seed sintético rodou duas vezes
+de forma idempotente; o RLS foi confirmado sem e com `app.current_tenant_id`, e
+o fluxo completo foi validado em navegador com 8 verificações positivas
+(≈ 30 min de auditoria fora do repositório). A F1 acrescentou verificação de
+tema/cookie em navegador e conferência da preferência gravada no `User`.
+Commit da F1 executado em `43adab5`; push autorizado neste ciclo. O veredito
+P6 permanece `rework — escopo incompleto`.
 
 ---
 

@@ -949,3 +949,73 @@ cookie-espelho validado**, sem alterar metodologia, textos canônicos, gates
 nem regra de score. O deploy público da casca SaaS depende de decisão
 separada (variáveis de ambiente na Vercel e banco compatível); o ambiente
 local já atende à demonstração autenticada.
+
+### 2026-11-27 — Restauração legada no Neon (antes da instrução seguinte)
+
+O usuário pediu para "deixar no Neon a aplicação legada, com o usuário
+antigo". Como a F0 já havia removido `DemoLogin`/`DemoSession` do código e do
+banco, a recuperação foi feita **somente no banco Neon**, sem tocar no
+código, sem criar branch e sem deploy:
+
+- Tabelas `demo_logins` e `demo_sessions`, índices e chave estrangeira
+  recriados a partir da migration `20261126220000_demo_login` (revisão
+  `f20216e`), via `DIRECT_URL` lido de `.env` e injetado só no processo.
+- `user01` semeado com hash scrypt recém-gerado a partir da senha informada
+  pelo usuário no chat. A senha foi usada apenas em variável de ambiente do
+  processo de geração do hash; não foi gravada em arquivo, código, documento
+  versionado nem commit, e não foi exibida pelo agente em logs.
+- Verificação somente-leitura: `active_user01=1`, formato do hash válido,
+  `password_matches=true`, `f1_column_on_neon=0`. Uma sessão legada
+  pré-existente foi preservada; nenhum token foi lido ou exibido.
+
+Esta ação é anterior à instrução registrada na seção seguinte e **não será
+repetida nem estendida**.
+
+### 2026-11-27 — F1 concluída localmente; Neon reservado para reconstrução
+
+O usuário autorizou **commit e push por feature** e determinou: "agora pode
+fazer tudo aqui local... pode fazer push... mas não pode alterar o neon...
+deixar tudo pronto depois para refazer o neon com a aplicação". A partir
+deste ponto, nenhuma migration, seed, escrita ou verificação será executada
+contra o Neon. O código, as migrações e a documentação ficam prontos para
+que o banco do Neon seja refeito depois com a aplicação, em decisão separada.
+
+F1 — preferência de aparência, aplicada **somente ao PostgreSQL local**:
+
+- Novo enum `AppearancePreference` (`LIGHT`/`DARK`) e coluna nullable
+  `appearance_preference` em `users`; migration
+  `20261127180000_appearance_preference` aplicada ao local. `null` significa
+  seguir o sistema. A coluna **não existe no Neon**.
+- O `User` é a fonte autoritativa. O cookie legível `mgh-appearance` é apenas
+  espelho para o script de boot; o valor passa por allowlist (`light`/`dark`)
+  e qualquer outro valor é descartado. Sem `localStorage`.
+- `setAppearanceAction` valida a entrada com Zod, usa identidade e tenant da
+  sessão verificada, grava via repositório tenant-scoped e revalida `/app`.
+  O botão sol/lua aplica a troca na hora e reconcilia com o valor salvo.
+- `/app` lê a preferência do `User`; `/login` permanece estático. Nenhum
+  texto canônico, gate, regra de score ou dado do instrumento foi alterado.
+- F3 continuará responsável pelo seletor completo e por
+  `Perfil → Aparência`.
+
+Verificação reexecutada antes deste registro:
+
+| Evidência | Resultado |
+|---|---|
+| `prisma:validate` / `prisma:generate` | schema válido; client v7.10.1 gerado |
+| Migration local | 5 migrations; `Database schema is up to date!` |
+| `npm run typecheck` / `npm run lint` | limpos |
+| `npm test` | 13 arquivos, 67 testes aprovados |
+| `npm run build` | compilou; `/`, `/api/auth/[...nextauth]` e `/app` dinâmicos; `/login` e `/_not-found` estáticos |
+| `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| `git diff --check` | limpo |
+| Navegador (CDP, PostgreSQL local) | sem cookie o tema segue o sistema; alternar muda para claro e grava cookie `light`; recarregar mantém claro; cookie inválido `system` é ignorado |
+| Banco local | `owner@example.test` com `appearance_preference = LIGHT` |
+
+O veredito P6 permanece `rework — escopo incompleto`: esta checagem de tema
+não substitui leitor de tela real nem crítica visual humana. Nenhum
+participante real foi liberado; a regra §3.6 continua vigente.
+
+Commit da F1 em `main`: `43adab5` (13 arquivos, 329 inserções, 30 remoções).
+O push está autorizado neste ciclo e será executado após este registro
+documental. O arquivo `docs/mgh-design-system/mgh-design-system-01.md`
+permanece untracked e preservado.

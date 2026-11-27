@@ -251,6 +251,15 @@ tabelas, código, script e variáveis legadas saíram do projeto. Isso não mudo
 texto canônico, regra de score nem o fluxo agora ativo. Nenhuma pessoa real
 participou e nada foi publicado.
 
+A frente mais recente guarda a escolha de aparência no cadastro da pessoa. O
+botão sol/lua continua mudando a tela na hora, mas agora a escolha é salva: um
+cookie de leitura rápida ajuda a abrir a página já no tema certo, e o valor
+guardado no cadastro manda no final. Se esse cookie chegar com um valor que
+não é claro nem escuro, ele é descartado e a tela segue a preferência do
+sistema. Isso não entra no instrumento, no score nem em relatório. A mudança
+foi aplicada só no banco local; o banco do Neon foi deixado como estava,
+preparado para ser refeito depois com a aplicação.
+
 Os testes automáticos cobrem configuração, autorização, dados/banco, motor
 de score, instrumento canônico, login e resolução da credencial. Os 9 casos de ouro
 do motor cobrem,
