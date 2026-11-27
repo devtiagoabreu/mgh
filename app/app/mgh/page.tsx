@@ -3,6 +3,7 @@ import { parseStoredPreference } from "@/lib/appearance/preference";
 import { requireVerifiedSession } from "@/lib/auth/session";
 import { getPrisma } from "@/lib/db/client";
 import { findUserAppearancePreference } from "@/lib/db/repositories";
+import { requireToolAccess } from "@/lib/tools/require";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -13,9 +14,13 @@ export const metadata = {
 export default async function ModulePage() {
   const { session, context } = await requireVerifiedSession();
   const email = session.user?.email;
-  if (!email) redirect("/login");
+  if (!email || session.user?.mghMustChangePassword === true) {
+    redirect("/trocar-senha");
+  }
+  await requireToolAccess(context, "MGH");
 
-  const user = await findUserAppearancePreference(await getPrisma(), context);
+  const db = await getPrisma();
+  const user = await findUserAppearancePreference(db, context);
   const stored = (user as { appearancePreference?: unknown } | null)
     ?.appearancePreference;
 

@@ -9,6 +9,7 @@ import {
 import { getPrisma } from "@/lib/db/client";
 import { getMghOperationalRaw } from "@/lib/db/dashboard";
 import { findUserAppearancePreference } from "@/lib/db/repositories";
+import { hasToolGrant } from "@/lib/tools/access";
 import {
   AGGREGATE_MIN_N,
   deriveMghOperationalMetrics,
@@ -33,6 +34,7 @@ export default async function WorkspaceHome() {
 
   const client = await getPrisma();
   const raw = await getMghOperationalRaw(client, context);
+  const hasMgh = await hasToolGrant(client, context, "MGH");
   const user = await findUserAppearancePreference(client, context);
   const metrics = deriveMghOperationalMetrics(raw);
   const stored = (user as { appearancePreference?: unknown } | null)
@@ -144,29 +146,42 @@ export default async function WorkspaceHome() {
           className="mgh-dashboard__section"
           aria-labelledby="mgh-dashboard-module"
         >
-          <div className="mgh-card mgh-card--module">
-            <div>
-              <p className="mgh-kicker">Módulo ativo</p>
+          {hasMgh ? (
+            <div className="mgh-card mgh-card--module">
+              <div>
+                <p className="mgh-kicker">Instrumento concedido</p>
+                <h2 id="mgh-dashboard-module" className="mgh-heading-2">
+                  MGH — sequência do instrumento
+                </h2>
+                <p className="mgh-copy">
+                  A demonstração mantém a sequência canônica em memória. Nenhuma
+                  resposta é registrada nesta tela.
+                </p>
+              </div>
+              <div className="mgh-actions">
+                <Link href="/app/mgh" className="mgh-button">
+                  Abrir MGH
+                </Link>
+                <Link
+                  href="/app/perfil"
+                  className="mgh-button mgh-button--secondary"
+                >
+                  Aparência
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="mgh-card" aria-labelledby="mgh-dashboard-module">
+              <p className="mgh-kicker">Instrumentos</p>
               <h2 id="mgh-dashboard-module" className="mgh-heading-2">
-                MGH — sequência do instrumento
+                Nenhum instrumento concedido
               </h2>
-              <p className="mgh-copy">
-                A demonstração mantém a sequência canônica em memória. Nenhuma
-                resposta é registrada nesta tela.
+              <p className="mgh-copy mgh-copy--muted">
+                Solicite ao responsável do workspace a concessão do
+                instrumento.
               </p>
             </div>
-            <div className="mgh-actions">
-              <Link href="/app/mgh" className="mgh-button">
-                Abrir MGH
-              </Link>
-              <Link
-                href="/app/perfil"
-                className="mgh-button mgh-button--secondary"
-              >
-                Aparência
-              </Link>
-            </div>
-          </div>
+          )}
         </section>
 
         <section

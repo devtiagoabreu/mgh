@@ -10,7 +10,7 @@ describe("F4 — casca SaaS do workspace", () => {
   it("protege todas as rotas /app com sessão verificada", () => {
     const layout = source("app/app/layout.tsx");
     expect(layout).toContain("requireVerifiedSession()");
-    expect(layout).toContain("<WorkspaceNav />");
+    expect(layout).toContain("<WorkspaceNav");
     expect(layout).toContain('className="mgh-workspace"');
   });
 

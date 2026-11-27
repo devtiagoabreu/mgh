@@ -4,10 +4,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const LINKS: ReadonlyArray<{ href: string; label: string }> = [
-  { href: "/app", label: "Visão geral" },
-  { href: "/app/mgh", label: "MGH" },
-  { href: "/app/perfil", label: "Perfil" },
+const LINKS: ReadonlyArray<{
+  href: string;
+  label: string;
+  visible: (props: {
+    canManageCollaborators: boolean;
+    hasMghGrant: boolean;
+  }) => boolean;
+}> = [
+  { href: "/app", label: "Visão geral", visible: () => true },
+  {
+    href: "/app/profissionais",
+    label: "Profissionais",
+    visible: ({ canManageCollaborators }) => canManageCollaborators,
+  },
+  {
+    href: "/app/mgh",
+    label: "MGH",
+    visible: ({ hasMghGrant }) => hasMghGrant,
+  },
+  { href: "/app/perfil", label: "Perfil", visible: () => true },
 ];
 
 /**
@@ -15,7 +31,13 @@ const LINKS: ReadonlyArray<{ href: string; label: string }> = [
  * é uma sidebar que pode ser recolhida. Somente MGH está ativo: os demais
  * módulos não são nomeados porque o Parking Lot está congelado.
  */
-export function WorkspaceNav() {
+export function WorkspaceNav({
+  canManageCollaborators = false,
+  hasMghGrant = false,
+}: {
+  readonly canManageCollaborators?: boolean;
+  readonly hasMghGrant?: boolean;
+} = {}) {
   const pathname = usePathname();
   const [drawerState, setDrawerState] = useState({
     pathname,
@@ -204,7 +226,9 @@ export function WorkspaceNav() {
         </div>
 
         <ul id="mgh-nav-list" className="mgh-sidebar__list">
-          {LINKS.map(({ href, label }) => (
+          {LINKS.filter((link) =>
+            link.visible({ canManageCollaborators, hasMghGrant }),
+          ).map(({ href, label }) => (
             <li key={href}>
               <Link
                 href={href}
