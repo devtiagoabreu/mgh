@@ -26,6 +26,7 @@ function tenantTables(): TableInfo[] {
     const body = match[1];
     const mapName = body.match(/@@map\("([^"]+)"\)/)?.[1];
     if (!mapName) continue;
+    if (!/tenantId\s+String\s+@map\("tenant_id"\)/.test(body)) continue;
     const vault = /@@schema\("vault"\)/.test(body);
     result.push({
       qualified: vault ? `vault."${mapName}"` : `public."${mapName}"`,

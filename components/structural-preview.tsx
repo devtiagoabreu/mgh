@@ -1,5 +1,6 @@
 "use client";
 
+import { logoutAction } from "@/app/actions/auth";
 import {
   useEffect,
   useId,
@@ -68,7 +69,7 @@ const INSPECTION_STATES: readonly Inspection[] = [
  * contexto, instruções, 48 cenários, transição, SELF, feedback e encerramento.
  * Não há API, persistência, score, relatório, perfil nem resposta individual.
  */
-export function StructuralPreview() {
+export function StructuralPreview({ username }: { username: string }) {
   const [stage, setStage] = useState<Stage>("consent");
   const [consentDeclined, setConsentDeclined] = useState(false);
   const [scenarioIndex, setScenarioIndex] = useState(1);
@@ -332,6 +333,12 @@ export function StructuralPreview() {
           <div className="mgh-actions">
             <InfoButton topic="demonstracao" onOpen={openInfo} />
             <ThemeToggle />
+            <form action={logoutAction}>
+              <button type="submit" className="mgh-button mgh-button--ghost">
+                Encerrar sessão
+              </button>
+            </form>
+            <span className="mgh-kicker">{username}</span>
             <button
               ref={exitRef}
               type="button"

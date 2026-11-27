@@ -606,6 +606,21 @@ body {
   font-weight: var(--mgh-weight-medium);
 }
 
+.mgh-login-form {
+  display: grid;
+  gap: var(--mgh-space-4);
+}
+
+.mgh-field {
+  display: grid;
+  gap: var(--mgh-space-2);
+}
+
+.mgh-label {
+  font-size: var(--mgh-font-label);
+  font-weight: var(--mgh-weight-medium);
+}
+
 .mgh-input {
   width: 100%;
   min-height: 44px;

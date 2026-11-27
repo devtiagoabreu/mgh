@@ -21,6 +21,8 @@ function models(): ParsedModel[] {
   return result;
 }
 
+const DEMO_MODELS = new Set(["DemoLogin", "DemoSession"]);
+
 const MODEL_NAMES = [
   "Tenant",
   "User",
@@ -43,7 +45,7 @@ const MODEL_NAMES = [
 
 describe("P1/P2 — schema tenant-scoped", () => {
   it("coloca tenantId mapeado para tenant_id em TODA tabela de tenant", () => {
-    const parsed = models();
+    const parsed = models().filter((model) => !DEMO_MODELS.has(model.name));
     expect(parsed.map((model) => model.name).sort()).toEqual(
       [...MODEL_NAMES].sort(),
     );
@@ -53,6 +55,25 @@ describe("P1/P2 — schema tenant-scoped", () => {
         `modelo ${model.name} sem tenantId mapeado`,
       ).toMatch(/tenantId\s+String\s+@map\("tenant_id"\)/);
     }
+  });
+
+  it("mantém a credencial da demonstração fora do escopo tenant", () => {
+    const demo = models().filter((model) => DEMO_MODELS.has(model.name));
+    expect(demo.map((model) => model.name).sort()).toEqual([
+      "DemoLogin",
+      "DemoSession",
+    ]);
+    for (const model of demo) {
+      expect(model.body, `modelo ${model.name} com tenantId`).not.toMatch(
+        /tenantId/,
+      );
+    }
+    expect(demo.find((model) => model.name === "DemoLogin")?.body).toMatch(
+      /passwordHash\s+String\s+@map\("password_hash"\)/,
+    );
+    expect(demo.find((model) => model.name === "DemoSession")?.body).toMatch(
+      /tokenHash\s+String\s+@unique\s+@map\("token_hash"\)/,
+    );
   });
 
   it("mantém apenas os papéis da Fase A e nenhum MENTOR_ASSISTANT", () => {
