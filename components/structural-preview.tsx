@@ -9,6 +9,10 @@ import {
   type ReactNode,
 } from "react";
 import {
+  FINALIZE_BACK_BUTTON,
+  FINALIZE_CONFIRMATION_DESCRIPTION,
+  FINALIZE_CONFIRMATION_TITLE,
+  FINAL_BUTTON,
   SCENARIOS,
   SCENARIO_TOTAL,
   SELF_ITEMS,
@@ -16,6 +20,7 @@ import {
 } from "@/lib/canonical/instrument";
 import { AutosaveStatus } from "./autosave-status";
 import { BlockedState } from "./blocked-state";
+import { CompletionPanel } from "./completed-panel";
 import { ConsentGate } from "./consent-gate";
 import { ContextPanel } from "./context-panel";
 import { EmptyState } from "./empty-state";
@@ -48,12 +53,14 @@ type Stage =
   | "transition"
   | "self"
   | "feedback"
-  | "confirmation";
+  | "confirmation"
+  | "completed";
 
 type Inspection = "none" | "loading" | "empty" | "error" | "blocked";
 
 type DialogState =
   | { kind: "exit" }
+  | { kind: "finalize" }
   | { kind: "info"; topic: InfoTopicKey }
   | null;
 
@@ -84,6 +91,7 @@ export function StructuralPreview({ username }: { username: string }) {
 
   const mainRef = useRef<HTMLElement>(null);
   const exitRef = useRef<HTMLButtonElement>(null);
+  const finalizeRef = useRef<HTMLButtonElement>(null);
   const infoReturnRef = useRef<HTMLElement | null>(null);
   const stageMounted = useRef(false);
   const scenarioHeadingId = useId();
@@ -108,6 +116,12 @@ export function StructuralPreview({ username }: { username: string }) {
     setFeedbackDetails({});
     setAnswerError(false);
     setInspection("none");
+    setDialog(null);
+  }
+
+  function handleFinalize() {
+    setDialog(null);
+    setStage("completed");
   }
 
   function openInfo(topic: InfoTopicKey, trigger: HTMLButtonElement | null) {
@@ -313,11 +327,21 @@ export function StructuralPreview({ username }: { username: string }) {
         <InfoButton topic="score" onOpen={openInfo} />
       </>
     );
+  } else if (stage === "completed") {
+    content = (
+      <>
+        <CompletionPanel onRestart={resetAll} />
+        <InfoButton topic="encerramento" onOpen={openInfo} />
+      </>
+    );
   } else {
     content = (
       <>
-        <NeutralConfirmation onFinish={resetAll} />
-        <InfoButton topic="bloqueio" onOpen={openInfo} />
+        <NeutralConfirmation
+          buttonRef={finalizeRef}
+          onFinish={() => setDialog({ kind: "finalize" })}
+        />
+        <InfoButton topic="encerramento" onOpen={openInfo} />
       </>
     );
   }
@@ -420,6 +444,29 @@ export function StructuralPreview({ username }: { username: string }) {
               }}
             >
               Encerrar demonstração
+            </button>
+          </div>
+        </StructuralDialog>
+      ) : null}
+
+      {dialog?.kind === "finalize" ? (
+        <StructuralDialog
+          titleId="mgh-finalize-title"
+          descriptionId="mgh-finalize-description"
+          title={FINALIZE_CONFIRMATION_TITLE}
+          description={FINALIZE_CONFIRMATION_DESCRIPTION}
+          closeLabel={FINALIZE_BACK_BUTTON}
+          returnFocusRef={finalizeRef}
+          inertRootId="mgh-app-shell"
+          onClose={() => setDialog(null)}
+        >
+          <div className="mgh-actions">
+            <button
+              type="button"
+              className="mgh-button mgh-button--secondary"
+              onClick={handleFinalize}
+            >
+              {FINAL_BUTTON}
             </button>
           </div>
         </StructuralDialog>

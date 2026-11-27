@@ -15,6 +15,8 @@
  *   08-data-model-e-prototipo.md`, P-02, linhas 1469-1480.
  * - SELF, feedback e tela final: `07-evidencias-e-pilotagem.md`,
  *   linhas 1440-1501.
+ * - Confirmação de envio e P-14 — Tela final:
+ *   `08-data-model-e-prototipo.md`, linhas 1869-1909.
  * - Códigos, ordem e contagem de 56 respostas: `fontes/anx-003-xlsx/
  *   01-00-readme.md`, linhas 45-93.
  *
@@ -874,3 +876,27 @@ export const FINAL_TEXT = [
   "O resultado experimental, quando disponibilizado, deve ser tratado como uma hipótese estruturada de observação — não como diagnóstico, avaliação de competência ou definição da pessoa.",
 ] as const;
 export const FINAL_BUTTON = "FINALIZAR" as const;
+
+/**
+ * Confirmação de envio (08:1869-1891) e P-14 — Tela final (08:1893-1909).
+ * Segunda versão registrada para o encerramento; mantida ao lado da variante
+ * de 07 sem escolha silenciosa.
+ */
+export const FINALIZE_CONFIRMATION_TITLE =
+  "Finalizar sua participação?" as const;
+export const FINALIZE_CONFIRMATION_DESCRIPTION =
+  "Depois do envio definitivo, suas respostas não poderão mais ser alteradas por este link." as const;
+export const FINALIZE_BACK_BUTTON = "VOLTAR" as const;
+
+export const COMPLETED_TITLE =
+  "Obrigado pela sua participação." as const;
+export const COMPLETED_TEXT = [
+  "Você concluiu o MGH™ Piloto P1.0.",
+  "Esta é uma versão experimental em desenvolvimento. As informações coletadas nesta fase serão utilizadas para analisar o funcionamento e aperfeiçoar a metodologia.",
+  "Sem resultado.",
+  "Sem D/I/S/C.",
+] as const;
+
+/** Texto negativo registrado em 08:1905-1909; exibido apenas na informação. */
+export const COMPLETED_EXCLUSION_NOTE =
+  "“Seu perfil está sendo calculado.”" as const;

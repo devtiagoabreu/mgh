@@ -2,8 +2,14 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  COMPLETED_EXCLUSION_NOTE,
+  COMPLETED_TEXT,
+  COMPLETED_TITLE,
   CONSENT_STATEMENT,
   FEEDBACK_ITEMS,
+  FINALIZE_BACK_BUTTON,
+  FINALIZE_CONFIRMATION_DESCRIPTION,
+  FINALIZE_CONFIRMATION_TITLE,
   FROZEN_OPENING_VARIANT,
   OPENING_INSTRUCTIONS,
   SCENARIOS,
@@ -28,6 +34,13 @@ const handoffSource = readFileSync(
   resolve(
     root,
     "docs/002/fontes/mapa-de-governo-humano/16-handoff-02-architecture-e-instrument.md",
+  ),
+  "utf8",
+);
+const completionSource = readFileSync(
+  resolve(
+    root,
+    "docs/002/fontes/mapa-de-governo-humano/08-data-model-e-prototipo.md",
   ),
   "utf8",
 );
@@ -90,5 +103,19 @@ describe("Instrumento canônico exibido na Fase A", () => {
     for (const paragraph of FROZEN_OPENING_VARIANT) {
       expect(plainHandoff).toContain(paragraph);
     }
+  });
+
+  it("transcreve a confirmação e a tela final sem resultado", () => {
+    const plainCompletion = unbold(completionSource);
+    expect(plainCompletion).toContain(FINALIZE_CONFIRMATION_TITLE);
+    expect(plainCompletion).toContain(FINALIZE_CONFIRMATION_DESCRIPTION);
+    expect(plainCompletion).toContain(FINALIZE_BACK_BUTTON);
+    expect(plainCompletion).toContain(COMPLETED_TITLE);
+    for (const paragraph of COMPLETED_TEXT) {
+      expect(plainCompletion).toContain(paragraph);
+    }
+    expect(plainCompletion).toContain(COMPLETED_EXCLUSION_NOTE);
+    expect(COMPLETED_TEXT).toContain("Sem resultado.");
+    expect(COMPLETED_TEXT).toContain("Sem D/I/S/C.");
   });
 });
