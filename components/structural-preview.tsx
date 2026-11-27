@@ -1,6 +1,7 @@
 "use client";
 
 import { logoutAction } from "@/app/actions/auth";
+import type { AppearancePreference } from "@/lib/appearance/preference";
 import {
   useEffect,
   useId,
@@ -76,7 +77,13 @@ const INSPECTION_STATES: readonly Inspection[] = [
  * contexto, instruções, 48 cenários, transição, SELF, feedback e encerramento.
  * Não há API, persistência, score, relatório, perfil nem resposta individual.
  */
-export function StructuralPreview({ username }: { username: string }) {
+export function StructuralPreview({
+  username,
+  appearancePreference,
+}: {
+  username: string;
+  appearancePreference: AppearancePreference | null;
+}) {
   const [stage, setStage] = useState<Stage>("consent");
   const [consentDeclined, setConsentDeclined] = useState(false);
   const [scenarioIndex, setScenarioIndex] = useState(1);
@@ -359,7 +366,7 @@ export function StructuralPreview({ username }: { username: string }) {
           </div>
           <div className="mgh-actions">
             <InfoButton topic="demonstracao" onOpen={openInfo} />
-            <ThemeToggle />
+            <ThemeToggle preference={appearancePreference} />
             <div className="mgh-header__session">
               <span className="mgh-kicker">{username}</span>
               <button

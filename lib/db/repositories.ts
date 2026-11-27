@@ -121,3 +121,32 @@ export function listAuditLogs(
     tx.auditLog.findMany({ where: tenantScopedWhere(ctx) }),
   );
 }
+
+// ---------------------------------------------------------------------------
+// F1 — preferência de aparência. Nunca é dado do produto nem entra em score.
+// O userId vem do contexto verificado da sessão, nunca de request.
+// ---------------------------------------------------------------------------
+
+export type AppearancePreferenceValue = "LIGHT" | "DARK";
+
+export function findUserAppearancePreference(
+  client: TenantDbClient,
+  ctx: VerifiedTenantContext,
+): Promise<unknown> {
+  return withTenantTransaction(client, ctx, (tx) =>
+    tx.user.findFirst({ where: tenantScopedWhere(ctx, { id: ctx.userId }) }),
+  );
+}
+
+export function setUserAppearancePreference(
+  client: TenantDbClient,
+  ctx: VerifiedTenantContext,
+  appearancePreference: AppearancePreferenceValue,
+): Promise<unknown> {
+  return withTenantTransaction(client, ctx, (tx) =>
+    tx.user.update({
+      where: tenantScopedWhere(ctx, { id: ctx.userId }),
+      data: { appearancePreference },
+    }),
+  );
+}

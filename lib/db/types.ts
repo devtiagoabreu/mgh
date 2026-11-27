@@ -20,6 +20,10 @@ export interface SimpleDelegate {
     create: Record<string, unknown>;
     update: Record<string, unknown>;
   }): Promise<unknown>;
+  update(args: {
+    where: Record<string, unknown>;
+    data: Record<string, unknown>;
+  }): Promise<unknown>;
   count(args?: { where?: Record<string, unknown> }): Promise<number>;
 }
 

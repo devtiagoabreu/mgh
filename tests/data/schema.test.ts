@@ -165,4 +165,30 @@ describe("P1/P2 — schema tenant-scoped", () => {
       expect(audit?.body, `AuditLog sem ${field}`).toContain(field);
     }
   });
+
+  it("persiste a preferência de aparência no User, sem terceiro valor", () => {
+    const user = models().find((model) => model.name === "User");
+    expect(user?.body).toMatch(
+      /appearancePreference\s+AppearancePreference\?\s+@map\("appearance_preference"\)/,
+    );
+    const preferenceEnum =
+      schema.match(/enum AppearancePreference\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+    expect(preferenceEnum).toContain("LIGHT");
+    expect(preferenceEnum).toContain("DARK");
+    expect(preferenceEnum).not.toContain("SYSTEM");
+
+    const migration = readFileSync(
+      resolve(
+        process.cwd(),
+        "prisma/migrations/20261127180000_appearance_preference/migration.sql",
+      ),
+      "utf8",
+    );
+    expect(migration).toContain(
+      'CREATE TYPE "AppearancePreference" AS ENUM (\'LIGHT\', \'DARK\')',
+    );
+    expect(migration).toContain(
+      'ADD COLUMN "appearance_preference" "AppearancePreference"',
+    );
+  });
 });

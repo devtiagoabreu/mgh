@@ -1,3 +1,4 @@
+import { appearanceBootScript } from "@/lib/appearance/preference";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -9,17 +10,10 @@ export const metadata: Metadata = {
 
 /**
  * Aplica o tema antes da primeira pintura para evitar flash de tema errado.
- * Preferência salva > preferência do sistema > claro. Nenhum dado do produto.
+ * Cookie-espelho validado > preferência do sistema > claro. Nenhum dado do
+ * produto. A fonte autoritativa é o User; o cookie é apenas o espelho.
  */
-const themeInit = [
-  "try{",
-  "var t=localStorage.getItem('mgh-theme');",
-  "if(t!=='light'&&t!=='dark'){",
-  "t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';",
-  "}",
-  "document.documentElement.dataset.theme=t;",
-  "}catch(e){document.documentElement.dataset.theme='light';}",
-].join("");
+const themeInit = appearanceBootScript();
 
 export default function RootLayout({
   children,

@@ -1,8 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-
-const STORAGE_KEY = "mgh-theme";
+import { setAppearanceAction } from "@/app/actions/appearance";
+import type { AppearancePreference } from "@/lib/appearance/preference";
+import { useEffect, useSyncExternalStore } from "react";
 
 function subscribe(onStoreChange: () => void) {
   const observer = new MutationObserver(onStoreChange);
@@ -17,26 +17,39 @@ function getSnapshot() {
   return document.documentElement.dataset.theme === "dark";
 }
 
-function getServerSnapshot() {
-  return false;
-}
-
 /**
- * Alterna o atributo `data-theme` por meio de um botão iconográfico. O nome
- * acessível descreve a ação seguinte; ícone e tema são derivados do estado.
+ * Alterna o tema e persiste a escolha via Server Action. O cookie-espelho é
+ * gravado no servidor; aqui a mudança é aplicada na hora para não esperar o
+ * arredondamento da rede. A fonte autoritativa continua sendo o `User`.
  */
-export function ThemeToggle() {
-  const isDark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+export function ThemeToggle({
+  preference,
+}: {
+  preference: AppearancePreference | null;
+}) {
+  const isDark = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    () => preference === "DARK",
+  );
   const label = isDark ? "Ativar modo claro" : "Ativar modo escuro";
+
+  // Após a revalidação, reconcilia o DOM com a fonte autoritativa.
+  // Sem preferência salva, mantém a decisão do script de boot (sistema).
+  useEffect(() => {
+    if (preference === null) return;
+    const target = preference === "DARK" ? "dark" : "light";
+    if (document.documentElement.dataset.theme !== target) {
+      document.documentElement.dataset.theme = target;
+    }
+  }, [preference]);
 
   function toggle() {
     const next = isDark ? "light" : "dark";
     document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // Preferência não persistida; o tema atual continua aplicado.
-    }
+    const formData = new FormData();
+    formData.set("appearance", next.toUpperCase());
+    void setAppearanceAction(formData);
   }
 
   return (
