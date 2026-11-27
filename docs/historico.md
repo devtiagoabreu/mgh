@@ -1282,3 +1282,72 @@ O veredito P6 permanece `rework — escopo incompleto`: gates verdes não
 substituem leitor de tela real nem crítica visual humana. Nenhum participante
 real foi liberado. A regra §3.6 continua vigente. Servidor `npm run dev`
 segue ligado em `http://localhost:3000`, PID `24092`.
+
+### 2026-11-27 — F4.1: dashboard operacional e navegação ocultável
+
+O usuário pediu uma navegação que se oculta e uma página inicial com mais
+"cara de SaaS", com cards e KPIs dos motores. Antes da escrita, ficou definido
+que o dashboard é operacional do único motor ativo (MGH), e não o dashboard
+organizacional congelado do Parking Lot. Nenhum nome do Parking Lot aparece na
+interface; módulos inativos mantêm texto neutro. Não há score, D/I/S/C,
+compatibilidade percentual, resposta individual, perfil de participante ou
+conclusão sobre pessoas. Nenhuma metodologia, texto canônico, ID, SELF,
+consentimento, Privacy Notice, versão, gate ou regra de score foi alterado.
+
+Implementação (somente no PostgreSQL local; nenhuma operação contra o Neon):
+
+- `lib/db/dashboard.ts`: contagens tenant-scoped na mesma transação com
+  `set_config('app.current_tenant_id', ...)`. `participantRef` entra somente em
+  `COUNT(DISTINCT "participantRef")`; nenhuma resposta individual é lida.
+- `lib/metrics/dashboard.ts`: derivação pura e validação dos contadores. A taxa
+  de conclusão só é exibida com `n >= 5`; abaixo disso o painel mostra `—` e
+  `Suprimida: n < 5 execuções.`
+- `app/app/page.tsx`: `/app` passou de visão estrutural a dashboard operacional.
+  Exibe sete KPIs — `Execuções concluídas`, `Em andamento`, `Invalidadas`,
+  `Participantes com execução concluída`, `Respostas RAW`, `Taxa de conclusão`
+  e `Membros ativos` — mais o cartão do módulo ativo e as versões congeladas
+  lidas de `lib/config/versions.ts`. O campo obrigatório
+  `O que estes dados NÃO permitem dizer:` está no cartão `Estado do motor`.
+  Os zeros exibidos são contagens reais do banco local sintético; nenhum run
+  foi criado apenas para preencher cards.
+- `components/workspace-nav.tsx`: drawer no mobile, sidebar recolhível no
+  desktop, `aria-expanded`/`aria-controls`, `Escape`, backdrop, armadilha de
+  foco, `inert` no conteúdo e no skip link, foco inicial no botão de fechar
+  após a visibilidade e retorno ao gatilho ao fechar.
+- `app/globals.css`: grade do workspace, KPIs, cartões e precedência das regras
+  contextuais sobre `.mgh-icon-button`, que antes revertia `display: none` do
+  toggle e comprimia a coluna de conteúdo para 224 px.
+- `tests/data/dashboard.test.ts`, `tests/metrics/dashboard.test.ts` e
+  `tests/workspace/f4.test.ts`: consultas tenant-scoped, ausência de leitura
+  individual, zeros reais, supressão `n < 5`, cálculo em `n = 5` e paridade da
+  navegação.
+
+Verificação reexecutada antes deste registro:
+
+| Evidência | Resultado |
+|---|---|
+| `npx next typegen` + `npm run typecheck` | limpos |
+| `npm run lint` | limpo |
+| `npm test` | 18 arquivos, 99 testes aprovados |
+| `npm run build` | compilou; `/`, `/api/auth/[...nextauth]`, `/app`, `/app/mgh` e `/app/perfil` dinâmicos; `/login` e `/_not-found` estáticos |
+| `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| `npm run prisma:validate` | schema válido |
+| `git diff --check` | limpo |
+| Auditoria CDP/axe, 9 estados | `violations: []` e `incomplete: []` em desktop claro/escuro, mobile com drawer aberto/fechado, `/app/mgh`, `/app/perfil` e forced-colors com ressalva abaixo |
+| Geometria e conteúdo | sem overflow, sem alvos < 24×24, 7 KPIs, campo de limitação presente e nenhum termo proibido em `/app` desktop/mobile |
+| Navegação desktop | `224px 945px` → `56px 1113px`; `aria-expanded` de `"true"` para `"false"`; lista some |
+| Navegação mobile | abre e fecha por botão, `Escape` e backdrop; `aria-controls`, `inert` no conteúdo/skip link e foco no botão `Fechar navegação` |
+| Forced colors | axe reportou `color-contrast:serious` em `.mgh-button[href$="mgh"]`; estilos computados mostram `rgb(255, 255, 0)` sobre `rgb(0, 0, 0)`, razão 19,56:1 calculada por código. Classificado como falso positivo do axe neste ambiente, sem alteração de CSS |
+
+A primeira rodada de auditoria encontrou três problemas reais, corrigidos antes
+da verificação final: o toggle desktop continuava visível por precedência de
+`.mgh-icon-button`, o cartão do módulo ficava com coluna de texto em largura
+zero e o foco do drawer era chamado enquanto o botão ainda estava
+`visibility: hidden`. Nenhum deles era erro de metodologia ou de dado canônico.
+
+O veredito P6 permanece `rework — escopo incompleto`: gates e auditoria
+automática verdes não substituem leitor de tela real nem crítica visual
+humana. Nenhum participante real foi liberado. A regra §3.6 continua vigente.
+Servidor `npm run dev` segue ligado em `http://localhost:3000`; apenas
+`localhost` é usado no fluxo de autenticação. Commit e push foram autorizados
+neste ciclo; hashes e resultado do push ficam no `git log` desta rodada.

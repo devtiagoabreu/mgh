@@ -126,7 +126,8 @@ metodologia, gates, textos canônicos nem o plano P0–P7 abaixo.
 | F1 | Preferência de aparência no `User`, com cookie-espelho validado | Concluída e comitada em `main` (`43adab5`); validada somente no local; push neste ciclo |
 | F2 | Tokens do MGH Design System v1.0 traduzidos para CSS | Implementada, validada localmente e comitada em `main` (`0a030c4`); push neste ciclo |
 | F3 | Seletor de tema no cabeçalho e em `Perfil → Aparência` | Concluída e publicada em `main` (`c2a9358`); validada localmente em claro/escuro |
-| F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Concluída localmente; `/app` visão geral, `/app/mgh` instrumento, `/app/perfil` mantido |
+| F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Concluída e publicada em `main` (`90ab302`); `/app/mgh` instrumento, `/app/perfil` mantido |
+| F4.1 | Dashboard operacional em `/app` e navegação ocultável | Implementada, validada localmente e comitada neste ciclo; KPIs reais do tenant local, sem score ou dados de pessoas |
 | F5 | Cadastros sintéticos de tenant, membros e coorte; planos sem cobrança | Não iniciada |
 | F6 | MGH em governança: sem score, KPIs D/I/S/C, agregados ou respostas individuais | Não iniciada |
 
@@ -436,6 +437,16 @@ continua com o seletor de aparência. A casca usa navegação lateral no desktop
 e cabeçalho compacto no mobile, com link ativo por `aria-current`. Nenhum nome
 do Parking Lot foi exibido; módulos inativos aparecem apenas como
 "indisponíveis nesta fase". Não há KPI, score, contagem, relatório ou resposta
-individual na visão geral. Nenhuma operação foi feita contra o Neon. O próximo
-passo continua dependendo de decisão separada: reconciliação de `ANX-003`,
-consentimento/Privacy Notice, RPO/RTO e auditoria com leitor de tela real.
+individual na visão geral. Nenhuma operação foi feita contra o Neon.
+
+A F4.1 substituiu a visão estrutural por um dashboard operacional do motor MGH.
+Os sete KPIs são contagens tenant-scoped lidas do PostgreSQL local sintético:
+execuções concluídas, em andamento e invalidadas, referências opacas distintas
+com execução concluída, registros RAW, membros ativos e taxa de conclusão. A
+taxa é suprimida quando `n < 5`; o painel traz o campo obrigatório
+`O que estes dados NÃO permitem dizer:` e nenhum score, D/I/S/C ou conclusão
+sobre pessoas. A navegação passou a ser recolhível no desktop e drawer no
+mobile, com foco, `inert` e ARIA verificados. Nenhuma operação foi feita contra
+o Neon. O próximo passo continua dependendo de decisão separada: reconciliação
+de `ANX-003`, consentimento/Privacy Notice, RPO/RTO e auditoria com leitor de
+tela real.

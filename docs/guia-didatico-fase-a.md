@@ -525,11 +525,19 @@ nenhum participante real foi liberado.
 A casca SaaS também ganhou uma visão geral em `/app`: nela, o MGH aparece como
 único módulo ativo e os demais são apenas descritos como indisponíveis. O
 instrumento passou a abrir em `/app/mgh`, e `Perfil → Aparência` continuou no
-mesmo lugar. No computador, a navegação fica na lateral; no celular, ela vira
-uma barra compacta. A visão geral não mostra notas, contagens, gráficos nem
-respostas de participantes — ela apenas organiza o acesso. Os textos do
-instrumento, os códigos, os gates e a regra de score permanecem exatamente
-como estavam.
+mesmo lugar. No computador, a navegação fica na lateral e pode ser recolhida;
+no celular, ela vira um painel que abre e fecha.
+
+A página inicial agora é um painel operacional. Ela mostra contagens do banco
+local de testes: execuções concluídas, em andamento e invalidadas,
+participantes com execução concluída (sem nome), respostas registradas,
+membros ativos e taxa de conclusão. Quando há menos de cinco execuções, a taxa
+não é mostrada. O painel também deixa claro o que esses números **não**
+permitem dizer: não identificam risco, não medem competência e não apoiam
+decisões sobre pessoas. Não há notas, gráficos de perfil nem respostas
+individuais. Os textos do instrumento, os códigos, os gates e a regra de score
+permanecem exatamente como estavam. Nenhuma pessoa real foi liberada no
+teste.
 
 — **Alisson Campos**
 Desenvolvido por **Tiago de Abreu**.
