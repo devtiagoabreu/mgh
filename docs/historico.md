@@ -667,3 +667,55 @@ continua vigente.
 
 Autorização do usuário: **commit e push**. Os documentos deste registro foram
 atualizados antes dos commits; hashes ficam no `git log` desta rodada.
+
+### 2026-11-26 — Modal de saída, cabeçalho e ícones de informação
+
+O usuário pediu: o modal do `Sair` deve oferecer `ENCERRAR SESSÃO` e
+`REINICIAR SEQUÊNCIA MGH`; o botão `Encerrar sessão` deve sair do cabeçalho;
+os botões “i” devem ser ícones compactos com tratamento claro/escuro; ícone,
+nome do usuário e `Sair` ficam mais à direita; o “i” de consentimento e
+privacidade fica ao lado do título `Consentimento`, dentro do cartão. Nenhum
+texto canônico, ID, SELF, consentimento, versão ou regra de score foi
+alterado — apenas rótulos de controle e apresentação.
+
+- `components/structural-preview.tsx`: modal `Sair da demonstração?` passou
+  a conter `Encerrar sessão` (`logoutAction`) e `Reiniciar sequência MGH`
+  (`resetAll`); o cabeçalho perdeu o botão de logout e agrupou ícone, nome do
+  usuário e `Sair` em `mgh-header__session`.
+- `components/info-button.tsx` e `components/theme-toggle.tsx`: ícones SVG de
+  32×32 px, nome acessível por texto oculto/`aria-label` e `title`. O tema
+  alterna ícone e rótulo (`Ativar modo escuro` / `Ativar modo claro`).
+- `components/consent-gate.tsx`: novo slot `info`, renderizado em
+  `mgh-card__header`, ao lado do título `Consentimento`.
+- `app/globals.css`: estilos do botão iconográfico, alinhamento da sessão,
+  cabeçalho do cartão e `form` inline; `forced-colors` passou a incluir
+  `.mgh-icon-button`.
+
+Verificação reexecutada:
+
+| Evidência | Resultado |
+|---|---|
+| Fluxo completo: abertura, contexto, instruções, escolha, PRC, transição, SELF, feedback, confirmação, diálogos, tela final e 4 estados | 48 estados × 3 configurações: `violations: []`, `incomplete: []`, sem overflow e sem alvos < 24×24 |
+| Modal `Sair da demonstração?` | `violations: []` em mobile claro e desktop escuro; botões `Encerrar sessão`, `Reiniciar sequência MGH` e `Voltar à demonstração`; foco inicial no último, `inert` no shell e no skip link, armadilha de Tab e Esc preservados |
+| Ações do modal | `Reiniciar sequência MGH` volta ao consentimento em `/` sem encerrar a sessão; `Encerrar sessão` redireciona para `/login` |
+| Botões “i” e tema | nome acessível preservado, ícone SVG decorativo, alvo 32×32; “i” de consentimento dentro do cartão; nenhum `docs/`, `ANX-003`, `TELA 0` ou número de linha aparece na interface |
+| Lighthouse de acessibilidade | score `1` no mobile e no desktop |
+| Teclado | skip link visível no foco e Enter leva a `#mgh-conteudo`; anel `2px solid`; modal mantém foco, Esc fecha e retorna ao gatilho |
+| Gates locais | `typecheck`, `lint`, `test` (11 arquivos / 57 testes) e `build` limpos |
+
+Uma primeira execução capturou `region:moderate` no skip link durante a
+navegação; a reexecução com espera explícita pela página autenticada ficou
+limpa, e o diagnóstico isolado da regra `region` aprovou o skip link.
+
+Limpeza: token de teste removido do Neon (`removed: 1`) e apagado do disco;
+`_tmp-create-session.mjs` removido; `next-env.d.ts` revertido após alteração
+gerada pelo `next dev`; servidor de desenvolvimento encerrado.
+
+**Veredito P6 permanece `rework — escopo incompleto`**: gates automatizados
+verdes não bastam sem leitor de tela real e crítica visual humana. Nenhum
+participante real foi liberado. A regra §3.6 continua vigente.
+
+Estado do Git: frente de UI pronta em `main`; o usuário autorizou **commit e
+push** nesta rodada. Código em `d430a12`; o registro documental e o push
+completam a rodada. A documentação operacional foi atualizada antes do
+commit (§3.7).

@@ -193,8 +193,9 @@ Em linguagem simples: é como contar quantas páginas um redator escreveu
 para calcular, de forma aproximada, quanto tempo levou. Serve para planejar, não para
 cobrar nem para provar trabalho.
 
-- Features já publicadas: **≈ 242 h estimadas**.
-- Frente de responsividade/acessibilidade em andamento: **≈ 3 h estimadas**.
+- Features já publicadas: **≈ 245 h estimadas**.
+- Frente de modal de saída, cabeçalho e ícones, código em `d430a12`, com
+  registro documental e push autorizados: **≈ 4 h 15 min estimadas**.
 - Features futuras: faixas macro (P3, P4, P7, pendências legais e de
   recuperação) no próprio documento.
 
@@ -216,6 +217,13 @@ que cada um faz:
 | `npm run build` | Monta a versão de produção | Compilou; `/` dinâmica, `/login` e `/_not-found` estáticas |
 | axe + Lighthouse | Verifica acessibilidade renderizada | 48 estados sem violações; score `1` no mobile e no desktop |
 | `git diff --check` | Procura espaços/quebras de linha problemáticos | Limpo |
+
+Na frente mais recente, o modal do `Sair` passou a oferecer `Encerrar sessão`
+e `Reiniciar sequência MGH`. Reiniciar volta ao consentimento sem sair do
+login; encerrar leva ao login. Os botões “i” e o controle de tema são ícones
+de 32×32 px, e o “i” de consentimento fica dentro do cartão, ao lado do
+título. Tudo isso foi reauditado nos dois temas e nos dois tamanhos de tela,
+sem alterar texto canônico nem regra de score.
 
 Os testes automáticos cobrem configuração, autorização, dados/banco, motor
 de score, instrumento canônico e login da demonstração. Os 9 casos de ouro

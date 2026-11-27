@@ -75,8 +75,9 @@ Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
 | Encerramento canônico sem resultado | `8fb9119` | 178 + 0 | ≈ 3 h 30 min |
 | `AGENTS.md` gerado pelo Next.js | `e90caa9` | 0 + 9 | 0 min |
 | Registro documental do login e do push | `bf25460` | 0 + 75 | ≈ 30 min |
+| Responsividade e acessibilidade da superfície | `06085dc` + `0a2c2a5` | 30 + 290 | ≈ 3 h |
 
-**Total estimado das features publicadas:** ≈ 242 h.
+**Total estimado das features publicadas:** ≈ 245 h.
 O total é a soma das estimativas acima; não é tempo medido.
 
 ---
@@ -85,14 +86,18 @@ O total é a soma das estimativas acima; não é tempo medido.
 
 | Feature | Estado | Base da estimativa | Estimativa |
 |---|---|---|---:|
-| Responsividade e acessibilidade da superfície | em andamento | 17 linhas versionadas + auditoria CDP/axe/Lighthouse fora do repo | ≈ 3 h |
+| Modal de saída, cabeçalho e ícones de informação | código em `d430a12`; registro documental nesta rodada | 161 linhas de código alteradas (≈ 3 h 15 min a 50 linhas/h) + auditoria CDP/axe/Lighthouse fora do repo (≈ 1 h) | ≈ 4 h 15 min |
 
-Evidências já produzidas nessa frente: 48 estados auditados em
-`390×844` e `1280×800`, claro/escuro; login auditado nos mesmos padrões;
-Lighthouse de acessibilidade `1` no mobile e no desktop; teclado, skip link,
-armadilha do modal, Esc, 200/400% e `prefers-reduced-motion` verificados.
-A auditoria com leitor de tela real e a crítica visual humana seguem
-pendentes, então o veredito de design continua `rework — escopo incompleto`.
+Evidências já produzidas nesta frente: modal `Sair da demonstração?` com
+`Encerrar sessão` e `Reiniciar sequência MGH`, retorno ao consentimento sem
+sair do login, e `Encerrar sessão` levando a `/login`; botões “i” e tema em
+ícone de 32×32 com nome acessível; “i” de consentimento dentro do cartão,
+ao lado do título; 48 estados auditados em `390×844` e `1280×800`,
+claro/escuro, sem `violations` nem `incomplete`; Lighthouse de
+acessibilidade `1` no mobile e no desktop; foco inicial, `inert`, armadilha
+de Tab e Esc preservados. A auditoria com leitor de tela real e a crítica
+visual humana seguem pendentes, então o veredito de design continua
+`rework — escopo incompleto`.
 
 ---
 

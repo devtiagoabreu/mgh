@@ -50,7 +50,7 @@ derived_from:
 | Aplicação | Demonstração protegida por login no banco; instrumento canônico renderizado, sem score/IA/resultado |
 | Ambiente | `.env` local criado (não versionado), `.env.example` versionado |
 | Plano | P0, P1/P2, P5 e P6 estrutural verificados; integração final green em `docs/evidencias/integracao-final.md` |
-| Horas | `docs/horas-de-desenvolvimento.md`: estimativas por feature (≈ 242 h publicadas + ≈ 3 h da frente atual), nunca medição ou cobrança |
+| Horas | `docs/horas-de-desenvolvimento.md`: estimativas por feature (≈ 245 h publicadas + ≈ 4 h 15 min da frente atual), nunca medição ou cobrança |
 | Acessibilidade | Gates automatizados verdes; veredito P6 segue `rework — escopo incompleto` até leitor de tela e crítica visual humana |
 
 **Bloqueios que permanecem abertos:** `ANX-003` DRAFT (0/48 textos exatos,
@@ -340,6 +340,7 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-25 (12) | P6 estrutural concluído: tokens em 3 camadas, light/dark, componentes com placeholders sintéticos; veredito de design `rework — escopo incompleto` até auditoria renderizada; evidência em `docs/evidencias/p6-design.md`. |
 | 2026-11-25 (13) | P1/P2 concluídos: 17 modelos tenant-scoped, `FORCE RLS`, trigger append-only, DAL parametrizado, seed sintético; 23 testes de dados; evidência em `docs/evidencias/p1-p2.md`. |
 | 2026-11-25 (14) | Integração final verde: `audit`, `prisma validate/generate`, `lint`, `typecheck`, `test` (48), `build` e `diff --check`; evidência em `docs/evidencias/integracao-final.md`. Commits por feature preservados. |
+| 2026-11-26 (15) | Controles de saída revisados: modal com `Encerrar sessão` e `Reiniciar sequência MGH`, cabeçalho com usuário/`Sair` à direita, ícones de 32×32 para “i” e tema e “i” de consentimento dentro do cartão. 48 estados reauditados e Lighthouse `1`; código em `d430a12`, com registro documental e push autorizados nesta rodada. |
 
 ---
 
