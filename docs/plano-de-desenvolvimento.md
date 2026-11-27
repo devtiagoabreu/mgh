@@ -124,7 +124,7 @@ metodologia, gates, textos canônicos nem o plano P0–P7 abaixo.
 |---|---|---|
 | F0 | Auth.js com Credentials (e-mail/senha), credencial global e sessão tenant-scoped | Concluída e publicada em `main` (`36d8778`); login legado removido; ambiente local operacional |
 | F1 | Preferência de aparência no `User`, com cookie-espelho validado | Concluída e comitada em `main` (`43adab5`); validada somente no local; push neste ciclo |
-| F2 | Tokens do MGH Design System v1.0 traduzidos para CSS | Não iniciada |
+| F2 | Tokens do MGH Design System v1.0 traduzidos para CSS | Implementada, validada localmente e comitada em `main` (`0a030c4`); push neste ciclo |
 | F3 | Seletor de tema no cabeçalho e em `Perfil → Aparência` | Não iniciada |
 | F4 | Shell SaaS em `/app/...`, com MGH como único módulo ativo | Não iniciada |
 | F5 | Cadastros sintéticos de tenant, membros e coorte; planos sem cobrança | Não iniciada |
@@ -366,6 +366,7 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 | 2026-11-27 (18) | Login legado removido em feature separada: modelos, tabelas, seed, script, variáveis e testes `demo-password` excluídos; migration `20261127150000_drop_demo_login` aplicada. Verificação verde (11 arquivos / 59 testes); commit e push seguem suspensos. |
 | 2026-11-27 (19) | PostgreSQL 16 local dedicado (`mgh_local`) com 4 migrations aplicadas, seed sintético idempotente e RLS confirmado; `NODE_ENV` removido de `.env.local` para corrigir build. Fluxo completo validado em navegador e build limpo. Usuário autorizou push: F0 publicada em `main` e próxima frente F1 agendada. |
 | 2026-11-27 (20) | F1 implementada e validada somente no local: enum/campo de aparência no `User`, migration aplicada, cookie-espelho validado, Server Action tenant-scoped, boot sem `localStorage`, testes e verificação em navegador. Legado do Neon restaurado no banco a pedido do usuário; nova instrução veta mudanças no Neon e reserva sua reconstrução para depois. Commit em `43adab5`. |
+| 2026-11-27 (21) | F2 implementada: tokens do MGH DS v1.0 traduzidos para CSS em camada separada, ativação futura por `data-ds="mgh-v1"` sem alterar `data-theme`. Documento de origem versionado por decisão do usuário; glows da seção 2.3 escolhidos sobre a variante da seção 5. Teste de paridade, gate de valor cru e contrastes calculados; FINDING 4,23:1 no botão primário registrado sem correção silenciosa. Commit em `0a030c4`. |
 
 ---
 
@@ -401,7 +402,7 @@ sobreposição, usar worktrees (`git-worktrees`) e integrar por branch.
 ## 9. Próximo passo
 
 F0 está publicada em `main`. F1 foi validada em banco local e navegador e
-comitada em `main` (`43adab5`); o push está autorizado neste ciclo. Os quatro
+publicada em `main` (`43adab5` + `6815414`, push `265415e..6815414`). Os quatro
 documentos operacionais foram atualizados antes do commit (regra §3.7).
 PostgreSQL 16 local dedicado segue operacional para a demonstração
 (`npm run dev` em `http://localhost:3000`); `.env` (Neon) e `.env.local`
@@ -409,6 +410,10 @@ PostgreSQL 16 local dedicado segue operacional para a demonstração
 
 O Neon **não será alterado**: o usuário determinou que ele fique reservado
 para ser refeito depois com a aplicação. Nenhuma migration, seed ou escrita
-será executada lá nesta frente. O próximo passo, após a publicação da F1, é
-**F2 — tokens do MGH Design System v1.0 traduzidos para CSS**. Deploy público
-da casca SaaS depende de decisão e configuração separadas na Vercel.
+será executada lá nesta frente. A F2 foi implementada e validada somente no
+local e comitada em `main` (`0a030c4`); o push está autorizado neste ciclo.
+Os quatro documentos operacionais foram atualizados antes do commit
+(regra §3.7). O próximo passo é **F3 — seletor de tema no cabeçalho e em
+`Perfil → Aparência`**, que também decidirá o FINDING de contraste do botão
+primário e quando ativar `data-ds`. Deploy público da casca SaaS depende de
+decisão e configuração separadas na Vercel.

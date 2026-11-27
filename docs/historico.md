@@ -1015,7 +1015,65 @@ O veredito P6 permanece `rework — escopo incompleto`: esta checagem de tema
 não substitui leitor de tela real nem crítica visual humana. Nenhum
 participante real foi liberado; a regra §3.6 continua vigente.
 
-Commit da F1 em `main`: `43adab5` (13 arquivos, 329 inserções, 30 remoções).
-O push está autorizado neste ciclo e será executado após este registro
-documental. O arquivo `docs/mgh-design-system/mgh-design-system-01.md`
-permanece untracked e preservado.
+F1 publicada em `main`: `43adab5` (código, 13 arquivos, 329 inserções,
+30 remoções) e `6815414` (registro documental), com push
+`265415e..6815414`. O arquivo `docs/mgh-design-system/mgh-design-system-01.md`
+foi preservado e passa a ser versionado na F2, por autorização do usuário.
+
+### 2026-11-27 — F2: tokens do MGH Design System v1.0 em CSS
+
+O usuário autorizou a F2. Perguntas feitas **antes** de qualquer escrita e
+respondidas pelo usuário:
+
+1. O documento `docs/mgh-design-system/mgh-design-system-01.md` estava
+   untracked. Decisão: **incluí-lo no commit** como fonte verificável dos
+   tokens; o teste de paridade lê o arquivo no repositório.
+2. Ativação do tema: **atributo separado `data-ds="mgh-v1"`**. O
+   `data-theme="light|dark"` da Fase A permanece intacto; quando `data-ds`
+   não está presente, nenhuma decisão visual muda.
+3. Divergência interna do documento nos glows: seção 2.3 traz
+   `0 0 20px rgba(..., 0.35)` e a config Tailwind da seção 5 traz
+   `0 0 25px rgba(..., 0.3)`. Decisão: **seção 2.3**; a variante da seção 5
+   fica registrada como divergência não aplicada.
+
+Entrega: `app/mgh-ds-v1.css`, importado em `app/layout.tsx` **depois** de
+`globals.css` (ordem confirmada no guia de CSS do Next.js instalado). A
+camada contém primitivos `--mgh-ds-primitive-*` transcritos do documento,
+alias semânticos que redirecionam os nomes já usados pela superfície e alias
+exclusivos do DS para uso futuro. Nenhum componente, boot script, gate,
+texto canônico, regra de score, migration ou dado do banco foi alterado.
+`data-ds` ainda não é definido pela aplicação: a F3 decide o seletor.
+
+Contrastes dos pares descritos no documento, **calculados por código** com
+sRGB/WCAG (não são valores definidos pela metodologia): branco/obsidian-950
+19,22:1; roxo/obsidian-950 4,54:1; roxo/obsidian-900 4,22:1;
+ciano-claro/obsidian-900 8,33:1; esmeralda/obsidian-800 6,86:1;
+rosa/obsidian-950 5,11:1; roxo-glow/obsidian-800 3,06:1 (não texto).
+
+**FINDING registrado, sem correção silenciosa:** o documento define
+`text-white` sobre `purple-electric` no botão primário; o cálculo dá
+4,23:1, abaixo de 4,5:1 para texto normal. A F2 transcreve a decisão do
+documento e não troca a cor. A resolução cabe à autoridade de design na F3.
+Também ficou registrado que `body` mantém `font-family` do P6
+(`system-ui`); a família do DS está disponível como token para a F3.
+
+Verificação reexecutada antes deste registro:
+
+| Evidência | Resultado |
+|---|---|
+| `npm test` | 14 arquivos, 75 testes aprovados |
+| `npm run typecheck` / `npm run lint` | limpos |
+| `npm run build` | compilou; `/`, `/api/auth/[...nextauth]` e `/app` dinâmicos; `/login` e `/_not-found` estáticos |
+| `npm audit --audit-level=high` | `found 0 vulnerabilities` |
+| `npm run prisma:validate` | schema válido |
+| `git diff --check` | limpo |
+| Navegador (CDP, `/login`) | sem `data-ds`, superfície clara P6 e corpo 16px; com `data-ds`, superfície `rgb(11, 14, 27)`, texto `rgb(255, 255, 255)` e corpo 14px; `data-theme="dark"` + `data-ds` mantém os valores do DS; remover `data-ds` restaura o tema anterior |
+
+Nenhuma operação foi feita contra o Neon. O servidor de desenvolvimento foi
+encerrado e `next-env.d.ts` foi revertido após a checagem em navegador.
+O veredito P6 permanece `rework — escopo incompleto`: checar variáveis
+computadas não substitui leitor de tela real nem crítica visual humana.
+
+Commit da F2 em `main`: `0a030c4` (5 arquivos, 703 inserções, incluindo o
+documento de origem agora versionado). Push autorizado neste ciclo, após o
+registro documental. Nenhuma operação contra o Neon foi feita na F2.

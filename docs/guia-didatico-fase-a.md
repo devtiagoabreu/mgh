@@ -260,6 +260,15 @@ sistema. Isso não entra no instrumento, no score nem em relatório. A mudança
 foi aplicada só no banco local; o banco do Neon foi deixado como estava,
 preparado para ser refeito depois com a aplicação.
 
+A frente seguinte preparou o "vocabulário visual" do MGH: cores, tamanhos de
+texto, arredondamentos, sombras e gradientes descritos no documento de design
+foram transformados em regras que o navegador entende. Elas ficam guardadas
+num arquivo separado e **não ligam ainda**: é como ter a paleta organizada na
+estante, sem pintar a parede. A chave para ligar será um rótulo chamado
+`data-ds`, que a frente seguinte pode colocar na página. O claro e o escuro
+de hoje continuam funcionando do mesmo jeito. Nada disso mexe no
+instrumento, na pontuação nem no banco do Neon.
+
 Os testes automáticos cobrem configuração, autorização, dados/banco, motor
 de score, instrumento canônico, login e resolução da credencial. Os 9 casos de ouro
 do motor cobrem,
