@@ -12,6 +12,7 @@ canonical: false
 derived_from:
   - docs/historico.md
   - docs/plano-de-desenvolvimento.md
+  - docs/horas-de-desenvolvimento.md
   - docs/evidencias/integracao-final.md
   - docs/governanca/01-gate-de-crise.md
   - docs/governanca/02-claims-e-evidencia.md
@@ -173,10 +174,29 @@ antes de participante real · `G7` restore testado e RPO/RTO decididos.
 | `57611d3` | branch | P1/P2: modelo tenant-scoped, RLS `FORCE`, DAL, seed sintético |
 | `3009899` | branch | Evidência final de integração |
 
-**Situação do Git hoje:** estamos na branch
-`feature/mgh-phase-a-foundation`, publicada com acompanhamento remoto.
-A `main` continua em `de13285`. **Nenhum merge e nenhum PR aberto.**
-Commits são feitos por feature — nunca numa alteração única gigante.
+**Situação do Git hoje:** a Fase A vive somente em `main`. As branches
+`feature/mgh-phase-a-foundation` e `docs/002-contexto-canonico` foram
+removidas após merge; nenhum commit foi perdido. **Nenhum PR foi aberto.**
+Commits continuam sendo feitos por feature — nunca numa alteração única
+gigante. Todo commit ou push é precedido pela atualização dos quatro
+documentos operacionais (regra §3.7 do histórico).
+
+### 4.4 Quanto tempo cada entrega levou
+
+O arquivo `docs/horas-de-desenvolvimento.md` estima o esforço de cada
+feature a partir das linhas versionadas. Ele não mediu tempo com
+cronômetro: usou taxas declaradas (50 linhas de código por hora, 150 de
+documentação e 1.500 de conversão assistida) e marcou tudo como
+`ESTIMATIVA`.
+
+Em linguagem simples: é como contar quantas páginas um redator escreveu
+para calcular, de forma aproximada, quanto tempo levou. Serve para planejar, não para
+cobrar nem para provar trabalho.
+
+- Features já publicadas: **≈ 242 h estimadas**.
+- Frente de responsividade/acessibilidade em andamento: **≈ 3 h estimadas**.
+- Features futuras: faixas macro (P3, P4, P7, pendências legais e de
+  recuperação) no próprio documento.
 
 ---
 
@@ -192,19 +212,23 @@ que cada um faz:
 | `npm run prisma:generate` | Gera o código que conversa com o banco | Prisma Client v7.10.1 gerado |
 | `npm run lint` | Revê estilo e erros comuns de código | Limpo |
 | `npm run typecheck` | Confere tipos (evita erro de "tipo errado") | Limpo |
-| `npm test` | Roda os testes automáticos | 9 arquivos, 48 testes passaram |
-| `npm run build` | Monta a versão de produção | Compilou; rotas `/` e `/_not-found` estáticas |
+| `npm test` | Roda os testes automáticos | 11 arquivos, 57 testes passaram |
+| `npm run build` | Monta a versão de produção | Compilou; `/` dinâmica, `/login` e `/_not-found` estáticas |
+| axe + Lighthouse | Verifica acessibilidade renderizada | 48 estados sem violações; score `1` no mobile e no desktop |
 | `git diff --check` | Procura espaços/quebras de linha problemáticos | Limpo |
 
-Conforme as evidências registradas, os 48 testes se dividem em **11** do
-P0 (configuração e autorização), **23** de dados/banco e **14** do motor
-de score. Os 9 casos de ouro cobrem,
+Os testes automáticos cobrem configuração, autorização, dados/banco, motor
+de score, instrumento canônico e login da demonstração. Os 9 casos de ouro
+do motor cobrem,
 entre outros: aplicação completa (56/56), incompleta (55/56), opção
 desconhecida, versão divergente, regra ausente, SELF/RG injetados, DR
 reordenado, recomputação idêntica e nova versão de scoring.
 
 **Importante:** "verde" aqui significa que o código passou. Não significa
-que o produto pode ser publicado — faltam as decisões da seção 6.
+que o produto pode ser publicado — faltam as decisões da seção 6. O mesmo
+vale para a acessibilidade automatizada: os gates estão verdes, mas o
+veredito de design continua `rework — escopo incompleto` até leitor de tela
+real e crítica visual humana.
 
 ---
 
@@ -212,21 +236,22 @@ que o produto pode ser publicado — faltam as decisões da seção 6.
 
 | ID | Em palavras simples | Quem decide |
 |---|---|---|
-| `ANX-003` / `BANK-0.2` | Os textos oficiais dos itens ainda não existem. Estão `DRAFT`; 0 de 48 cenários e 0 IDs canônicos recuperados | MGH |
-| `REQ-INST-012` | Publicação e teste ponta a ponta esperam o banco canônico (`WAITING_BANK`) | MGH |
+| `ANX-003` / `BANK-0.2` | O xlsx ainda marca `scenario_text_canonical = SOURCE_REQUIRED`. O documento mestre traz os 48 enunciados/opções e o registro `ANX-003` traz códigos, ordem e 56 respostas; reconciliação formal pendente | MGH |
+| `REQ-INST-012` | Os textos literais já aparecem na demonstração protegida por login. Publicação/E2E formais ainda dependem da autoridade MGH | MGH |
 | `OPEN-INST-001` | Rótulos e texto finais de `SELF-01..08` pendentes | MGH |
 | `OPEN-LEGAL-001` | Consentimento jurídico final pendente — bloqueia participante real | Legal/Privacy |
 | `OPEN-LEGAL-002` | Privacy Notice final pendente | Legal/Privacy |
 | `OPEN-TEN-001` | Mentor ver respostas individuais: decisão pendente. Default é somente agregados | MGH + Legal |
 | `OPEN-TECH-006` | RPO/RTO (quanto tempo podemos ficar fora e quanto dado perdemos) e restore testado pendentes | Tecnologia |
 | `SPECIFICATION CONFLICT` | Duas versões do desfecho de Gate Review: `REPEAT_WAVE` e `REPEAT_O0_WAVE`. As duas ficam registradas; nenhuma virou regra | MGH |
-| RLS em banco real | A separação entre tenants foi verificada só no código. Falta executar em Neon com seed sintético | Tecnologia |
-| Acessibilidade renderizada | Faltam axe/Lighthouse, leitor de tela, 200/400%, forced colors, 1280×800 e 390×844 | Design/Acessibilidade |
+| RLS em banco real | A migration já foi aplicada no Neon do branch local. Falta validação runtime com seed sintético de dois tenants e branches `qa/*`/`preview/*` | Tecnologia |
+| Acessibilidade renderizada | axe/Lighthouse, 200/400%, forced colors, 1280×800 e 390×844 já foram auditados. Faltam leitor de tela real e crítica visual humana | Design/Acessibilidade |
 
 **Consequência direta:** piloto com participantes reais está **bloqueado**.
-Publicação no Vercel está tecnicamente pronta, mas depende de (1) variáveis
-de ambiente cadastradas manualmente, (2) migration aplicada em branch
-sintética do Neon e (3) decisão explícita do dono do repositório.
+A migration local já foi aplicada e o build no Vercel está tecnicamente
+pronto, mas a liberação depende de (1) variáveis de ambiente cadastradas
+manualmente, (2) branches sintéticos com seed e (3) decisão explícita da
+autoridade MGH.
 
 O veredito do P6 segue **`rework — escopo incompleto`** até a auditoria
 renderizada. Isso é pendência de evidência, não necessariamente erro de
@@ -396,9 +421,9 @@ compatibilidade percentual, `job fit`, `hiring` e `promotion`.
 
 ## 11. Como retomar o trabalho
 
-**Estado em 26/11/2026:** branch `feature/mgh-phase-a-foundation`.
-O dump `docs/exemplo_projeto_mgh.txt` foi **descartado** nesta data,
-com autorização do usuário; ele não existe mais.
+**Estado em 26/11/2026:** `main` contém a Fase A; branches de feature
+foram removidas após o merge. O dump `docs/exemplo_projeto_mgh.txt` foi
+**descartado** nesta data, com autorização do usuário; ele não existe mais.
 
 Checklist de retomada:
 
@@ -411,8 +436,9 @@ Checklist de retomada:
    consentimento, versões e resultados de teste.
 5. Não faça commit de segredo nem de arquivo ignorado.
 6. Antes de dizer "pronto", reexecute a verificação da seção 5.
-7. Commits por feature; push ou merge na `main` só com autorização.
-8. Atualize `docs/historico.md` ao final de cada marco relevante.
+7. Commits por feature; push na `main` só com autorização explícita.
+8. Antes de **todo commit e todo push**, atualize os quatro documentos:
+   histórico, guia, plano e horas de desenvolvimento (regra §3.7).
 
 ---
 
@@ -423,9 +449,12 @@ contradizer um anexo canônico (`ANX-*`), o plano aprovado ou
 `docs/002`, **o documento canônico vence**. Divergência é registrada como
 `SPECIFICATION CONFLICT` — nunca resolvida por conveniência.
 
-O próximo passo concreto é escolher uma frente entre: aplicar a migration
-em branch sintética do Neon, recuperar os textos canônicos do `ANX-003` ou
-fechar a auditoria renderizada de acessibilidade.
+O próximo passo concreto é escolher uma frente entre: reconciliação formal
+do banco canônico (`ANX-003`/`BANK-0.2`), consentimento e Privacy Notice
+finais, RPO/RTO com restore testado ou auditoria renderizada com leitor de
+tela real e crítica visual humana. A migration local já foi aplicada e os
+textos do instrumento já foram recuperados na demonstração; as divergências
+registradas continuam reservadas à autoridade MGH.
 
 — **Alisson Campos**
 Desenvolvido por **Tiago de Abreu**.
@@ -436,6 +465,7 @@ Desenvolvido por **Tiago de Abreu**.
 
 - `docs/historico.md` — estado atual, decisões e retomada
 - `docs/plano-de-desenvolvimento.md` — cronograma P0–P7, gates e evolução
+- `docs/horas-de-desenvolvimento.md` — estimativas de esforço por feature
 - `docs/evidencias/*.md` — evidências por frente e integração final
 - `docs/governanca/01-gate-de-crise.md`
 - `docs/governanca/02-claims-e-evidencia.md`

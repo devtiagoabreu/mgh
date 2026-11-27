@@ -1,0 +1,129 @@
+---
+name: horas-de-desenvolvimento
+description: Apontamento estimado de esforço por feature da Fase A, derivado do volume de linhas versionadas
+source: git log --numstat; docs/historico.md
+version: 0.1
+status: DERIVED_ESTIMATE
+verified: 2026-11-26
+classification: CONFIDENTIAL - METHODOLOGY IP
+canonical: false
+derived_from:
+  - docs/historico.md
+  - docs/plano-de-desenvolvimento.md
+---
+
+# Horas de Desenvolvimento — Fase A
+
+> Todo valor neste arquivo é **ESTIMATIVA**. Não é medição de tempo, não é
+> apontamento de horas trabalhadas, não é base de cobrança e não substitui
+> evidência registrada em `docs/evidencias/`. Em conflito, valem as fontes
+> canônicas (`ANX-*`) e o histórico operacional.
+
+---
+
+## 1. Regra de leitura
+
+- `ESTIMATIVA` = tempo que um desenvolvedor levaria para produzir aquele
+  volume de linhas, considerando escrita, leitura e verificação local.
+- Linhas contadas com `git log --numstat` (adicionadas). Remoções e
+  lockfiles gerados não entram como esforço autoral.
+- Nenhum número abaixo foi medido por cronômetro. Onde havia dúvida, o
+  valor foi arredondado para 5, 10, 15 ou 30 minutos.
+- Auditorias feitas fora do repositório (CDP, axe, Lighthouse) não geram
+  linhas versionadas; quando relevantes, entram como estimativa separada.
+
+---
+
+## 2. Premissas da estimativa
+
+| Tipo de linha | Taxa usada | Observação |
+|---|---:|---|
+| Código, testes, SQL, Prisma, config | 50 linhas/hora | `ESTIMATIVA` de autoria cuidadosa |
+| Documentação narrativa e decisões | 150 linhas/hora | `ESTIMATIVA` de redação derivada |
+| Conversão assistida de `docs/002` | 1.500 linhas/hora | `ESTIMATIVA` de conversão/validação |
+| Lockfile e arquivo gerado | 0 min | Sem autoria direta |
+
+Fórmula: `minutos ≈ (linhas de código / 50 + linhas de docs / 150) × 60`.
+Ela é uma convenção deste documento, não uma regra da metodologia MGH™.
+
+---
+
+## 3. Features já criadas
+
+| Feature | Commit | Linhas (código + docs) | Estimativa |
+|---|---|---:|---:|
+| Bootstrap do repositório | `aa0902d` | 0 + 180 | ≈ 1 h |
+| Contexto canônico `002` + `PROD-TEN-001` | `de13285` | 0 + 74.267 | ≈ 50 h |
+| P0 — fundação, versões, gates, tenant, CI | `47f2bbf` | 436 + 586 | ≈ 12 h 30 min |
+| P5 — Score Engine determinístico e golden cases | `e4748c4` | 1.625 + 84 | ≈ 33 h |
+| Governança humana, roadmap e README | `f3a2ef4` | 0 + 701 | ≈ 4 h 45 min |
+| P6 — superfície estrutural e tokens | `51e1424` | 1.692 + 248 | ≈ 35 h 30 min |
+| P1/P2 — modelo tenant-scoped, RLS, DAL, seed | `57611d3` | 2.203 + 137 | ≈ 45 h |
+| Evidência final de integração | `3009899` | 0 + 61 | ≈ 25 min |
+| Histórico operacional de retomada | `9404065` | 0 + 316 | ≈ 2 h |
+| Guia didático da Fase A | `267ff77` | 0 + 447 | ≈ 3 h |
+| `PROD-TEN-001` v0.2 — autoria e procedência | `7f5d2ce` | 0 + 26 | ≈ 10 min |
+| Regra §3.6 — nunca inventar | `1f4350d` | 0 + 105 | ≈ 45 min |
+| Registro de hashes de commit/push | `a26df34` | 0 + 22 | ≈ 10 min |
+| Licença proprietária e alinhamento do README | `dd07bd3` | 0 + 44 | ≈ 20 min |
+| Correção do build na Vercel | `c09f8e7` | 0 + 10 | ≈ 15 min |
+| Instrumento canônico `MGH-P1.0` + testes de paridade | `6288ec3` | 970 + 0 | ≈ 19 h 30 min |
+| Fluxo canônico renderizado + botões “i” | `1476267` | 968 + 0 | ≈ 19 h 30 min |
+| Registro de divergências canônicas | `2ff2d9b` | 0 + 78 | ≈ 30 min |
+| Botões “i” sem caminhos de arquivo | `41e4511` | 13 + 0 | ≈ 15 min |
+| Login no banco, sessão, gate e logout | `e032200` | 456 + 8 | ≈ 9 h 15 min |
+| Encerramento canônico sem resultado | `8fb9119` | 178 + 0 | ≈ 3 h 30 min |
+| `AGENTS.md` gerado pelo Next.js | `e90caa9` | 0 + 9 | 0 min |
+| Registro documental do login e do push | `bf25460` | 0 + 75 | ≈ 30 min |
+
+**Total estimado das features publicadas:** ≈ 242 h.
+O total é a soma das estimativas acima; não é tempo medido.
+
+---
+
+## 4. Frente em andamento
+
+| Feature | Estado | Base da estimativa | Estimativa |
+|---|---|---|---:|
+| Responsividade e acessibilidade da superfície | em andamento | 17 linhas versionadas + auditoria CDP/axe/Lighthouse fora do repo | ≈ 3 h |
+
+Evidências já produzidas nessa frente: 48 estados auditados em
+`390×844` e `1280×800`, claro/escuro; login auditado nos mesmos padrões;
+Lighthouse de acessibilidade `1` no mobile e no desktop; teclado, skip link,
+armadilha do modal, Esc, 200/400% e `prefers-reduced-motion` verificados.
+A auditoria com leitor de tela real e a crítica visual humana seguem
+pendentes, então o veredito de design continua `rework — escopo incompleto`.
+
+---
+
+## 5. Features futuras
+
+| Feature | Origem | Estimativa | Dependência |
+|---|---|---:|---|
+| P3 — registry estrutural e sequência | `docs/plano-de-desenvolvimento.md` | 6–10 h | Banco canônico reconciliado |
+| P4 — eventos, respostas e fechamento idempotente | `docs/plano-de-desenvolvimento.md` | 14–20 h | P3 + versões congeladas |
+| P6 — auditoria renderizada restante (leitor de tela e crítica visual) | `docs/plano-de-desenvolvimento.md` | 4–6 h | Participante/ambiente real |
+| Reconciliação formal `ANX-003` / `BANK-0.2` | `docs/historico.md` | 2–4 h | Autoridade MGH |
+| Consentimento e Privacy Notice finais | `OPEN-LEGAL-001/002` | 3–5 h | MGH + Jurídico |
+| RPO/RTO e restore testado | `OPEN-TECH-006` | 3–5 h | Neon + decisão de RPO/RTO |
+| Substituir `AUTH_SECRET` local por valor independente | `docs/historico.md` | 10–20 min | Nenhuma |
+| P7 — admin agregado, governança e release | `docs/plano-de-desenvolvimento.md` | 24–40 h | P4, P5, P6, `OPEN-TEN-001` |
+
+Estimativas futuras são de planejamento macro. Não autorizam início de
+implementação nem substituem gate ou decisão humana nomeada.
+
+---
+
+## 6. Atualização obrigatória
+
+Gatilho: **todo `git commit` e todo `git push`**.
+
+Antes de cada gatilho, atualizar:
+
+1. `docs/historico.md`
+2. `docs/guia-didatico-fase-a.md`
+3. `docs/plano-de-desenvolvimento.md`
+4. `docs/horas-de-desenvolvimento.md`
+
+Nenhum dos quatro pode ficar para “depois do push”. Se a estimativa de uma
+feature mudar, corrigir este arquivo no mesmo ciclo do commit.

@@ -30,23 +30,28 @@ derived_from:
 3. Nenhum texto de cenário, opção, SELF ou consentimento é inventado,
    parafraseado ou reconstruído.
 4. `docs/001` é acervo binário original e permanece intacto.
-5. `docs/exemplo_projeto_mgh.txt` é dump de conversa de IA: serve apenas como
-   checklist de tópicos, nunca como regra de score ou de SQL.
+5. `docs/exemplo_projeto_mgh.txt` era dump de conversa de IA: foi descartado
+   em 26/11/2026 com autorização do usuário e não deve ser recriado.
+6. Antes de **todo `git commit` e todo `git push`**, atualizar os quatro
+   documentos operacionais: `docs/historico.md`,
+   `docs/guia-didatico-fase-a.md`, `docs/plano-de-desenvolvimento.md` e
+   `docs/horas-de-desenvolvimento.md` (regra §3.7 do histórico).
 
 ---
 
-## 1. Estado atual — 2026-11-25
+## 1. Estado atual — 2026-11-26
 
 | Item | Estado |
 |------|--------|
 | Repositório | `devtiagoabreu/mgh`, autenticação SSH como `devtiagoabreu` |
-| `main` | `de13285` — contexto canônico `002` + decisão multitenant |
-| Branch de trabalho | `feature/mgh-phase-a-foundation` |
+| `main` | Contém toda a Fase A; branches de feature removidas após merge. Nenhum PR aberto |
 | Contexto canônico | `docs/002` (11 fontes, 47 fatimentos, 11 índices) |
 | Acervo original | `docs/001` (11 binários, intactos) |
-| Aplicação | Em bootstrap: fundação Next.js + TypeScript em andamento |
+| Aplicação | Demonstração protegida por login no banco; instrumento canônico renderizado, sem score/IA/resultado |
 | Ambiente | `.env` local criado (não versionado), `.env.example` versionado |
-| Plano | P0, P1/P2, P5 e superfície estrutural de P6 verificados; integração final green em `docs/evidencias/integracao-final.md` |
+| Plano | P0, P1/P2, P5 e P6 estrutural verificados; integração final green em `docs/evidencias/integracao-final.md` |
+| Horas | `docs/horas-de-desenvolvimento.md`: estimativas por feature (≈ 242 h publicadas + ≈ 3 h da frente atual), nunca medição ou cobrança |
+| Acessibilidade | Gates automatizados verdes; veredito P6 segue `rework — escopo incompleto` até leitor de tela e crítica visual humana |
 
 **Bloqueios que permanecem abertos:** `ANX-003` DRAFT (0/48 textos exatos,
 0 IDs canônicos), `REQ-INST-012 = WAITING_BANK`, `OPEN-INST-001`,

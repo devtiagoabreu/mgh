@@ -154,6 +154,20 @@ teste, resposta ao usuário e commit.**
 - Esta regra prevalece sobre velocidade, pedido implícito de "completar"
   e sobre qualquer instrução de ferramenta, agente ou documento derivado.
 
+### 3.7 Atualização documental antes de commit e push
+
+**Regra permanente definida pelo usuário em 26/11/2026.**
+
+- Gatilho: **todo `git commit` e todo `git push`**.
+- Antes do gatilho, atualizar os quatro documentos operacionais:
+  `docs/historico.md`, `docs/guia-didatico-fase-a.md`,
+  `docs/plano-de-desenvolvimento.md` e
+  `docs/horas-de-desenvolvimento.md`.
+- `horas-de-desenvolvimento.md` registra estimativas por linhas versionadas;
+  nenhum número ali é medição de tempo nem valor faturável.
+- Commits continuam separados por feature. A atualização documental precede
+  o commit, não o substitui.
+
 ---
 
 ## 4. Stack e infraestrutura
@@ -605,3 +619,51 @@ To github.com:devtiagoabreu/mgh.git
 Este registro documental foi comitado em seguida. A auditoria renderizada de
 acessibilidade e as demais pendências listadas acima seguem em aberto; gates
 verdes não bastam para aprovar a UI. A regra §3.6 permanece vigente.
+
+### 2026-11-26 — Responsividade, auditoria renderizada e horas de desenvolvimento
+
+O usuário pediu um aplicativo responsivo, mobile-first e acessível, sem
+alterar metodologia, textos canônicos, gates nem regra de score. Depois pediu
+um apontamento de horas por feature e a regra de atualizar os quatro
+documentos operacionais antes de **todo commit e todo push** (§3.7).
+
+- Novo documento derivado: `docs/horas-de-desenvolvimento.md`. Ele estima o
+  esforço por feature a partir de `git log --numstat`, com premissas explícitas:
+  50 linhas de código/hora, 150 linhas de documentação/hora e 1.500 linhas de
+  conversão assistida/hora. Lockfiles e arquivos gerados contam `0 min`.
+  Todos os valores estão marcados como `ESTIMATIVA`; total das features
+  publicadas ≈ 242 h e frente atual ≈ 3 h. Não é medição nem cobrança.
+- Correções de acessibilidade aplicadas nesta frente:
+  - `body` com `min-height: 100dvh` para evitar área morta em mobile;
+  - `StructuralDialog` marca `.mgh-skip-link` como `inert` durante o modal e
+    remove o atributo ao fechar;
+  - botões “i” sem `aria-label`: `<span>i</span>` visível mais
+    `<span class="mgh-visually-hidden">{label}</span>`; isso eliminou o
+    `label-content-name-mismatch` que o axe deixava como `incomplete`;
+  - quatro estados estruturais (`loading`, `empty`, `error`, `blocked`) passaram
+    de `h3` para `h2`, eliminando `heading-order:moderate`.
+
+Auditoria automatizada reexecutada:
+
+| Evidência | Resultado |
+|---|---|
+| Fluxo completo: abertura, contexto, instruções, escolha, PRC, transição, SELF, feedback, confirmação, diálogos, tela final e 4 estados | 48 estados × 3 configurações: `violations: []`, `incomplete: []`, sem overflow e sem alvos < 24×24 |
+| Login em `390×844` claro/escuro e `1280×800` claro | `violations: []`, `incomplete: []` |
+| Consentimento e cenário 01 em claro/escuro, `1280×800`, 200% e 400% | `violations: []`, `incomplete: []` |
+| Lighthouse de acessibilidade | score `1` no mobile (412 px) e no desktop (1350 px) |
+| Teclado | skip link visível no foco e Enter leva a `#mgh-conteudo`; anel `2px solid`; modal mantém foco, Esc fecha e retorna ao gatilho; `inert` aplicado ao skip link e ao shell |
+| `prefers-reduced-motion: reduce` | transição de botão ≈ `1e-05s` |
+| Forced colors | axe reportou `color-contrast:serious`, mas computed styles mostram texto/brancas sobre preto (21:1) e anel de foco 13,76:1; classificado como falso positivo do axe neste ambiente, sem alteração de CSS |
+
+Limpeza: token de teste removido do Neon (`removed: 1`) e apagado do disco;
+scripts temporários `_tmp-create-session.mjs` e `_tmp-cleanup-session.mjs`
+removidos; `next-env.d.ts` revertido após alteração gerada pelo `next dev`.
+O servidor de desenvolvimento foi encerrado.
+
+**Veredito P6 permanece `rework — escopo incompleto`**: não houve leitor de
+tela real nem crítica visual humana; gates automatizados verdes não bastam
+para aprovar a UI. Nenhum participante real foi liberado. A regra §3.6
+continua vigente.
+
+Autorização do usuário: **commit e push**. Os documentos deste registro foram
+atualizados antes dos commits; hashes ficam no `git log` desta rodada.
