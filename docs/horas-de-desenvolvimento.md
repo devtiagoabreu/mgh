@@ -124,6 +124,13 @@ violações nem `incomplete`, exceto o conhecido falso positivo de forced colors
 (≈ 45 min de auditoria fora do repositório, estimativa). Nenhuma operação foi
 feita contra o Neon; commit e push autorizados neste ciclo.
 
+A replicação da infraestrutura no Neon (migration faltante, remoção do legado,
+seed sintético, criação da role de runtime sem `BYPASSRLS`, verificação de RLS e
+execução do DAL do dashboard) consumiu ≈ 3–4 h de esforço estimado, incluindo
+diagnóstico e evidências fora do repositório. Nenhuma senha foi versionada.
+Deploy e sincronização do fork na Vercel ficam com o usuário; o agente faz push
+somente em `origin` (`devtiagoabreu/mgh`).
+
 Evidências já produzidas nas frentes F0/F0.1, F1 e F2: `typecheck`, `lint`,
 `test` (14 arquivos / 75 testes), `build`, `prisma:validate`, `audit` (0
 vulnerabilidades) e `diff --check` limpos; build com `/`,

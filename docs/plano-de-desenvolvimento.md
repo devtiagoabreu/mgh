@@ -450,3 +450,13 @@ mobile, com foco, `inert` e ARIA verificados. Nenhuma operação foi feita contr
 o Neon. O próximo passo continua dependendo de decisão separada: reconciliação
 de `ANX-003`, consentimento/Privacy Notice, RPO/RTO e auditoria com leitor de
 tela real.
+
+A infraestrutura foi replicada no Neon por autorização do usuário: 5 migrations
+aplicadas, legado `demo_logins`/`demo_sessions` removido e seed sintético com
+3 identidades ativas. A role usada no runtime foi trocada para `mgh_app`
+(`NOBYPASSRLS`), porque a role owner do Neon ignorava `RLS FORCE`; a role owner
+continua restrita a `DIRECT_URL` para migrações/seed. O DAL do dashboard rodou
+contra o Neon com os mesmos zeros reais e a taxa suprimida. Deploy, variáveis e
+sincronização do fork na Vercel são responsabilidade do usuário; o agente apenas
+faz push em `origin` (`devtiagoabreu/mgh`). Nenhuma regra de produto, isolamento,
+papel, sequência, scoring ou Fase A mudou.

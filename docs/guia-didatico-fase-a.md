@@ -539,6 +539,10 @@ individuais. Os textos do instrumento, os códigos, os gates e a regra de score
 permanecem exatamente como estavam. Nenhuma pessoa real foi liberada no
 teste.
 
+A mesma estrutura de painel foi replicada no banco de produção (Neon), com uma
+conta de acesso que não pode ignorar as regras de separação por workspace. Os
+números continuam sendo zeros reais; nenhum participante foi cadastrado.
+
 — **Alisson Campos**
 Desenvolvido por **Tiago de Abreu**.
 

@@ -1351,3 +1351,35 @@ humana. Nenhum participante real foi liberado. A regra §3.6 continua vigente.
 Servidor `npm run dev` segue ligado em `http://localhost:3000`; apenas
 `localhost` é usado no fluxo de autenticação. Commit e push foram autorizados
 neste ciclo; hashes e resultado do push ficam no `git log` desta rodada.
+
+### 2026-11-27 — Replicação no Neon com role de runtime sem `BYPASSRLS`
+
+O usuário autorizou sobrescrever o legado e assumir Vercel + Neon com o estado
+correto do projeto. A replicação foi feita primeiro no PostgreSQL local e
+depois no Neon; nenhuma senha foi versionada.
+
+- Local: 5 migrations aplicadas, seed idempotente com 3 identidades sintéticas,
+  RLS `FORCE` ativo em `tenants`, `users` e `tenant_memberships`. Sem
+  `app.current_tenant_id` as três tabelas retornam `0`; com o tenant sintético,
+  `1 / 3 / 3`. Dashboard: 0 execuções, 0 registros RAW e 3 membros ativos.
+- Neon antes: 4 migrations; faltava `20261127180000_appearance_preference`;
+  legado `demo_logins` (1 linha) e `demo_sessions` (4 linhas) presente.
+- Neon depois: migration aplicada, legado removido, seed com 3 identidades
+  ativas. Senha sintética rotacionada, exibida uma única vez ao usuário e
+  gravada apenas como hash scrypt em `.env` (ignorado pelo Git).
+- **FINDING:** a role `neondb_owner` do Neon tem `rolbypassrls = true`; com ela
+  no runtime, `FORCE ROW LEVEL SECURITY` não era aplicado e consultas sem tenant
+  retornavam linhas de `tenants` / `users` / `tenant_memberships`. Foi criada a
+  role `mgh_app`, `NOBYPASSRLS`, com `SELECT` nas tabelas operacionais e
+  `UPDATE` em `users`; `DATABASE_URL` passou a usar essa role na URL pooled.
+  `DIRECT_URL` continua com a role owner, somente para migrations/seed.
+- Verificação com a role de runtime: `bypass_rls: false`; sem tenant
+  `0 / 0 / 0 / 0`; com tenant `1 / 3 / 3 / 0`; `auth_credentials` global com 3
+  registros ativos (esperado, fora do RLS). O DAL do dashboard executado contra
+  o Neon devolveu os mesmos zeros reais e a taxa suprimida.
+- Nenhum texto canônico, gate, versão ou regra de score foi alterado.
+- Vercel: o usuário confirmou que cuida pessoalmente do deploy. Ele mantém um
+  fork de `devtiagoabreu/mgh` e atualiza esse fork quando quer publicar. O agente
+  não configurou projeto, variáveis nem deploy; o link local temporário feito
+  para inspeção foi removido, e nenhum token foi versionado. O push nesta rodada
+  vai apenas para `origin` (`git@github.com:devtiagoabreu/mgh.git`).
