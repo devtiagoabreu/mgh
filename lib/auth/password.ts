@@ -1,7 +1,8 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { PASSWORD_MAX_LENGTH } from "./password-limits";
 
 const SCRYPT_KEY_LENGTH = 64;
-export const PASSWORD_MAX_LENGTH = 128;
+export { PASSWORD_MAX_LENGTH } from "./password-limits";
 
 /** Hash scrypt com salt aleatório. Nunca guarda a senha em texto claro. */
 export function hashPassword(password: string): string {

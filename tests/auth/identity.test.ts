@@ -35,6 +35,7 @@ const activeCredential = {
   passwordHash,
   userId,
   tenantId,
+  mustChangePassword: true,
 };
 const activeMembership = { active: true, role: "MENTOR_OWNER" };
 
@@ -44,7 +45,12 @@ describe("F0 — resolução da credencial", () => {
 
     await expect(
       resolveAuthIdentity("owner@example.test", "senha-sintetica-de-teste"),
-    ).resolves.toEqual({ userId, tenantId, role: "MENTOR_OWNER" });
+    ).resolves.toEqual({
+      userId,
+      tenantId,
+      role: "MENTOR_OWNER",
+      mustChangePassword: true,
+    });
 
     expect(calls.map((call) => call.kind)).toContain("authCredential.findUnique");
     expect(calls.map((call) => call.kind)).toContain("$transaction.begin");
@@ -96,5 +102,25 @@ describe("F0 — resolução da credencial", () => {
     await expect(
       resolveAuthIdentity("owner@example.test", "senha-sintetica-de-teste"),
     ).resolves.toBeNull();
+  });
+
+  it("propaga a obrigatoriedade de trocar a senha sem alterar a ordem", async () => {
+    const calls = installFake(
+      { ...activeCredential, mustChangePassword: false },
+      activeMembership,
+    );
+
+    const identity = await resolveAuthIdentity(
+      "owner@example.test",
+      "senha-sintetica-de-teste",
+    );
+    expect(identity?.mustChangePassword).toBe(false);
+    expect(calls.map((call) => call.kind)).toEqual([
+      "authCredential.findUnique",
+      "$transaction.begin",
+      "$queryRaw",
+      "tenantMembership.findFirst",
+      "$transaction.commit",
+    ]);
   });
 });

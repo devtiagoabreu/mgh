@@ -6,9 +6,10 @@ import { resolveAuthIdentity } from "@/lib/auth/identity";
 /**
  * Autenticação real da Fase A.
  *
- * O JWT carrega apenas claims verificados no login: userId, tenantId e role.
- * sessionId é o `jti` gerado pelo Auth.js. Nenhum middleware e nenhuma leitura
- * de header/query decide o tenant; lib/auth/session.ts revalida antes do DAL.
+ * O JWT carrega apenas claims verificados no login: userId, tenantId, role e
+ * a necessidade de trocar a senha temporária. sessionId é o `jti` gerado pelo
+ * Auth.js. Nenhum middleware e nenhuma leitura de header/query decide o
+ * tenant; lib/auth/session.ts revalida antes do DAL.
  */
 const CredentialsSchema = z.object({
   email: z.string().trim().email().max(254),
@@ -46,6 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           mghUserId: identity.userId,
           mghTenantId: identity.tenantId,
           mghRole: identity.role,
+          mghMustChangePassword: identity.mustChangePassword,
         };
       },
     }),
@@ -56,6 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.mghUserId = user.mghUserId;
         token.mghTenantId = user.mghTenantId;
         token.mghRole = user.mghRole;
+        token.mghMustChangePassword = user.mghMustChangePassword === true;
         // ID estável da sessão: o jti do Auth.js é regenerado a cada encode.
         token.mghSessionId = crypto.randomUUID();
       }
@@ -66,6 +69,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.mghUserId = token.mghUserId;
         session.user.mghTenantId = token.mghTenantId;
         session.user.mghRole = token.mghRole;
+        session.user.mghMustChangePassword =
+          token.mghMustChangePassword === true;
         session.user.mghSessionId = token.mghSessionId ?? token.jti;
       }
       return session;

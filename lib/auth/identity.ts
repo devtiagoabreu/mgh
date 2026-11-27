@@ -14,6 +14,7 @@ export interface VerifiedAuthIdentity {
   readonly userId: string;
   readonly tenantId: string;
   readonly role: PhaseARole;
+  readonly mustChangePassword: boolean;
 }
 
 type StoredCredential = {
@@ -21,6 +22,7 @@ type StoredCredential = {
   readonly passwordHash: string;
   readonly userId: string;
   readonly tenantId: string;
+  readonly mustChangePassword: boolean;
 };
 
 type StoredMembership = {
@@ -60,5 +62,6 @@ export async function resolveAuthIdentity(
     userId: credential.userId,
     tenantId: credential.tenantId,
     role: membership.role,
+    mustChangePassword: credential.mustChangePassword === true,
   };
 }

@@ -9,6 +9,7 @@ declare module "next-auth" {
     mghUserId?: string;
     mghTenantId?: string;
     mghRole?: string;
+    mghMustChangePassword?: boolean;
   }
 
   interface Session {
@@ -23,6 +24,7 @@ declare module "@auth/core/jwt" {
     mghUserId?: string;
     mghTenantId?: string;
     mghRole?: string;
+    mghMustChangePassword?: boolean;
     mghSessionId?: string;
   }
 }
