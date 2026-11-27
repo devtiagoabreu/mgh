@@ -1,6 +1,7 @@
 import { appearanceBootScript } from "@/lib/appearance/preference";
 import type { Metadata } from "next";
 import "./globals.css";
+import "./mgh-ds-v1.css";
 
 export const metadata: Metadata = {
   title: "MGH — Fase A",

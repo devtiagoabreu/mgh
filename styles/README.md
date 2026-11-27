@@ -31,6 +31,28 @@ Escalas: corpo 16px, H1 32px, display 48px (declarado; não usado para evitar
 aparência de métrica gamificada); espaçamento 4/8/12/16/24/32/48/64;
 raio 4/8/12/full; no máximo `--mgh-shadow-rest` e `--mgh-shadow-elevated`.
 
+## Camada opcional do MGH Design System v1.0 (`app/mgh-ds-v1.css`)
+
+Fonte: `docs/mgh-design-system/mgh-design-system-01.md`. Ativação exclusiva
+por `html[data-ds="mgh-v1"]`, importada depois de `globals.css` no layout.
+O atributo `data-theme` da Fase A permanece intacto; sem `data-ds`, nada muda.
+
+A camada traduz os tokens documentados para `--mgh-ds-primitive-*` e
+redireciona os nomes semânticos já consumidos pela superfície para esses
+primitivos. Nenhum componente é alterado na F2; a F3 decide o seletor.
+
+Glows: seção 2.3 (`20px / 0.35`). A config Tailwind da seção 5 (`25px / 0.3`)
+está registrada como divergência não aplicada, por decisão registrada.
+
+Contrastes calculados a partir dos hex da especificação (WCAG sRGB, cálculo
+derivado — não são valores definidos pela metodologia): branco/obsidian-950
+19,22:1; roxo/obsidian-950 4,54:1; roxo/obsidian-900 4,22:1 (abaixo de
+4,5:1 para texto normal); ciano-claro/obsidian-900 8,33:1; esmeralda/
+obsidian-800 6,86:1; rosa/obsidian-950 5,11:1; roxo-glow/obsidian-800
+3,06:1 (não texto). **FINDING:** o documento define `text-white` sobre
+`purple-electric`, que resulta em 4,23:1 — insuficiente para texto normal.
+A F2 não troca a cor silenciosamente; a decisão cabe à autoridade de design.
+
 ## Componentes estruturais (`components/`)
 
 | Arquivo | Papel |

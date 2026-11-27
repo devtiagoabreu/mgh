@@ -1,0 +1,160 @@
+/*
+ * MGH Design System v1.0 — tradução dos tokens da especificação
+ * `docs/mgh-design-system/mgh-design-system-01.md` para CSS.
+ *
+ * Ativação: `html[data-ds="mgh-v1"]`. O atributo `data-theme` da Fase A
+ * continua intacto; quando `data-ds` não está presente, nada muda.
+ *
+ * Regra de ouro: valores crus aparecem SOMENTE em `--mgh-ds-primitive-*`.
+ * Camada semântica e alias de componente usam exclusivamente `var()`.
+ *
+ * Divergência registrada: os glows da seção 2.3 (20px / 0.35) são a fonte
+ * escolhida; a configuração Tailwind da seção 5 (25px / 0.3) não é aplicada.
+ * Decisão registrada em 27/11/2026, sem escolha silenciosa.
+ */
+
+:root[data-ds="mgh-v1"] {
+  color-scheme: dark;
+
+  /* --- Primitivos: cores (seção 2.1) ------------------------------------- */
+  --mgh-ds-primitive-color-obsidian-950: #0B0E1B;
+  --mgh-ds-primitive-color-obsidian-900: #0F172A;
+  --mgh-ds-primitive-color-obsidian-800: #13192E;
+  --mgh-ds-primitive-color-obsidian-700: #1E293B;
+  --mgh-ds-primitive-color-border-glass: rgba(255, 255, 255, 0.08);
+  --mgh-ds-primitive-color-purple-electric: #8B5CF6;
+  --mgh-ds-primitive-color-purple-glow: #7C3AED;
+  --mgh-ds-primitive-color-cyan-vibrant: #06B6D4;
+  --mgh-ds-primitive-color-cyan-light: #38BDF8;
+  --mgh-ds-primitive-color-emerald: #10B981;
+  --mgh-ds-primitive-color-rose: #EF4444;
+  --mgh-ds-primitive-color-dominance: #F43F5E;
+  --mgh-ds-primitive-color-influence: #F59E0B;
+  --mgh-ds-primitive-color-compliance: #3B82F6;
+  --mgh-ds-primitive-color-magenta: #EC4899;
+
+  /* Traduções literais de classes presentes nas seções 3 e 4. */
+  --mgh-ds-primitive-color-text: #FFFFFF; /* text-white */
+  --mgh-ds-primitive-color-border-subtle: rgba(255, 255, 255, 0.05); /* /5 */
+  --mgh-ds-primitive-color-purple-soft: rgba(139, 92, 246, 0.10); /* /10 */
+
+  /* Neutro secundário já verificado na camada P6; o DS não traz hex para
+   * text-slate-300/400, então nenhum valor é inventado aqui. */
+  --mgh-ds-primitive-color-text-muted: var(--mgh-primitive-color-n-300);
+
+  /* --- Primitivos: tipografia (seção 2.2) -------------------------------- */
+  --mgh-ds-primitive-font-family-ui: Inter, "Plus Jakarta Sans", sans-serif;
+  --mgh-ds-primitive-font-family-mono: "JetBrains Mono", monospace;
+  --mgh-ds-primitive-font-display: 32px;
+  --mgh-ds-primitive-font-h2: 24px;
+  --mgh-ds-primitive-font-h3: 18px;
+  --mgh-ds-primitive-font-body: 14px;
+  --mgh-ds-primitive-font-small: 12px;
+  --mgh-ds-primitive-font-mono: 13px;
+  --mgh-ds-primitive-leading-display: 40px;
+  --mgh-ds-primitive-leading-h2: 32px;
+  --mgh-ds-primitive-leading-h3: 24px;
+  --mgh-ds-primitive-leading-body: 20px;
+  --mgh-ds-primitive-leading-small: 16px;
+  --mgh-ds-primitive-weight-regular: 400;
+  --mgh-ds-primitive-weight-medium: 500;
+  --mgh-ds-primitive-weight-semibold: 600;
+  --mgh-ds-primitive-weight-bold: 700;
+
+  /* --- Primitivos: raio, sombra, gradiente e movimento (2.3/3/4/5) ------- */
+  --mgh-ds-primitive-radius-sm: 6px;
+  --mgh-ds-primitive-radius-md: 12px;
+  --mgh-ds-primitive-radius-lg: 16px;
+  --mgh-ds-primitive-radius-xl: 24px;
+  --mgh-ds-primitive-radius-2xl: 20px; /* seção 5 */
+  --mgh-ds-primitive-radius-3xl: 24px; /* seção 5 */
+
+  --mgh-ds-primitive-shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --mgh-ds-primitive-shadow-glow-purple: 0 0 20px rgba(139, 92, 246, 0.35);
+  --mgh-ds-primitive-shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.35);
+
+  --mgh-ds-primitive-gradient-mesh: linear-gradient(
+    135deg,
+    #7C3AED 0%,
+    #06B6D4 50%,
+    #EC4899 100%
+  );
+  --mgh-ds-primitive-gradient-progress: linear-gradient(
+    90deg,
+    #8B5CF6 0%,
+    #06B6D4 100%
+  );
+  --mgh-ds-primitive-gradient-dr: linear-gradient(#8B5CF6, #06B6D4);
+
+  --mgh-ds-primitive-motion-200: 200ms;
+  --mgh-ds-primitive-motion-300: 300ms;
+
+  /* --- Alias semânticos de componente ----------------------------------- */
+  /* Redirecionam os nomes já consumidos pela superfície P6. Nenhum
+   * componente é editado na F2. */
+  --mgh-color-surface: var(--mgh-ds-primitive-color-obsidian-950);
+  --mgh-color-surface-raised: var(--mgh-ds-primitive-color-obsidian-800);
+  --mgh-color-surface-sunken: var(--mgh-ds-primitive-color-obsidian-900);
+  --mgh-color-text: var(--mgh-ds-primitive-color-text);
+  --mgh-color-text-muted: var(--mgh-ds-primitive-color-text-muted);
+  --mgh-color-border: var(--mgh-ds-primitive-color-border-glass);
+  --mgh-color-border-subtle: var(--mgh-ds-primitive-color-border-subtle);
+  --mgh-color-action-bg: var(--mgh-ds-primitive-color-purple-electric);
+  --mgh-color-action-hover-bg: var(--mgh-ds-primitive-color-purple-glow);
+  --mgh-color-action-fg: var(--mgh-ds-primitive-color-text);
+  --mgh-color-focus: var(--mgh-ds-primitive-color-purple-glow);
+  --mgh-color-selection-bg: var(--mgh-ds-primitive-color-purple-soft);
+  --mgh-color-selection-border: var(--mgh-ds-primitive-color-purple-electric);
+  --mgh-color-danger-bg: var(--mgh-ds-primitive-color-obsidian-700);
+  --mgh-color-danger-fg: var(--mgh-ds-primitive-color-text);
+  --mgh-color-danger-border: var(--mgh-ds-primitive-color-rose);
+  --mgh-color-positive-fg: var(--mgh-ds-primitive-color-emerald);
+  --mgh-color-caution-fg: var(--mgh-ds-primitive-color-influence);
+  --mgh-color-skeleton: var(--mgh-ds-primitive-color-obsidian-700);
+  --mgh-shadow-rest: var(--mgh-ds-primitive-shadow-card);
+  --mgh-shadow-elevated: var(--mgh-ds-primitive-shadow-card);
+
+  --mgh-font-display: var(--mgh-ds-primitive-font-display);
+  --mgh-font-h1: var(--mgh-ds-primitive-font-display);
+  --mgh-font-h2: var(--mgh-ds-primitive-font-h2);
+  --mgh-font-h3: var(--mgh-ds-primitive-font-h3);
+  --mgh-font-body: var(--mgh-ds-primitive-font-body);
+  --mgh-font-caption: var(--mgh-ds-primitive-font-small);
+  --mgh-font-label: var(--mgh-ds-primitive-font-body);
+  --mgh-weight-regular: var(--mgh-ds-primitive-weight-regular);
+  --mgh-weight-medium: var(--mgh-ds-primitive-weight-medium);
+  --mgh-weight-bold: var(--mgh-ds-primitive-weight-bold);
+  --mgh-leading-body: var(--mgh-ds-primitive-leading-body);
+
+  --mgh-radius-control: var(--mgh-ds-primitive-radius-md);
+  --mgh-radius-card: var(--mgh-ds-primitive-radius-lg);
+  --mgh-radius-panel: var(--mgh-ds-primitive-radius-xl);
+  --mgh-radius-pill: var(--mgh-primitive-radius-full);
+
+  /* Alias exclusivos do DS, para uso quando a F3 ativar o tema. */
+  --mgh-ds-font-family-ui: var(--mgh-ds-primitive-font-family-ui);
+  --mgh-ds-font-family-mono: var(--mgh-ds-primitive-font-family-mono);
+  --mgh-ds-font-mono: var(--mgh-ds-primitive-font-mono);
+  --mgh-ds-weight-semibold: var(--mgh-ds-primitive-weight-semibold);
+  --mgh-ds-leading-display: var(--mgh-ds-primitive-leading-display);
+  --mgh-ds-leading-h2: var(--mgh-ds-primitive-leading-h2);
+  --mgh-ds-leading-h3: var(--mgh-ds-primitive-leading-h3);
+  --mgh-ds-leading-small: var(--mgh-ds-primitive-leading-small);
+  --mgh-ds-radius-2xl: var(--mgh-ds-primitive-radius-2xl);
+  --mgh-ds-radius-3xl: var(--mgh-ds-primitive-radius-3xl);
+  --mgh-ds-shadow-glow-purple: var(--mgh-ds-primitive-shadow-glow-purple);
+  --mgh-ds-shadow-glow-cyan: var(--mgh-ds-primitive-shadow-glow-cyan);
+  --mgh-ds-gradient-mesh: var(--mgh-ds-primitive-gradient-mesh);
+  --mgh-ds-gradient-progress: var(--mgh-ds-primitive-gradient-progress);
+  --mgh-ds-gradient-dr: var(--mgh-ds-primitive-gradient-dr);
+  --mgh-ds-motion-200: var(--mgh-ds-primitive-motion-200);
+  --mgh-ds-motion-300: var(--mgh-ds-primitive-motion-300);
+
+  --mgh-ds-color-dominance: var(--mgh-ds-primitive-color-dominance);
+  --mgh-ds-color-influence: var(--mgh-ds-primitive-color-influence);
+  --mgh-ds-color-steadiness: var(--mgh-ds-primitive-color-emerald);
+  --mgh-ds-color-compliance: var(--mgh-ds-primitive-color-compliance);
+  --mgh-ds-color-visual: var(--mgh-ds-primitive-color-purple-electric);
+  --mgh-ds-color-auditory: var(--mgh-ds-primitive-color-cyan-vibrant);
+  --mgh-ds-color-kinesthetic: var(--mgh-ds-primitive-color-magenta);
+}
