@@ -24,6 +24,27 @@ describe("F4 — casca SaaS do workspace", () => {
     expect(nav).toContain('aria-label="Navegação do workspace"');
   });
 
+  it("oculta a navegação com drawer mobile e sidebar recolhível", () => {
+    const nav = source("components/workspace-nav.tsx");
+    const css = source("app/globals.css");
+    expect(nav).toContain("drawerOpen");
+    expect(nav).toContain("collapsed");
+    expect(nav).toContain("aria-expanded={drawerOpen}");
+    expect(nav).toContain('aria-controls="mgh-nav-drawer"');
+    expect(nav).toContain('aria-controls="mgh-nav-list"');
+    expect(nav).toContain('event.key === "Escape"');
+    expect(nav).toContain('setAttribute("inert", "")');
+    expect(nav).toContain('removeAttribute("inert")');
+    expect(nav).toContain('querySelector<HTMLElement>(".mgh-skip-link")');
+    expect(nav).toContain("requestAnimationFrame");
+    expect(nav).toContain('window.matchMedia("(min-width: 60rem)")');
+    expect(css).toContain(".mgh-workspace .mgh-nav-toggle");
+    expect(css).toContain(".mgh-sidebar .mgh-sidebar__collapse");
+    expect(css).toContain(".mgh-sidebar--open");
+    expect(css).toContain(".mgh-sidebar--collapsed");
+    expect(css).toContain(".mgh-nav-backdrop");
+  });
+
   it("não nomeia módulos congelados do Parking Lot", () => {
     const nav = source("components/workspace-nav.tsx");
     const home = source("app/app/page.tsx");
@@ -41,13 +62,38 @@ describe("F4 — casca SaaS do workspace", () => {
     expect(nav).toContain("indisponíveis");
   });
 
-  it("mantém a visão geral estrutural, sem dados do instrumento", () => {
+  it("exibe KPIs operacionais reais e o campo de limitação obrigatório", () => {
     const home = source("app/app/page.tsx");
     expect(home).toContain("requireVerifiedSession()");
+    expect(home).toContain("getMghOperationalRaw");
+    expect(home).toContain("deriveMghOperationalMetrics");
     expect(home).toContain('href="/app/mgh"');
-    expect(home).toContain("Nenhum participante real foi liberado");
+    expect(home).toContain("Execuções concluídas");
+    expect(home).toContain("Taxa de conclusão");
+    expect(home).toContain("O que estes dados NÃO permitem dizer:");
+    expect(home).toContain("participante real foi liberado");
     expect(home).not.toContain("@/lib/canonical/instrument");
     expect(home).not.toContain("@/lib/engine");
+    expect(home).not.toContain("D/I/S/C");
+  });
+
+  it("estilos do dashboard usam tokens e sobrevivem a forced-colors", () => {
+    const css = source("app/globals.css");
+    for (const selector of [
+      ".mgh-shell--dashboard",
+      ".mgh-dashboard__intro",
+      ".mgh-section-heading",
+      ".mgh-badge",
+      ".mgh-kpi-grid",
+      ".mgh-kpi__value",
+      ".mgh-card--module",
+      ".mgh-dashboard__versions",
+    ]) {
+      expect(css).toContain(selector);
+    }
+    const forced = css.slice(css.indexOf("@media (forced-colors: active)"));
+    expect(forced).toContain(".mgh-kpi");
+    expect(forced).toContain(".mgh-badge");
   });
 
   it("move o instrumento para /app/mgh sem alterar o componente", () => {
