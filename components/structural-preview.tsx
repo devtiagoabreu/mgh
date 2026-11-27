@@ -199,11 +199,14 @@ export function StructuralPreview({ username }: { username: string }) {
                 Voltar ao consentimento
               </button>
             </div>
+            <InfoButton topic="consentimento" onOpen={openInfo} />
           </>
         ) : (
-          <ConsentGate onDecision={handleConsent} />
+          <ConsentGate
+            onDecision={handleConsent}
+            info={<InfoButton topic="consentimento" onOpen={openInfo} />}
+          />
         )}
-        <InfoButton topic="consentimento" onOpen={openInfo} />
       </>
     );
   } else if (stage === "opening") {
@@ -357,20 +360,17 @@ export function StructuralPreview({ username }: { username: string }) {
           <div className="mgh-actions">
             <InfoButton topic="demonstracao" onOpen={openInfo} />
             <ThemeToggle />
-            <form action={logoutAction}>
-              <button type="submit" className="mgh-button mgh-button--ghost">
-                Encerrar sessão
+            <div className="mgh-header__session">
+              <span className="mgh-kicker">{username}</span>
+              <button
+                ref={exitRef}
+                type="button"
+                className="mgh-button mgh-button--ghost"
+                onClick={() => setDialog({ kind: "exit" })}
+              >
+                Sair
               </button>
-            </form>
-            <span className="mgh-kicker">{username}</span>
-            <button
-              ref={exitRef}
-              type="button"
-              className="mgh-button mgh-button--ghost"
-              onClick={() => setDialog({ kind: "exit" })}
-            >
-              Sair
-            </button>
+            </div>
           </div>
         </header>
 
@@ -435,6 +435,11 @@ export function StructuralPreview({ username }: { username: string }) {
           onClose={() => setDialog(null)}
         >
           <div className="mgh-actions">
+            <form action={logoutAction}>
+              <button type="submit" className="mgh-button mgh-button--secondary">
+                Encerrar sessão
+              </button>
+            </form>
             <button
               type="button"
               className="mgh-button mgh-button--secondary"
@@ -443,7 +448,7 @@ export function StructuralPreview({ username }: { username: string }) {
                 setDialog(null);
               }}
             >
-              Encerrar demonstração
+              Reiniciar sequência MGH
             </button>
           </div>
         </StructuralDialog>

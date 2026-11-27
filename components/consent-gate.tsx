@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent, type ReactNode } from "react";
 import {
   CONSENT_BUTTON,
   CONSENT_CHECKBOXES,
@@ -11,13 +11,14 @@ import type { ConsentDecision } from "./structural-copy";
 
 type ConsentGateProps = {
   onDecision: (decision: ConsentDecision) => void;
+  info?: ReactNode;
 };
 
 /**
  * Consentimento: texto metodológico literal de docs/002. Não é a redação
  * jurídica final. Nenhuma caixa vem marcada; recusar não registra resposta.
  */
-export function ConsentGate({ onDecision }: ConsentGateProps) {
+export function ConsentGate({ onDecision, info }: ConsentGateProps) {
   const [accepted, setAccepted] = useState<boolean[]>(() =>
     CONSENT_CHECKBOXES.map(() => false),
   );
@@ -34,7 +35,10 @@ export function ConsentGate({ onDecision }: ConsentGateProps) {
 
   return (
     <form className="mgh-card" onSubmit={handleSubmit}>
-      <h2 className="mgh-heading-2">Consentimento</h2>
+      <div className="mgh-card__header">
+        <h2 className="mgh-heading-2">Consentimento</h2>
+        {info}
+      </div>
       <p id={statementId} className="mgh-copy">
         {CONSENT_STATEMENT}
       </p>

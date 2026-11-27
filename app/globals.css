@@ -306,6 +306,19 @@ body {
   gap: var(--mgh-space-1);
 }
 
+.mgh-header__session {
+  display: grid;
+  gap: var(--mgh-space-2);
+  align-items: center;
+}
+
+@media (min-width: 40rem) {
+  .mgh-header__session {
+    display: flex;
+    margin-inline-start: auto;
+  }
+}
+
 .mgh-kicker {
   margin: 0;
   color: var(--mgh-color-text-muted);
@@ -383,6 +396,12 @@ body {
   border-radius: var(--mgh-radius-card);
 }
 
+.mgh-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--mgh-space-2);
+}
+
 @media (max-width: 30rem) {
   .mgh-card {
     padding: var(--mgh-space-4);
@@ -400,6 +419,10 @@ body {
     flex-wrap: wrap;
     align-items: center;
   }
+}
+
+.mgh-actions form {
+  display: inline-flex;
 }
 
 .mgh-button {
@@ -454,28 +477,36 @@ body {
   cursor: not-allowed;
 }
 
-.mgh-info-button {
+/* Gatilhos iconográficos: mesmo alvo mínimo, menor peso visual. */
+.mgh-icon-button {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  inline-size: 44px;
-  block-size: 44px;
+  inline-size: 32px;
+  block-size: 32px;
   padding: 0;
   font: inherit;
-  font-size: var(--mgh-font-label);
-  font-weight: var(--mgh-weight-bold);
-  border: 1px solid var(--mgh-color-border);
-  border-radius: var(--mgh-radius-pill);
-  background: var(--mgh-color-surface);
+  border: 1px solid var(--mgh-color-border-subtle);
+  border-radius: var(--mgh-radius-control);
+  background: transparent;
   color: var(--mgh-color-text-muted);
   cursor: pointer;
   transition: background var(--mgh-motion-fast), color var(--mgh-motion-fast);
 }
 
-.mgh-info-button:hover {
+.mgh-icon-button:hover {
   background: var(--mgh-color-surface-sunken);
   color: var(--mgh-color-text);
+}
+
+.mgh-icon-button__icon {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+}
+
+.mgh-info-button {
+  border-radius: var(--mgh-radius-pill);
 }
 
 .mgh-info-details {
@@ -797,6 +828,7 @@ body {
 
 @media (forced-colors: active) {
   .mgh-button,
+  .mgh-icon-button,
   .mgh-info-button,
   .mgh-card,
   .mgh-choice,

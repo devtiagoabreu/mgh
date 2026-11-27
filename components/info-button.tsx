@@ -9,9 +9,9 @@ type InfoButtonProps = {
 };
 
 /**
- * Gatilho "i" de um tópico explicativo. O rótulo visível é curto; o nome
- * acessível vem do tópico e a referência ao gatilho volta ao modal para o
- * retorno de foco.
+ * Gatilho iconográfico "i" de um tópico explicativo. O nome acessível vem do
+ * tópico (texto oculto visualmente) e a referência ao gatilho volta ao modal
+ * para o retorno de foco. O ícone é decorativo e não participa do nome.
  */
 export function InfoButton({ topic, onOpen }: InfoButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -21,11 +21,24 @@ export function InfoButton({ topic, onOpen }: InfoButtonProps) {
     <button
       ref={ref}
       type="button"
-      className="mgh-info-button"
+      className="mgh-icon-button mgh-info-button"
       title={info.label}
       onClick={() => onOpen(topic, ref.current)}
     >
-      <span>i</span>
+      <svg
+        className="mgh-icon-button__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v5" />
+        <circle cx="12" cy="7.75" r="0.9" fill="currentColor" stroke="none" />
+      </svg>
       <span className="mgh-visually-hidden">{info.label}</span>
     </button>
   );

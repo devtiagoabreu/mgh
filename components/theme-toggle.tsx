@@ -21,9 +21,13 @@ function getServerSnapshot() {
   return false;
 }
 
-/** Alterna o atributo `data-theme`; componentes nunca trocam de classe. */
+/**
+ * Alterna o atributo `data-theme` por meio de um botão iconográfico. O nome
+ * acessível descreve a ação seguinte; ícone e tema são derivados do estado.
+ */
 export function ThemeToggle() {
   const isDark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const label = isDark ? "Ativar modo claro" : "Ativar modo escuro";
 
   function toggle() {
     const next = isDark ? "light" : "dark";
@@ -38,11 +42,40 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="mgh-button mgh-button--ghost"
+      className="mgh-icon-button"
       onClick={toggle}
-      aria-pressed={isDark}
+      title={label}
+      aria-label={label}
     >
-      Modo escuro
+      {isDark ? (
+        <svg
+          className="mgh-icon-button__icon"
+          aria-hidden="true"
+          focusable="false"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
+        </svg>
+      ) : (
+        <svg
+          className="mgh-icon-button__icon"
+          aria-hidden="true"
+          focusable="false"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
+        </svg>
+      )}
     </button>
   );
 }
